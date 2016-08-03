@@ -20,11 +20,11 @@ define(['jquery', 'query-builder'], function($) {
 
     /**
      *
-     * @type {{selectorTable: string, selectorBuilder: string, template: string, instance: QueryBuilder, plugins: string[], filters: *[], basicRules: {condition: string, rules: Array}, buttons: *[]}}
+     * @type {{selectorBuilderPoistion: string, selectorBuilder: string, template: string, instance: QueryBuilder, plugins: string[], filters: *[], basicRules: {condition: string, rules: Array}, buttons: *[]}}
      * @exports TYPO3/CMS/Querybuilder/QueryBuilder
      */
     var QueryBuilder = {
-        selectorTable: '.panel.recordlist',
+        selectorBuilderPoistion: '.t3js-module-body h1',
         selectorBuilder: '.t3js-querybuilder',
         template: '<div class="col-md-12 col-lg-10 col-lg-offset-1"><div class="t3js-querybuilder"></div><div class="btn-group"></div></div>',
         instance: null,
@@ -50,8 +50,7 @@ define(['jquery', 'query-builder'], function($) {
      * Initialize method
      */
     QueryBuilder.initialize = function(rules) {
-        console.log(rules);
-        $(QueryBuilder.selectorTable).prepend(QueryBuilder.template);
+        $(QueryBuilder.template).insertAfter(QueryBuilder.selectorBuilderPoistion);
         var $queryBuilderContainer = $(QueryBuilder.selectorBuilder);
         if (QueryBuilder.buttons.length > 0) {
             var $buttonGroup = $queryBuilderContainer.parent().find('.btn-group');
