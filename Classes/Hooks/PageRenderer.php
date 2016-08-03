@@ -5,8 +5,8 @@ namespace T3G\Querybuilder\Hooks;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\PathUtility;
 
-class PageRenderer {
-
+class PageRenderer
+{
     /**
      * @param array $params
      *
@@ -23,12 +23,12 @@ class PageRenderer {
             $pageRenderer->addRequireJsConfiguration([
                 'paths' => [
                     'query-builder' => PathUtility::getAbsoluteWebPath('../typo3conf/ext/querybuilder/Resources/Public/JavaScript/query-builder.standalone'),
-                ]
+                ],
             ]);
             $query = GeneralUtility::_GP('query');
             $query = json_decode($query);
             $pageRenderer->loadRequireJsModule('TYPO3/CMS/Querybuilder/QueryBuilder', 'function(QueryBuilder) {
-                QueryBuilder.initialize('. json_encode($query) .');
+                QueryBuilder.initialize(' . json_encode($query) . ');
             }');
         }
     }

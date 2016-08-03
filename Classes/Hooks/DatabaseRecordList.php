@@ -5,10 +5,9 @@ namespace T3G\Querybuilder\Hooks;
 use TYPO3\CMS\Backend\RecordList\RecordListGetTableHookInterface;
 use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
-class DatabaseRecordList implements RecordListGetTableHookInterface {
-
+class DatabaseRecordList implements RecordListGetTableHookInterface
+{
     const OPERATOR_EQUAL = 'equal';
     const OPERATOR_NOT_EQUAL = 'not_equal';
     const OPERATOR_IN = 'in';
@@ -21,19 +20,20 @@ class DatabaseRecordList implements RecordListGetTableHookInterface {
     const OPERATOR_NOT_ENDS_WITH = 'not_ends_with';
     const OPERATOR_IS_EMPTY = 'is_empty';
     const OPERATOR_IS_NOT_EMPTY = 'is_not_empty';
-    const OPERATOR_IS_NULL= 'is_null';
+    const OPERATOR_IS_NULL = 'is_null';
     const OPERATOR_IS_NOT_NULL = 'is_not_null';
 
+    const CONDITION_AND = 'AND';
+    const CONDITION_OR = 'OR';
+
     /**
-     * modifies the DB list query
+     * modifies the DB list query.
      *
-     * @param string $table The current database table
-     * @param int $pageId The record's page ID
-     * @param string $additionalWhereClause An additional WHERE clause
-     * @param string $selectedFieldsList Comma separated list of selected fields
-     * @param \TYPO3\CMS\Recordlist\RecordList\DatabaseRecordList $parentObject Parent \TYPO3\CMS\Recordlist\RecordList\DatabaseRecordList object
-     *
-     * @return void
+     * @param string                                              $table                 The current database table
+     * @param int                                                 $pageId                The record's page ID
+     * @param string                                              $additionalWhereClause An additional WHERE clause
+     * @param string                                              $selectedFieldsList    Comma separated list of selected fields
+     * @param \TYPO3\CMS\Recordlist\RecordList\DatabaseRecordList $parentObject          Parent \TYPO3\CMS\Recordlist\RecordList\DatabaseRecordList object
      */
     public function getDBlistQuery($table, $pageId, &$additionalWhereClause, &$selectedFieldsList, &$parentObject)
     {
@@ -41,19 +41,37 @@ class DatabaseRecordList implements RecordListGetTableHookInterface {
             $query = GeneralUtility::_GP('query');
             if ($query !== null) {
                 $query = json_decode($query);
-            }
-            $condition = $query->condition === 'AND' ? 'AND' : 'OR';
-            if (!empty($query->rules)) {
-                foreach ($query->rules as $rule) {
-                    $additionalWhereClause .= ' ' . $condition . ' ' . $this->getWhereClause($rule, $table);
-                }
+                $additionalWhereClause .= ' AND ' . $this->parseQuery($query, $table);
             }
         }
     }
 
     /**
+     * @param \stdClass $query
+     * @param string    $table
+     *
+     * @return string
+     */
+    protected function parseQuery($query, $table)
+    {
+        $condition = $query->condition === self::CONDITION_AND ? self::CONDITION_AND : self::CONDITION_OR;
+        $whereParts = [];
+        if (!empty($query->rules)) {
+            foreach ($query->rules as $rule) {
+                if ($rule->condition && $rule->rules) {
+                    $whereParts[] = $this->parseQuery($rule, $table);
+                } else {
+                    $whereParts[] = $this->getWhereClause($rule, $table);
+                }
+            }
+        }
+
+        return ' ( ' . implode(' ' . $condition . ' ', $whereParts) . ' ) ';
+    }
+
+    /**
      * @param \stdClass $rule
-     * @param string $table
+     * @param string    $table
      *
      * @return string
      */
@@ -109,6 +127,7 @@ class DatabaseRecordList implements RecordListGetTableHookInterface {
                 $where = $field . 'IS ' . $negation . ' NULL';
                 break;
         }
+
         return $where;
     }
 

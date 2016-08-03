@@ -1,4 +1,5 @@
 <?php
+
 $EM_CONF[$_EXTKEY] = array(
     'title' => 'QueryBuilder',
     'description' => 'Backend extension for query builder in list module.',
