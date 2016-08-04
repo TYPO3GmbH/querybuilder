@@ -20,13 +20,14 @@ define(['jquery', 'query-builder'], function($) {
 
     /**
      *
-     * @type {{selectorBuilderPoistion: string, selectorBuilder: string, template: string, instance: QueryBuilder, plugins: string[], filters: *[], basicRules: {condition: string, rules: Array}, buttons: *[]}}
+     * @type {{selectorBuilderPoistion: string, selectorBuilderContainer: string, selectorBuilder: string, template: string, instance: null, plugins: string[], filters: *[], basicRules: {condition: string, rules: Array}, buttons: *[]}}
      * @exports TYPO3/CMS/Querybuilder/QueryBuilder
      */
     var QueryBuilder = {
         selectorBuilderPoistion: '.t3js-module-body h1',
-        selectorBuilder: '.t3js-querybuilder',
-        template: '<div class="col-md-12 col-lg-10 col-lg-offset-1"><div class="t3js-querybuilder"></div><div class="btn-group"></div></div>',
+        selectorBuilderContainer: '.t3js-querybuilder',
+        selectorBuilder: '.t3js-querybuilder-builder',
+        template: '<div class="t3js-querybuilder"><div class="t3js-querybuilder-builder"></div><div class="btn-group"></div></div>',
         instance: null,
         plugins: ['bt-tooltip-errors'],
         filters: [{
@@ -51,16 +52,16 @@ define(['jquery', 'query-builder'], function($) {
      */
     QueryBuilder.initialize = function(rules) {
         $(QueryBuilder.template).insertAfter(QueryBuilder.selectorBuilderPoistion);
-        var $queryBuilderContainer = $(QueryBuilder.selectorBuilder);
+        var $queryBuilderContainer = $(QueryBuilder.selectorBuilderContainer);
         if (QueryBuilder.buttons.length > 0) {
-            var $buttonGroup = $queryBuilderContainer.parent().find('.btn-group');
+            var $buttonGroup = $queryBuilderContainer.find('.btn-group');
             for (var i=0; i<QueryBuilder.buttons.length; i++) {
                 var button = QueryBuilder.buttons[i];
                 var $button = $('<button type="button" class="btn btn-default" data-action="' + button.action + '">' + button.title + '</button>');
                 $button.appendTo($buttonGroup);
             }
         }
-        QueryBuilder.instance = $queryBuilderContainer.queryBuilder({
+        QueryBuilder.instance = $queryBuilderContainer.find(QueryBuilder.selectorBuilder).queryBuilder({
             allow_empty: true,
             plugins: QueryBuilder.plugins,
             filters: QueryBuilder.filters,

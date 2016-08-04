@@ -18,7 +18,7 @@ class PageRenderer
             $pageRenderer = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Page\PageRenderer::class);
 
             $pageRenderer->addCssFile(
-                PathUtility::getAbsoluteWebPath('../typo3conf/ext/querybuilder/Resources/Public/Css/query-builder.default.min.css')
+                PathUtility::getAbsoluteWebPath('../typo3conf/ext/querybuilder/Resources/Public/Css/query-builder.default.css')
             );
             $pageRenderer->addRequireJsConfiguration([
                 'paths' => [
