@@ -42,7 +42,6 @@ class TcaOnly implements FormDataGroupInterface
         $orderedDataProvider = $orderingService->orderByDependencies($dataProvider, 'before', 'depends');
 
         foreach ($orderedDataProvider as $providerClassName => $_) {
-            /** @var FormDataProviderInterface $provider */
             $provider = GeneralUtility::makeInstance($providerClassName);
 
             if (!$provider instanceof FormDataProviderInterface) {
