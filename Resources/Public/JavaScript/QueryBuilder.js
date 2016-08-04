@@ -15,7 +15,7 @@
  * Module: TYPO3/CMS/Querybuilder/QueryBuilder
  * Javascript functions regarding the permissions module
  */
-define(['jquery', 'query-builder'], function($) {
+define(['jquery', 'twbs/bootstrap-datetimepicker', 'query-builder'], function($) {
     'use strict';
 
     /**
@@ -29,11 +29,20 @@ define(['jquery', 'query-builder'], function($) {
         selectorBuilder: '.t3js-querybuilder-builder',
         template: '<div class="t3js-querybuilder"><div class="t3js-querybuilder-builder"></div><div class="btn-group"></div></div>',
         instance: null,
-        plugins: ['bt-tooltip-errors'],
+        plugins: {
+            'bt-tooltip-errors': { delay: 100 },
+            'sortable': { icon: 'fa fa-sort' },
+            'invert': {},
+            'filter-description': { icon: 'fa fa-info' }
+        },
+        icon: 'fa fa-sort',
+        // Filter:Types: string, integer, double, date, time, datetime and boolean.
+        // Filter:Required: id, type, values*
         filters: [{
             id: 'title',
             label: 'Title',
-            type: 'string'
+            type: 'string',
+            description: 'foo'
         }],
         basicRules: {
             condition: 'AND',
@@ -50,7 +59,7 @@ define(['jquery', 'query-builder'], function($) {
     /**
      * Initialize method
      */
-    QueryBuilder.initialize = function(rules) {
+    QueryBuilder.initialize = function(rules, filter) {
         $(QueryBuilder.template).insertAfter(QueryBuilder.selectorBuilderPoistion);
         var $queryBuilderContainer = $(QueryBuilder.selectorBuilderContainer);
         if (QueryBuilder.buttons.length > 0) {
@@ -63,8 +72,15 @@ define(['jquery', 'query-builder'], function($) {
         }
         QueryBuilder.instance = $queryBuilderContainer.find(QueryBuilder.selectorBuilder).queryBuilder({
             allow_empty: true,
+            icons: {
+                'add_group': 'fa fa-plus-circle',
+                'add_rule': 'fa fa-plus',
+                'remove_group': 'fa fa-minus-circle',
+                'remove_rule': 'fa fa-minus-circle',
+                'error': 'fa fa-warning'
+            },
             plugins: QueryBuilder.plugins,
-            filters: QueryBuilder.filters,
+            filters: filter.length ? filter : QueryBuilder.filters,
             rules: rules || QueryBuilder.basicRules
         });
         QueryBuilder.initialzeEvents();

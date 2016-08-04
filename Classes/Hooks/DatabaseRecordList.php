@@ -22,6 +22,12 @@ class DatabaseRecordList implements RecordListGetTableHookInterface
     const OPERATOR_IS_NOT_EMPTY = 'is_not_empty';
     const OPERATOR_IS_NULL = 'is_null';
     const OPERATOR_IS_NOT_NULL = 'is_not_null';
+    const OPERATOR_LESS = 'less';
+    const OPERATOR_LESS_OR_EQUAL = 'less_or_equal';
+    const OPERATOR_GREATER = 'greater';
+    const OPERATOR_GREATER_OR_EQUAL = 'greater_or_equal';
+    const OPERATOR_BETWEEN = 'between';
+    const OPERATOR_NOT_BETWEEN = 'not_between';
 
     const CONDITION_AND = 'AND';
     const CONDITION_OR = 'OR';
@@ -125,6 +131,25 @@ class DatabaseRecordList implements RecordListGetTableHookInterface
             case self::OPERATOR_IS_NOT_NULL:
                 $negation = $rule->operator === self::OPERATOR_IS_NOT_NULL ? 'NOT' : '';
                 $where = $field . 'IS ' . $negation . ' NULL';
+                break;
+            case self::OPERATOR_LESS:
+                $where = $field . '<' . $value;
+                break;
+            case self::OPERATOR_LESS_OR_EQUAL:
+                $where = $field . '<=' . $value;
+                break;
+            case self::OPERATOR_GREATER:
+                $where = $field . '>' . $value;
+                break;
+            case self::OPERATOR_GREATER_OR_EQUAL:
+                $where = $field . '>=' . $value;
+                break;
+            case self::OPERATOR_BETWEEN:
+            case self::OPERATOR_NOT_BETWEEN:
+                $negation = $rule->operator === self::OPERATOR_NOT_BETWEEN ? 'NOT ' : '';
+                $value1 = $dbConnection->fullQuoteStr($rule->value[0], $table);
+                $value2 = $dbConnection->fullQuoteStr($rule->value[1], $table);
+                $where = $field . $negation . ' BETWEEN ' . $value1 . ' AND' . $value2;
                 break;
         }
 
