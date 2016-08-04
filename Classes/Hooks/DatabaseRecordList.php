@@ -5,6 +5,7 @@ namespace T3G\Querybuilder\Hooks;
 use TYPO3\CMS\Backend\RecordList\RecordListGetTableHookInterface;
 use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 class DatabaseRecordList implements RecordListGetTableHookInterface
 {
@@ -86,7 +87,7 @@ class DatabaseRecordList implements RecordListGetTableHookInterface
         $dbConnection = $this->getDatabaseConnection();
         $where = '';
         $field = $dbConnection->quoteStr($rule->field, $table) . ' ';
-        $value = $dbConnection->fullQuoteStr($rule->value, $table);
+        $value = is_string($rule->value) ? $dbConnection->fullQuoteStr($rule->value, $table) : null;
         switch ($rule->operator) {
             case self::OPERATOR_EQUAL:
                 $where = $field . '=' . $value;
