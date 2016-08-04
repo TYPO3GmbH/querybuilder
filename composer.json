@@ -18,12 +18,12 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"T3G\\Querybuilder\\": "web/typo3conf/ext/querybuilder/Classes"
+			"T3G\\Querybuilder\\": "Classes"
 		}
 	},
 	"autoload-dev": {
 		"psr-4": {
-			"T3G\\Querybuilder\\Tests\\": "web/typo3conf/ext/querybuilder/Tests"
+			"T3G\\Querybuilder\\Tests\\": "Tests"
 		}
 	}
 }
