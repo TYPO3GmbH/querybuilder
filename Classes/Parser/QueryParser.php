@@ -34,6 +34,12 @@ class QueryParser
     const CONDITION_AND = 'AND';
     const CONDITION_OR = 'OR';
 
+    const FORMAT_DATETIME = 'Y-m-d H:i';
+    const FORMAT_DATE = 'Y-m-d';
+    const FORMAT_TIME = 'H:i';
+    const FORMAT_TIMESEC = 'H:i:s';
+    const FORMAT_YEAR = 'Y';
+
     /**
      * @param \stdClass $queryObject
      * @param string $table
@@ -68,13 +74,16 @@ class QueryParser
         $dbConnection = $this->getDatabaseConnection();
         $where = '';
         $field = $dbConnection->quoteStr($rule->field, $table) . ' ';
-        $value = is_string($rule->value) ? $dbConnection->fullQuoteStr($rule->value, $table) : null;
+        $value = $this->getValue($rule);
+        $value = !is_array($value)
+            ? $dbConnection->fullQuoteStr($value, $table)
+            : $value;
         switch ($rule->operator) {
             case self::OPERATOR_EQUAL:
-                $where = $field . '=' . $value;
+                $where = $field . '= ' . $value;
                 break;
             case self::OPERATOR_NOT_EQUAL:
-                $where = $field . '!=' . $value;
+                $where = $field . '!= ' . $value;
                 break;
             case self::OPERATOR_IN:
             case self::OPERATOR_NOT_IN:
@@ -115,27 +124,67 @@ class QueryParser
                 $where = $field . 'IS ' . $negation . ' NULL';
                 break;
             case self::OPERATOR_LESS:
-                $where = $field . '<' . $value;
+                $where = $field . '< ' . $value;
                 break;
             case self::OPERATOR_LESS_OR_EQUAL:
-                $where = $field . '<=' . $value;
+                $where = $field . '<= ' . $value;
                 break;
             case self::OPERATOR_GREATER:
-                $where = $field . '>' . $value;
+                $where = $field . '> ' . $value;
                 break;
             case self::OPERATOR_GREATER_OR_EQUAL:
-                $where = $field . '>=' . $value;
+                $where = $field . '>= ' . $value;
                 break;
             case self::OPERATOR_BETWEEN:
             case self::OPERATOR_NOT_BETWEEN:
                 $negation = $rule->operator === self::OPERATOR_NOT_BETWEEN ? 'NOT ' : '';
-                $value1 = $dbConnection->fullQuoteStr($rule->value[0], $table);
-                $value2 = $dbConnection->fullQuoteStr($rule->value[1], $table);
-                $where = $field . $negation . ' BETWEEN ' . $value1 . ' AND' . $value2;
+                $value1 = $dbConnection->fullQuoteStr($value[0], $table);
+                $value2 = $dbConnection->fullQuoteStr($value[1], $table);
+                $where = $field . $negation . 'BETWEEN ' . $value1 . ' AND ' . $value2;
                 break;
         }
 
         return $where;
+    }
+
+    /**
+     * Prepare incoming values. E.g. parse date string into timestamp.
+     *
+     * @param \stdClass $rule
+     *
+     * @return mixed
+     */
+    protected function getValue($rule)
+    {
+        $values = $rule->value;
+        if (!is_array($values)) {
+            $values = [$values];
+        }
+        $format = null;
+        switch ($rule->type) {
+            case 'datetime':
+                $format = self::FORMAT_DATETIME;
+                break;
+            case 'date':
+                $format = self::FORMAT_DATE;
+                break;
+            case 'time':
+                $format = self::FORMAT_TIME;
+                break;
+            case 'timesec':
+                $format = self::FORMAT_TIMESEC;
+                break;
+            case 'year':
+                $format = self::FORMAT_YEAR;
+                break;
+        }
+        foreach ($values as &$value) {
+            if ($format !== null) {
+                $date = \DateTime::createFromFormat($format, $value);
+                $value = $date->getTimestamp();
+            }
+        }
+        return count($values) === 1 ? $values[0] : $values;
     }
 
     /**

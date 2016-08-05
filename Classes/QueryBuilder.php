@@ -6,13 +6,17 @@ use T3G\Querybuilder\Backend\Form\FormDataGroup\TcaOnly;
 use TYPO3\CMS\Backend\Form\FormDataCompiler;
 use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Lang\LanguageService;
 
 /**
  * Class QueryParser.
  */
 class QueryBuilder
 {
+    const FORMAT_DATETIME = 'YYYY-MM-DD HH:mm';
+    const FORMAT_DATE = 'YYYY-MM-DD';
+    const FORMAT_TIME = 'HH:mm';
+    const FORMAT_TIMESEC = 'HH:mm:ss';
+    const FORMAT_YEAR = 'YYYY';
 
     /**
      * Build the filter configuration from TCA
@@ -28,10 +32,8 @@ class QueryBuilder
         $dataProviderResult = $this->prepareTca($table);
         $TCA = $dataProviderResult['processedTca'];
         $filters = [];
-
         $filterFields = !empty($TCA['ctrl']['queryFilterFields']) ? $TCA['ctrl']['queryFilterFields'] : $TCA['ctrl']['searchFields'];
         $filterFields = GeneralUtility::trimExplode(',', $filterFields);
-        $languageService = $this->getLanguageService();
         foreach ($filterFields as $filterField) {
             $fieldConfig = $TCA['columns'][$filterField];
             if (!is_array($fieldConfig)) {
@@ -45,7 +47,8 @@ class QueryBuilder
             $filter->type = $this->determineFilterType($fieldConfig);
             $filter->input = $this->determineFilterInput($fieldConfig);
             $filter->values = $this->determineFilterValues($fieldConfig);
-            $filter->label = $languageService->sL($fieldConfig['label']);
+            $filter->label = $fieldConfig['label'];
+            $filter->description = !empty($fieldConfig['description']) ? $fieldConfig['description'] : '';
             $this->determineAndAddExtras($filter, $fieldConfig);
             $filters[] = $filter;
         }
@@ -72,12 +75,12 @@ class QueryBuilder
                 if (strpos($fieldConfig['config']['eval'], 'double2') !== false) {
                     $type = 'double';
                 }
-                //if (strpos($fieldConfig['config']['eval'], 'date') !== false) {
-                //    $type = 'date';
-                //}
-                //if (strpos($fieldConfig['config']['eval'], 'datetime') !== false) {
-                //    $type = 'datetime';
-                //}
+                if (strpos($fieldConfig['config']['eval'], 'date') !== false) {
+                    $type = 'date';
+                }
+                if (strpos($fieldConfig['config']['eval'], 'datetime') !== false) {
+                    $type = 'datetime';
+                }
                 break;
         }
 
@@ -111,14 +114,13 @@ class QueryBuilder
      */
     protected function determineFilterValues(array $fieldConfig)
     {
-        $languageService = $this->getLanguageService();
         $values = [];
         switch ($fieldConfig['config']['type']) {
             case 'select':
                 if (!empty($fieldConfig['config']['items'])) {
                     foreach ($fieldConfig['config']['items'] as $item) {
                         $tmp = new \stdClass();
-                        $tmp->{$item[1]} = $languageService->sL($item[0]);
+                        $tmp->{$item[1]} = $item[0];
                         $values[] = $tmp;
                     }
                 }
@@ -150,19 +152,19 @@ class QueryBuilder
             $filter->plugin_config->icons->clear = 'fa fa-trash';
             switch ($filter->type) {
                 case 'datetime':
-                    $filter->plugin_config->format = 'YYYY-MM-DD HH:mm';
+                    $filter->plugin_config->format = self::FORMAT_DATETIME;
                     break;
                 case 'date':
-                    $filter->plugin_config->format = 'YYYY-MM-DD';
+                    $filter->plugin_config->format = self::FORMAT_DATE;
                     break;
                 case 'time':
-                    $filter->plugin_config->format = 'HH:mm';
+                    $filter->plugin_config->format = self::FORMAT_TIME;
                     break;
                 case 'timesec':
-                    $filter->plugin_config->format = 'HH:mm:ss';
+                    $filter->plugin_config->format = self::FORMAT_TIMESEC;
                     break;
                 case 'year':
-                    $filter->plugin_config->format = 'YYYY';
+                    $filter->plugin_config->format = self::FORMAT_YEAR;
                     break;
             }
             $filter->validation->format = $filter->plugin_config->format;
@@ -188,14 +190,6 @@ class QueryBuilder
         ];
 
         return $formDataCompiler->compile($formDataCompilerInput);
-    }
-
-    /**
-     * @return LanguageService
-     */
-    protected function getLanguageService()
-    {
-        return $GLOBALS['LANG'];
     }
 
     /**

@@ -15,7 +15,7 @@
  * Module: TYPO3/CMS/Querybuilder/QueryBuilder
  * Javascript functions regarding the permissions module
  */
-define(['jquery', 'twbs/bootstrap-datetimepicker', 'query-builder'], function($) {
+define(['jquery', 'moment', 'twbs/bootstrap-datetimepicker', 'query-builder'], function($, moment) {
     'use strict';
 
     /**
@@ -60,6 +60,8 @@ define(['jquery', 'twbs/bootstrap-datetimepicker', 'query-builder'], function($)
      * Initialize method
      */
     QueryBuilder.initialize = function(rules, filter) {
+        // Add moment to the global windows space, because query-builder checks again window.moment
+        window.moment = moment;
         $(QueryBuilder.template).insertAfter(QueryBuilder.selectorBuilderPoistion);
         var $queryBuilderContainer = $(QueryBuilder.selectorBuilderContainer);
         if (QueryBuilder.buttons.length > 0) {
@@ -70,6 +72,7 @@ define(['jquery', 'twbs/bootstrap-datetimepicker', 'query-builder'], function($)
                 $button.appendTo($buttonGroup);
             }
         }
+        QueryBuilder.initialzeEvents();
         QueryBuilder.instance = $queryBuilderContainer.find(QueryBuilder.selectorBuilder).queryBuilder({
             allow_empty: true,
             icons: {
@@ -83,18 +86,29 @@ define(['jquery', 'twbs/bootstrap-datetimepicker', 'query-builder'], function($)
             filters: filter.length ? filter : QueryBuilder.filters,
             rules: rules || QueryBuilder.basicRules
         });
-        QueryBuilder.initialzeEvents();
     };
 
     /**
      *
      */
     QueryBuilder.initialzeEvents = function() {
-        $(QueryBuilder.selectorBuilder).parent().find('.btn-group button').click(function() {
+        var $builderElement = $(QueryBuilder.selectorBuilder);
+        $builderElement.on('afterCreateRuleInput.queryBuilder', function(e, rule) {
+            if (rule.filter.plugin === 'datetimepicker') {
+                var $input = rule.$el.find('.rule-value-container [name*=_value_]');
+                $input.on('dp.change', function() {
+                    $input.trigger('change');
+                });
+            }
+        });
+        $builderElement.parent().find('.btn-group button').click(function() {
             var $button = $(this);
             var action = $button.data('action');
             switch (action) {
                 case 'apply':
+                    if (!QueryBuilder.instance.queryBuilder('validate')) {
+                        break;
+                    }
                     var url = self.location.href;
                     if (url.indexOf('&query=') !== -1) {
                         url = url.substring(0, url.indexOf('&query='));
