@@ -34,6 +34,10 @@ class QueryBuilder
         $languageService = $this->getLanguageService();
         foreach ($filterFields as $filterField) {
             $fieldConfig = $TCA['columns'][$filterField];
+            if (!is_array($fieldConfig)) {
+                // if a filter field has no column declaration continue...
+                continue;
+            }
             // Filter:Types: string, integer, double, date, time, datetime and boolean.
             // Filter:Required: id, type, values*
             $filter = new \stdClass();
