@@ -3,33 +3,38 @@
 namespace T3G\Querybuilder\Hooks;
 
 use T3G\Querybuilder\Parser\QueryParser;
-use TYPO3\CMS\Backend\RecordList\RecordListGetTableHookInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Recordlist\RecordList\AbstractDatabaseRecordList;
 
 /**
  * Class DatabaseRecordList.
  */
-class DatabaseRecordList implements RecordListGetTableHookInterface
+class DatabaseRecordList
 {
+
     /**
-     * modifies the DB list query.
-     *
-     * @param string                                              $table                 The current database table
-     * @param int                                                 $pageId                The record's page ID
-     * @param string                                              $additionalWhereClause An additional WHERE clause
-     * @param string                                              $selectedFieldsList    Comma separated list of selected fields
-     * @param \TYPO3\CMS\Recordlist\RecordList\DatabaseRecordList $parentObject          Parent \TYPO3\CMS\Recordlist\RecordList\DatabaseRecordList object
-     *
-     * @throws \InvalidArgumentException
+     * @param array $parameters parameters
+     * @param string $table the current database table
+     * @param int $pageId the records' page ID
+     * @param array $additionalConstraints additional constraints
+     * @param array $fieldList field list
+     * @param AbstractDatabaseRecordList $parentObject
      */
-    public function getDBlistQuery($table, $pageId, &$additionalWhereClause, &$selectedFieldsList, &$parentObject)
+    public function buildQueryParametersPostProcess(array &$parameters,
+                                   string $table,
+                                   int $pageId,
+                                   array $additionalConstraints,
+                                   array $fieldList,
+                                   AbstractDatabaseRecordList $parentObject)
     {
-        if (GeneralUtility::_GP('M') === 'web_list' && GeneralUtility::_GP('table') !== null) {
+        if (GeneralUtility::_GP('M') === 'web_list' && $parentObject->table !== null) {
             $query = GeneralUtility::_GP('query');
             if ($query !== null) {
                 $query = json_decode($query);
-                $queryParser = GeneralUtility::makeInstance(QueryParser::class);
-                $additionalWhereClause .= ' AND ' . $queryParser->parse($query, $table);
+                if ($query) {
+                    $queryParser = GeneralUtility::makeInstance(QueryParser::class);
+                    $parameters['where'][] = $queryParser->parse($query, $table);
+                }
             }
         }
     }

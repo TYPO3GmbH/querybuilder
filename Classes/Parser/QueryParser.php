@@ -2,6 +2,7 @@
 
 namespace T3G\Querybuilder\Parser;
 
+use stdClass;
 use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -41,7 +42,7 @@ class QueryParser
     const FORMAT_YEAR = 'Y';
 
     /**
-     * @param \stdClass $queryObject
+     * @param stdClass $queryObject
      * @param string $table
      *
      * @return string
@@ -64,12 +65,12 @@ class QueryParser
     }
 
     /**
-     * @param \stdClass $rule
-     * @param string    $table
+     * @param stdClass $rule
+     * @param string $table
      *
      * @return string
      */
-    protected function getWhereClause($rule, $table)
+    protected function getWhereClause(stdClass $rule, string $table) : string
     {
         $dbConnection = $this->getDatabaseConnection();
         $where = '';
@@ -150,8 +151,7 @@ class QueryParser
     /**
      * Prepare incoming values. E.g. parse date string into timestamp.
      *
-     * @param \stdClass $rule
-     *
+     * @param stdClass $rule
      * @return mixed
      */
     protected function getValue($rule)

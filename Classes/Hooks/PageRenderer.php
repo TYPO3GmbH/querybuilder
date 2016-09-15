@@ -2,9 +2,11 @@
 
 namespace T3G\Querybuilder\Hooks;
 
+use InvalidArgumentException;
 use T3G\Querybuilder\QueryBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\PathUtility;
+use UnexpectedValueException;
 
 /**
  * Class PageRenderer
@@ -15,10 +17,10 @@ class PageRenderer
     /**
      * @param array $params
      *
-     * @throws \InvalidArgumentException
-     * @throws \UnexpectedValueException
+     * @throws InvalidArgumentException
+     * @throws UnexpectedValueException
      */
-    public function renderPreProcess($params)
+    public function renderPreProcess(array $params)
     {
         $table = GeneralUtility::_GP('table');
         if ($table !== null && GeneralUtility::_GP('M') === 'web_list') {
