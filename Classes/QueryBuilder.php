@@ -2,10 +2,13 @@
 
 namespace T3G\Querybuilder;
 
+use InvalidArgumentException;
+use stdClass;
 use T3G\Querybuilder\Backend\Form\FormDataGroup\TcaOnly;
 use TYPO3\CMS\Backend\Form\FormDataCompiler;
 use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use UnexpectedValueException;
 
 /**
  * Class QueryParser.
@@ -24,8 +27,8 @@ class QueryBuilder
      * @param string $table
      *
      * @return array
-     * @throws \UnexpectedValueException
-     * @throws \InvalidArgumentException
+     * @throws UnexpectedValueException
+     * @throws InvalidArgumentException
      */
     public function buildFilterFromTca($table)
     {
@@ -42,7 +45,7 @@ class QueryBuilder
             }
             // Filter:Types: string, integer, double, date, time, datetime and boolean.
             // Filter:Required: id, type, values*
-            $filter = new \stdClass();
+            $filter = new stdClass();
             $filter->id = $filterField;
             $filter->type = $this->determineFilterType($fieldConfig);
             $filter->input = $this->determineFilterInput($fieldConfig);
@@ -92,7 +95,7 @@ class QueryBuilder
      *
      * @return string
      */
-    protected function determineFilterInput(array $fieldConfig)
+    protected function determineFilterInput(array $fieldConfig) : string
     {
         $input = 'text';
         switch ($fieldConfig['config']['type']) {
@@ -109,8 +112,7 @@ class QueryBuilder
 
     /**
      * @param array $fieldConfig
-     *
-     * @return string
+     * @return array
      */
     protected function determineFilterValues(array $fieldConfig)
     {
@@ -119,7 +121,7 @@ class QueryBuilder
             case 'select':
                 if (!empty($fieldConfig['config']['items'])) {
                     foreach ($fieldConfig['config']['items'] as $item) {
-                        $tmp = new \stdClass();
+                        $tmp = new stdClass();
                         $tmp->{$item[1]} = $item[0];
                         $values[] = $tmp;
                     }
@@ -131,17 +133,17 @@ class QueryBuilder
     }
 
     /**
-     * @param \stdClass $filter
+     * @param stdClass $filter
      * @param array $fieldConfig
      */
     protected function determineAndAddExtras(&$filter, $fieldConfig)
     {
         if ($filter->type === 'date' || $filter->type === 'datetime') {
-            $filter->validation = new \stdClass();
+            $filter->validation = new stdClass();
             $filter->plugin = 'datetimepicker';
-            $filter->plugin_config = new \stdClass();
+            $filter->plugin_config = new stdClass();
             $filter->plugin_config->sideBySide = true;
-            $filter->plugin_config->icons = new \stdClass();
+            $filter->plugin_config->icons = new stdClass();
             $filter->plugin_config->icons->time = 'fa fa-clock-o';
             $filter->plugin_config->icons->date = 'fa fa-calendar';
             $filter->plugin_config->icons->up = 'fa fa-chevron-up';
@@ -175,9 +177,8 @@ class QueryBuilder
      * @param string $tableName
      *
      * @return array
-     * @throws \UnexpectedValueException
-     *
-     * @throws \InvalidArgumentException
+     * @throws UnexpectedValueException
+     * @throws InvalidArgumentException
      */
     protected function prepareTca($tableName)
     {
