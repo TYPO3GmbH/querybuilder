@@ -187,7 +187,7 @@ class QueryBuilder
 
         $formDataCompilerInput = [
             'tableName' => $tableName,
-            'command' => 'edit',
+            'command' => 'new'
         ];
 
         return $formDataCompiler->compile($formDataCompilerInput);

@@ -106,18 +106,13 @@ $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['formDataGroup']['tcaOnly'] = a
             \TYPO3\CMS\Backend\Form\FormDataProvider\TcaTypesShowitem::class,
         ),
     ),
-    \TYPO3\CMS\Backend\Form\FormDataProvider\TcaFlexFetch::class => array(
+    \TYPO3\CMS\Backend\Form\FormDataProvider\TcaFlexPrepare::class => array(
         'depends' => array(
             \TYPO3\CMS\Backend\Form\FormDataProvider\InitializeProcessedTca::class,
             \TYPO3\CMS\Backend\Form\FormDataProvider\UserTsConfig::class,
             \TYPO3\CMS\Backend\Form\FormDataProvider\PageTsConfigMerged::class,
             \TYPO3\CMS\Backend\Form\FormDataProvider\TcaColumnsRemoveUnused::class,
             \TYPO3\CMS\Backend\Form\FormDataProvider\TcaColumnsProcessFieldLabels::class,
-        ),
-    ),
-    \TYPO3\CMS\Backend\Form\FormDataProvider\TcaFlexPrepare::class => array(
-        'depends' => array(
-            \TYPO3\CMS\Backend\Form\FormDataProvider\TcaFlexFetch::class,
         ),
     ),
     \TYPO3\CMS\Backend\Form\FormDataProvider\TcaFlexProcess::class => array(
@@ -145,8 +140,6 @@ $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['formDataGroup']['tcaOnly'] = a
             \TYPO3\CMS\Backend\Form\FormDataProvider\TcaTypesShowitem::class,
             \TYPO3\CMS\Backend\Form\FormDataProvider\TcaColumnsRemoveUnused::class,
             \TYPO3\CMS\Backend\Form\FormDataProvider\TcaCheckboxItems::class,
-            // GeneralUtility::getFlexFormDS() needs unchanged databaseRow values as string
-            \TYPO3\CMS\Backend\Form\FormDataProvider\TcaFlexFetch::class,
         ),
     ),
     \TYPO3\CMS\Backend\Form\FormDataProvider\TcaSelectTreeItems::class => array(
