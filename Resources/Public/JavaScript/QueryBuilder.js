@@ -20,18 +20,18 @@ define(['jquery', 'moment', 'twbs/bootstrap-datetimepicker', 'query-builder'], f
 
     /**
      *
-     * @type {{selectorBuilderPoistion: string, selectorBuilderContainer: string, selectorBuilder: string, template: string, instance: null, plugins: string[], filters: *[], basicRules: {condition: string, rules: Array}, buttons: *[]}}
+     * @type {{selectorBuilderPosition: string, selectorBuilderContainer: string, selectorBuilder: string, template: string, instance: null, plugins: string[], filters: *[], basicRules: {condition: string, rules: Array}, buttons: *[]}}
      * @exports TYPO3/CMS/Querybuilder/QueryBuilder
      */
     var QueryBuilder = {
-        selectorBuilderPoistion: '.t3js-module-body h1',
+        selectorBuilderPosition: '.t3js-module-body h1',
         selectorBuilderContainer: '.t3js-querybuilder',
         selectorBuilder: '.t3js-querybuilder-builder',
         template: '<div class="t3js-querybuilder"><div class="t3js-querybuilder-builder"></div><div class="btn-group"></div></div>',
         instance: null,
         plugins: {
             'bt-tooltip-errors': { delay: 100 },
-            'sortable': { icon: 'fa fa-sort' },
+            //'sortable': { icon: 'fa fa-sort' },
             'invert': {},
             'filter-description': { icon: 'fa fa-info' }
         },
@@ -62,7 +62,7 @@ define(['jquery', 'moment', 'twbs/bootstrap-datetimepicker', 'query-builder'], f
     QueryBuilder.initialize = function(rules, filter) {
         // Add moment to the global windows space, because query-builder checks again window.moment
         window.moment = moment;
-        $(QueryBuilder.template).insertAfter(QueryBuilder.selectorBuilderPoistion);
+        $(QueryBuilder.template).insertAfter(QueryBuilder.selectorBuilderPosition);
         var $queryBuilderContainer = $(QueryBuilder.selectorBuilderContainer);
         if (QueryBuilder.buttons.length > 0) {
             var $buttonGroup = $queryBuilderContainer.find('.btn-group');

@@ -1,126 +1,132 @@
 /*!
- * jQuery.extendext 0.1.1
+ * jQuery.extendext 0.1.2
  *
- * Copyright 2014 Damien "Mistic" Sorel (http://www.strangeplanet.fr)
+ * Copyright 2014-2016 Damien "Mistic" Sorel (http://www.strangeplanet.fr)
  * Licensed under MIT (http://opensource.org/licenses/MIT)
  * 
  * Based on jQuery.extend by jQuery Foundation, Inc. and other contributors
  */
 
-(function(root, factory) {
+(function (root, factory) {
     if (typeof define === 'function' && define.amd) {
         define('jQuery.extendext', ['jquery'], factory);
+    }
+    else if (typeof module === 'object' && module.exports) {
+        module.exports = factory(require('jquery'));
     }
     else {
         factory(root.jQuery);
     }
-}(this, function($) {
-  "use strict";
+}(this, function ($) {
+    "use strict";
 
-  $.extendext = function() {
-    var options, name, src, copy, copyIsArray, clone,
-      target = arguments[0] || {},
-      i = 1,
-      length = arguments.length,
-      deep = false,
-      arrayMode = 'default';
+    $.extendext = function () {
+        var options, name, src, copy, copyIsArray, clone,
+            target = arguments[0] || {},
+            i = 1,
+            length = arguments.length,
+            deep = false,
+            arrayMode = 'default';
 
-    // Handle a deep copy situation
-    if ( typeof target === "boolean" ) {
-      deep = target;
+        // Handle a deep copy situation
+        if (typeof target === "boolean") {
+            deep = target;
 
-      // Skip the boolean and the target
-      target = arguments[ i++ ] || {};
-    }
-
-    // Handle array mode parameter
-    if ( typeof target === "string" ) {
-      arrayMode = $([target.toLowerCase(), 'default']).filter(['default','concat','replace','extend'])[0];
-
-      // Skip the string param
-      target = arguments[ i++ ] || {};
-    }
-
-    // Handle case when target is a string or something (possible in deep copy)
-    if ( typeof target !== "object" && !$.isFunction(target) ) {
-      target = {};
-    }
-
-    // Extend jQuery itself if only one argument is passed
-    if ( i === length ) {
-      target = this;
-      i--;
-    }
-
-    for ( ; i < length; i++ ) {
-      // Only deal with non-null/undefined values
-      if ( (options = arguments[ i ]) !== null ) {
-        // Special operations for arrays
-        if ($.isArray(options) && arrayMode !== 'default') {
-          clone = target && $.isArray(target) ? target : [];
-
-          switch (arrayMode) {
-          case 'concat':
-            target = clone.concat( $.extend( deep, [], options ) );
-            break;
-
-          case 'replace':
-            target = $.extend( deep, [], options );
-            break;
-
-          case 'extend':
-            options.forEach(function(e, i) {
-              if (typeof e === 'object') {
-                var type = $.isArray(e) ? [] : {};
-                clone[i] = $.extendext( deep, arrayMode, clone[i] || type, e );
-
-              } else if (clone.indexOf(e) === -1) {
-                clone.push(e);
-              }
-            });
-
-            target = clone;
-            break;
-          }
-
-        } else {
-          // Extend the base object
-          for ( name in options ) {
-            src = target[ name ];
-            copy = options[ name ];
-
-            // Prevent never-ending loop
-            if ( target === copy ) {
-              continue;
-            }
-
-            // Recurse if we're merging plain objects or arrays
-            if ( deep && copy && ( $.isPlainObject(copy) ||
-              (copyIsArray = $.isArray(copy)) ) ) {
-
-              if ( copyIsArray ) {
-                copyIsArray = false;
-                clone = src && $.isArray(src) ? src : [];
-
-              } else {
-                clone = src && $.isPlainObject(src) ? src : {};
-              }
-
-              // Never move original objects, clone them
-              target[ name ] = $.extendext( deep, arrayMode, clone, copy );
-
-            // Don't bring in undefined values
-            } else if ( copy !== undefined ) {
-              target[ name ] = copy;
-            }
-          }
+            // Skip the boolean and the target
+            target = arguments[i++] || {};
         }
-      }
-    }
 
-    // Return the modified object
-    return target;
-  };
+        // Handle array mode parameter
+        if (typeof target === "string") {
+            arrayMode = target.toLowerCase();
+            if (arrayMode !== 'concat' && arrayMode !== 'replace' && arrayMode !== 'extend') {
+                arrayMode = 'default';
+            }
+
+            // Skip the string param
+            target = arguments[i++] || {};
+        }
+
+        // Handle case when target is a string or something (possible in deep copy)
+        if (typeof target !== "object" && !$.isFunction(target)) {
+            target = {};
+        }
+
+        // Extend jQuery itself if only one argument is passed
+        if (i === length) {
+            target = this;
+            i--;
+        }
+
+        for (; i < length; i++) {
+            // Only deal with non-null/undefined values
+            if ((options = arguments[i]) !== null) {
+                // Special operations for arrays
+                if ($.isArray(options) && arrayMode !== 'default') {
+                    clone = target && $.isArray(target) ? target : [];
+
+                    switch (arrayMode) {
+                    case 'concat':
+                        target = clone.concat($.extend(deep, [], options));
+                        break;
+
+                    case 'replace':
+                        target = $.extend(deep, [], options);
+                        break;
+
+                    case 'extend':
+                        options.forEach(function (e, i) {
+                            if (typeof e === 'object') {
+                                var type = $.isArray(e) ? [] : {};
+                                clone[i] = $.extendext(deep, arrayMode, clone[i] || type, e);
+
+                            } else if (clone.indexOf(e) === -1) {
+                                clone.push(e);
+                            }
+                        });
+
+                        target = clone;
+                        break;
+                    }
+
+                } else {
+                    // Extend the base object
+                    for (name in options) {
+                        src = target[name];
+                        copy = options[name];
+
+                        // Prevent never-ending loop
+                        if (target === copy) {
+                            continue;
+                        }
+
+                        // Recurse if we're merging plain objects or arrays
+                        if (deep && copy && ( $.isPlainObject(copy) ||
+                            (copyIsArray = $.isArray(copy)) )) {
+
+                            if (copyIsArray) {
+                                copyIsArray = false;
+                                clone = src && $.isArray(src) ? src : [];
+
+                            } else {
+                                clone = src && $.isPlainObject(src) ? src : {};
+                            }
+
+                            // Never move original objects, clone them
+                            target[name] = $.extendext(deep, arrayMode, clone, copy);
+
+                            // Don't bring in undefined values
+                        } else if (copy !== undefined) {
+                            target[name] = copy;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Return the modified object
+        return target;
+    };
 }));
 
 // doT.js
@@ -149,7 +155,8 @@
 			doNotSkipEncoded: false
 		},
 		template: undefined, //fn, compile template
-		compile:  undefined  //fn, for express
+		compile:  undefined, //fn, for express
+		log: true
 	}, _globals;
 
 	doT.encodeHTMLSource = function(doNotSkipEncoded) {
@@ -266,13 +273,13 @@
 
 
 /*!
- * jQuery QueryBuilder 2.3.3
- * Copyright 2014-2016 Damien "Mistic" Sorel (http://www.strangeplanet.fr)
+ * jQuery QueryBuilder 2.4.1
+ * Copyright 2014-2017 Damien "Mistic" Sorel (http://www.strangeplanet.fr)
  * Licensed under MIT (http://opensource.org/licenses/MIT)
  */
 
 // Languages: en
-// Plugins: bt-checkbox, bt-selectpicker, bt-tooltip-errors, change-filters, filter-description, invert, mongodb-support, sortable, sql-support, unique-filter
+// Plugins: bt-checkbox, bt-selectpicker, bt-tooltip-errors, change-filters, filter-description, invert, mongodb-support, not-group, sortable, sql-support, unique-filter
 (function(root, factory) {
     if (typeof define == 'function' && define.amd) {
         define('query-builder', ['jquery', 'doT', 'jQuery.extendext'], factory);
@@ -294,7 +301,7 @@ var QueryBuilder = function($el, options) {
 // ===============================
 $.extend(QueryBuilder.prototype, {
     change: function(type, value) {
-        var event = new $.Event(type + '.queryBuilder.filter', {
+        var event = new $.Event(this.tojQueryEvent(type, true), {
             builder: this,
             value: value
         });
@@ -305,7 +312,7 @@ $.extend(QueryBuilder.prototype, {
     },
 
     trigger: function(type) {
-        var event = new $.Event(type + '.queryBuilder', {
+        var event = new $.Event(this.tojQueryEvent(type), {
             builder: this
         });
 
@@ -315,18 +322,24 @@ $.extend(QueryBuilder.prototype, {
     },
 
     on: function(type, cb) {
-        this.$el.on(type + '.queryBuilder', cb);
+        this.$el.on(this.tojQueryEvent(type), cb);
         return this;
     },
 
     off: function(type, cb) {
-        this.$el.off(type + '.queryBuilder', cb);
+        this.$el.off(this.tojQueryEvent(type), cb);
         return this;
     },
 
     once: function(type, cb) {
-        this.$el.one(type + '.queryBuilder', cb);
+        this.$el.one(this.tojQueryEvent(type), cb);
         return this;
+    },
+
+    tojQueryEvent: function(name, filter) {
+        return name.split(' ').map(function(type) {
+            return type + '.queryBuilder' + (filter ? '.filter' : '');
+        }).join(' ');
     }
 });
 
@@ -540,6 +553,8 @@ QueryBuilder.DEFAULTS = {
 
     default_group_flags: {
         condition_readonly: false,
+        no_add_rule: false,
+        no_add_group: false,
         no_delete: false
     },
 
@@ -602,8 +617,7 @@ QueryBuilder.prototype.init = function($el, options) {
         generated_id: false,
         has_optgroup: false,
         has_operator_oprgroup: false,
-        id: null,
-        updating_value: false
+        id: null
     };
 
     // "allow_groups" can be boolean or int
@@ -909,7 +923,7 @@ QueryBuilder.prototype.bindEvents = function() {
                         break;
 
                     case 'filter':
-                        self.updateRuleFilter(node);
+                        self.updateRuleFilter(node, oldValue);
                         break;
 
                     case 'operator':
@@ -958,7 +972,7 @@ QueryBuilder.prototype.setRoot = function(addRule, data, flags) {
     this.model.root.model = this.model;
 
     this.model.root.data = data;
-    this.model.root.flags = $.extend({}, this.settings.default_group_flags, flags);
+    this.model.root.__.flags = $.extend({}, this.settings.default_group_flags, flags);
 
     this.trigger('afterAddGroup', this.model.root);
 
@@ -994,7 +1008,7 @@ QueryBuilder.prototype.addGroup = function(parent, addRule, data, flags) {
     var model = parent.addGroup($group);
 
     model.data = data;
-    model.flags = $.extend({}, this.settings.default_group_flags, flags);
+    model.__.flags = $.extend({}, this.settings.default_group_flags, flags);
 
     this.trigger('afterAddGroup', model);
 
@@ -1089,14 +1103,17 @@ QueryBuilder.prototype.addRule = function(parent, data, flags) {
         model.data = data;
     }
 
-    model.flags = $.extend({}, this.settings.default_rule_flags, flags);
+    model.__.flags = $.extend({}, this.settings.default_rule_flags, flags);
 
     this.trigger('afterAddRule', model);
 
     this.createRuleFilters(model);
 
     if (this.settings.default_filter || !this.settings.display_empty_filter) {
-        model.filter = this.getFilterById(this.settings.default_filter || this.filters[0].id);
+        model.filter = this.change('getDefaultFilter',
+            this.getFilterById(this.settings.default_filter || this.filters[0].id),
+            model
+        );
     }
 
     return model;
@@ -1186,9 +1203,11 @@ QueryBuilder.prototype.createRuleInput = function(rule) {
     $valueContainer.show();
 
     $inputs.on('change ' + (filter.input_event || ''), function() {
-        self.status.updating_value = true;
-        rule.value = self.getRuleValue(rule);
-        self.status.updating_value = false;
+        if (!this._updating_input) {
+            rule._updating_value = true;
+            rule.value = self.getRuleInputValue(rule);
+            rule._updating_value = false;
+        }
     });
 
     if (filter.plugin) {
@@ -1201,21 +1220,27 @@ QueryBuilder.prototype.createRuleInput = function(rule) {
         rule.value = filter.default_value;
     }
     else {
-        self.status.updating_value = true;
-        rule.value = self.getRuleValue(rule);
-        self.status.updating_value = false;
+        rule._updating_value = true;
+        rule.value = self.getRuleInputValue(rule);
+        rule._updating_value = false;
     }
 };
 
 /**
  * Perform action when rule's filter is changed
  * @param rule {Rule}
+ * @param previousFilter {object}
  */
-QueryBuilder.prototype.updateRuleFilter = function(rule) {
+QueryBuilder.prototype.updateRuleFilter = function(rule, previousFilter) {
     this.createRuleOperators(rule);
     this.createRuleInput(rule);
 
     rule.$el.find(Selectors.rule_filter).val(rule.filter ? rule.filter.id : '-1');
+
+    // clear rule data if the filter changed
+    if (previousFilter && rule.filter && previousFilter.id !== rule.filter.id) {
+        rule.data = undefined;
+    }
 
     this.trigger('afterUpdateRuleFilter', rule);
 };
@@ -1236,7 +1261,7 @@ QueryBuilder.prototype.updateRuleOperator = function(rule, previousOperator) {
     else {
         $valueContainer.show();
 
-        if ($valueContainer.is(':empty') || rule.operator.nb_inputs !== previousOperator.nb_inputs) {
+        if ($valueContainer.is(':empty') || !previousOperator || rule.operator.nb_inputs !== previousOperator.nb_inputs) {
             this.createRuleInput(rule);
         }
     }
@@ -1246,6 +1271,8 @@ QueryBuilder.prototype.updateRuleOperator = function(rule, previousOperator) {
     }
 
     this.trigger('afterUpdateRuleOperator', rule);
+
+    this.updateRuleValue(rule);
 };
 
 /**
@@ -1253,8 +1280,8 @@ QueryBuilder.prototype.updateRuleOperator = function(rule, previousOperator) {
  * @param rule {Rule}
  */
 QueryBuilder.prototype.updateRuleValue = function(rule) {
-    if (!this.status.updating_value) {
-        this.setRuleValue(rule, rule.value);
+    if (!rule._updating_value) {
+        this.setRuleInputValue(rule, rule.value);
     }
 
     this.trigger('afterUpdateRuleValue', rule);
@@ -1293,6 +1320,12 @@ QueryBuilder.prototype.applyGroupFlags = function(group) {
     if (flags.condition_readonly) {
         group.$el.find('>' + Selectors.group_condition).prop('disabled', true)
             .parent().addClass('readonly');
+    }
+    if (flags.no_add_rule) {
+        group.$el.find(Selectors.add_rule).remove();
+    }
+    if (flags.no_add_group) {
+        group.$el.find(Selectors.add_group).remove();
     }
     if (flags.no_delete) {
         group.$el.find(Selectors.delete_group).remove();
@@ -1333,14 +1366,13 @@ QueryBuilder.prototype.displayError = function(node) {
             node.$el.removeClass('has-error');
         }
         else {
-            // translate the text without modifying event array
-            var error = $.extend([], node.error, [
-                this.lang.errors[node.error[0]] || node.error[0]
-            ]);
+            var errorMessage = this.lang.errors[node.error[0]] || node.error[0];
+            errorMessage = Utils.fmt(errorMessage, node.error.slice(1));
+            errorMessage = this.change('displayError', errorMessage, node.error, node);
 
             node.$el.addClass('has-error')
               .find(Selectors.error_container).eq(0)
-                .attr('title', Utils.fmt.apply(null, error));
+                .attr('title', errorMessage);
         }
     }
 };
@@ -1419,11 +1451,11 @@ QueryBuilder.prototype.clear = function() {
  * @param {object}
  */
 QueryBuilder.prototype.setOptions = function(options) {
-    // use jQuery utils to filter options keys
-    $.makeArray($(Object.keys(options)).filter(QueryBuilder.modifiable_options))
-        .forEach(function(opt) {
-            this.settings[opt] = options[opt];
-        }, this);
+    $.each(options, function(opt, value) {
+        if (QueryBuilder.modifiable_options.indexOf(opt) !== -1) {
+            this.settings[opt] = value;
+        }
+    }.bind(this));
 };
 
 /**
@@ -1451,6 +1483,12 @@ QueryBuilder.prototype.validate = function() {
         group.each(function(rule) {
             if (!rule.filter) {
                 self.triggerValidationError(rule, 'no_filter', null);
+                errors++;
+                return;
+            }
+
+            if (!rule.operator) {
+                self.triggerValidationError(rule, 'no_operator', null);
                 errors++;
                 return;
             }
@@ -1495,71 +1533,76 @@ QueryBuilder.prototype.validate = function() {
  * Get an object representing current rules
  * @param {object} options
  *      - get_flags: false[default] | true(only changes from default flags) | 'all'
+ *      - allow_invalid: false[default] | true(returns rules even if they are invalid)
  * @return {object}
  */
 QueryBuilder.prototype.getRules = function(options) {
     options = $.extend({
-        get_flags: false
+        get_flags: false,
+        allow_invalid: false
     }, options);
 
-    if (!this.validate()) {
-        return {};
+    var valid = this.validate();
+    if (!valid && !options.allow_invalid) {
+        return null;
     }
 
     var self = this;
 
     var out = (function parse(group) {
-        var data = {
+        var groupData = {
             condition: group.condition,
             rules: []
         };
 
         if (group.data) {
-            data.data = $.extendext(true, 'replace', {}, group.data);
+            groupData.data = $.extendext(true, 'replace', {}, group.data);
         }
 
         if (options.get_flags) {
             var flags = self.getGroupFlags(group.flags, options.get_flags === 'all');
             if (!$.isEmptyObject(flags)) {
-                data.flags = flags;
+                groupData.flags = flags;
             }
         }
 
-        group.each(function(model) {
+        group.each(function(rule) {
             var value = null;
-            if (model.operator.nb_inputs !== 0) {
-                value = model.value;
+            if (!rule.operator || rule.operator.nb_inputs !== 0) {
+                value = rule.value;
             }
 
-            var rule = {
-                id: model.filter.id,
-                field: model.filter.field,
-                type: model.filter.type,
-                input: model.filter.input,
-                operator: model.operator.type,
+            var ruleData = {
+                id: rule.filter ? rule.filter.id : null,
+                field: rule.filter ? rule.filter.field : null,
+                type: rule.filter ? rule.filter.type : null,
+                input: rule.filter ? rule.filter.input : null,
+                operator: rule.operator ? rule.operator.type : null,
                 value: value
             };
 
-            if (model.filter.data || model.data) {
-                rule.data = $.extendext(true, 'replace', {}, model.filter.data, model.data);
+            if (rule.filter && rule.filter.data || rule.data) {
+                ruleData.data = $.extendext(true, 'replace', {}, rule.filter.data, rule.data);
             }
 
             if (options.get_flags) {
-                var flags = self.getRuleFlags(model.flags, options.get_flags === 'all');
+                var flags = self.getRuleFlags(rule.flags, options.get_flags === 'all');
                 if (!$.isEmptyObject(flags)) {
-                    rule.flags = flags;
+                    ruleData.flags = flags;
                 }
             }
 
-            data.rules.push(rule);
+            groupData.rules.push(self.change('ruleToJson', ruleData, rule));
 
         }, function(model) {
-            data.rules.push(parse(model));
-        });
+            groupData.rules.push(parse(model));
+        }, this);
 
-        return data;
+        return self.change('groupToJson', groupData, group);
 
     }(this.model.root));
+
+    out.valid = valid;
 
     return this.change('getRules', out);
 };
@@ -1568,8 +1611,14 @@ QueryBuilder.prototype.getRules = function(options) {
  * Set rules from object
  * @throws RulesError, UndefinedConditionError
  * @param data {object}
+ * @param {object} options
+ *      - allow_invalid: false[default] | true(silent-fail if the data are invalid)
  */
-QueryBuilder.prototype.setRules = function(data) {
+QueryBuilder.prototype.setRules = function(data, options) {
+    options = $.extend({
+        allow_invalid: false
+    }, options);
+
     if ($.isArray(data)) {
         data = {
             condition: this.settings.default_condition,
@@ -1583,6 +1632,7 @@ QueryBuilder.prototype.setRules = function(data) {
 
     this.clear();
     this.setRoot(false, data.data, this.parseGroupFlags(data));
+    this.applyGroupFlags(this.model.root);
 
     data = this.change('setRules', data);
 
@@ -1597,17 +1647,19 @@ QueryBuilder.prototype.setRules = function(data) {
             data.condition = self.settings.default_condition;
         }
         else if (self.settings.conditions.indexOf(data.condition) == -1) {
-            Utils.error('UndefinedCondition', 'Invalid condition "{0}"', data.condition);
+            Utils.error(!options.allow_invalid, 'UndefinedCondition', 'Invalid condition "{0}"', data.condition);
+            data.condition = self.settings.default_condition;
         }
 
         group.condition = data.condition;
 
         data.rules.forEach(function(item) {
             var model;
-            if (item.rules && item.rules.length > 0) {
+
+            if (item.rules !== undefined) {
                 if (self.settings.allow_groups !== -1 && self.settings.allow_groups < group.level) {
+                    Utils.error(!options.allow_invalid, 'RulesParse', 'No more than {0} groups are allowed', self.settings.allow_groups);
                     self.reset();
-                    Utils.error('RulesParse', 'No more than {0} groups are allowed', self.settings.allow_groups);
                 }
                 else {
                     model = self.addGroup(group, false, item.data, self.parseGroupFlags(item));
@@ -1615,31 +1667,54 @@ QueryBuilder.prototype.setRules = function(data) {
                         return;
                     }
 
+                    self.applyGroupFlags(model);
+
                     add(item, model);
                 }
             }
             else {
-                if (item.id === undefined) {
-                    Utils.error('RulesParse', 'Missing rule field id');
-                }
-                if (item.operator === undefined) {
-                    item.operator = 'equal';
+                if (!item.empty) {
+                    if (item.id === undefined) {
+                        Utils.error(!options.allow_invalid, 'RulesParse', 'Missing rule field id');
+                        item.empty = true;
+                    }
+                    if (item.operator === undefined) {
+                        item.operator = 'equal';
+                    }
                 }
 
-                model = self.addRule(group, item.data);
+                model = self.addRule(group, item.data, self.parseRuleFlags(item));
                 if (model === null) {
                     return;
                 }
 
-                model.filter = self.getFilterById(item.id);
-                model.operator = self.getOperatorByType(item.operator);
-                model.flags = self.parseRuleFlags(item);
+                if (!item.empty) {
+                    model.filter = self.getFilterById(item.id, !options.allow_invalid);
 
-                if (model.operator.nb_inputs !== 0 && item.value !== undefined) {
-                    model.value = item.value;
+                    if (model.filter) {
+                        model.operator = self.getOperatorByType(item.operator, !options.allow_invalid);
+
+                        if (!model.operator) {
+                            model.operator = self.getOperators(model.filter)[0];
+                        }
+
+                        if (model.operator && model.operator.nb_inputs !== 0 && item.value !== undefined) {
+                            model.value = item.value;
+                        }
+                    }
+                }
+
+                self.applyRuleFlags(model);
+
+                if (self.change('jsonToRule', model, item) != model) {
+                    Utils.error('RulesParse', 'Plugin tried to change rule reference');
                 }
             }
         });
+
+        if (self.change('jsonToGroup', group, data) != group) {
+            Utils.error('RulesParse', 'Plugin tried to change group reference');
+        }
 
     }(data, this.model.root));
 };
@@ -1670,7 +1745,7 @@ QueryBuilder.prototype.validateValue = function(rule, value) {
  * @throws ConfigError
  * @param rule {Rule}
  * @param value {string|string[]|undefined}
- * @return {array|true}
+ * @return {Array|boolean} error array or true
  */
 QueryBuilder.prototype.validateValueInternal = function(rule, value) {
     var filter = rule.filter;
@@ -1682,22 +1757,23 @@ QueryBuilder.prototype.validateValueInternal = function(rule, value) {
     if (rule.operator.nb_inputs === 1) {
         value = [value];
     }
-    else {
-        value = value;
-    }
 
     for (var i = 0; i < operator.nb_inputs; i++) {
         switch (filter.input) {
             case 'radio':
-                if (value[i] === undefined) {
-                    result = ['radio_empty'];
+                if (value[i] === undefined || value[i].length === 0) {
+                    if (!validation.allow_empty_value) {
+                        result = ['radio_empty'];
+                    }
                     break;
                 }
                 break;
 
             case 'checkbox':
                 if (value[i] === undefined || value[i].length === 0) {
-                    result = ['checkbox_empty'];
+                    if (!validation.allow_empty_value) {
+                        result = ['checkbox_empty'];
+                    }
                     break;
                 }
                 else if (!operator.multiple && value[i].length > 1) {
@@ -1707,21 +1783,15 @@ QueryBuilder.prototype.validateValueInternal = function(rule, value) {
                 break;
 
             case 'select':
-                if (filter.multiple) {
-                    if (value[i] === undefined || value[i].length === 0 || (filter.placeholder && value[i] == filter.placeholder_value)) {
+                if (value[i] === undefined || value[i].length === 0 || (filter.placeholder && value[i] == filter.placeholder_value)) {
+                    if (!validation.allow_empty_value) {
                         result = ['select_empty'];
-                        break;
                     }
-                    else if (!operator.multiple && value[i].length > 1) {
-                        result = ['operator_not_multiple', operator.type];
-                        break;
-                    }
+                    break;
                 }
-                else {
-                    if (value[i] === undefined || (filter.placeholder && value[i] == filter.placeholder_value)) {
-                        result = ['select_empty'];
-                        break;
-                    }
+                if (filter.multiple && !operator.multiple && value[i].length > 1) {
+                    result = ['operator_not_multiple', operator.type];
+                    break;
                 }
                 break;
 
@@ -1729,18 +1799,20 @@ QueryBuilder.prototype.validateValueInternal = function(rule, value) {
                 switch (QueryBuilder.types[filter.type]) {
                     case 'string':
                         if (value[i] === undefined || value[i].length === 0) {
-                            result = ['string_empty'];
+                            if (!validation.allow_empty_value) {
+                                result = ['string_empty'];
+                            }
                             break;
                         }
                         if (validation.min !== undefined) {
                             if (value[i].length < parseInt(validation.min)) {
-                                result = ['string_exceed_min_length', validation.min];
+                                result = [this.getValidationMessage(validation, 'min', 'string_exceed_min_length'), validation.min];
                                 break;
                             }
                         }
                         if (validation.max !== undefined) {
                             if (value[i].length > parseInt(validation.max)) {
-                                result = ['string_exceed_max_length', validation.max];
+                                result = [this.getValidationMessage(validation, 'max', 'string_exceed_max_length'), validation.max];
                                 break;
                             }
                         }
@@ -1749,14 +1821,20 @@ QueryBuilder.prototype.validateValueInternal = function(rule, value) {
                                 validation.format = new RegExp(validation.format);
                             }
                             if (!validation.format.test(value[i])) {
-                                result = ['string_invalid_format', validation.format];
+                                result = [this.getValidationMessage(validation, 'format', 'string_invalid_format'), validation.format];
                                 break;
                             }
                         }
                         break;
 
                     case 'number':
-                        if (value[i] === undefined || isNaN(value[i])) {
+                        if (value[i] === undefined || value[i].length === 0) {
+                            if (!validation.allow_empty_value) {
+                                result = ['number_nan'];
+                            }
+                            break;
+                        }
+                        if (isNaN(value[i])) {
                             result = ['number_nan'];
                             break;
                         }
@@ -1774,20 +1852,20 @@ QueryBuilder.prototype.validateValueInternal = function(rule, value) {
                         }
                         if (validation.min !== undefined) {
                             if (value[i] < parseFloat(validation.min)) {
-                                result = ['number_exceed_min', validation.min];
+                                result = [this.getValidationMessage(validation, 'min', 'number_exceed_min'), validation.min];
                                 break;
                             }
                         }
                         if (validation.max !== undefined) {
                             if (value[i] > parseFloat(validation.max)) {
-                                result = ['number_exceed_max', validation.max];
+                                result = [this.getValidationMessage(validation, 'max', 'number_exceed_max'), validation.max];
                                 break;
                             }
                         }
                         if (validation.step !== undefined && validation.step !== 'any') {
                             var v = (value[i] / validation.step).toPrecision(14);
                             if (parseInt(v) != v) {
-                                result = ['number_wrong_step', validation.step];
+                                result = [this.getValidationMessage(validation, 'step', 'number_wrong_step'), validation.step];
                                 break;
                             }
                         }
@@ -1795,7 +1873,9 @@ QueryBuilder.prototype.validateValueInternal = function(rule, value) {
 
                     case 'datetime':
                         if (value[i] === undefined || value[i].length === 0) {
-                            result = ['datetime_empty'];
+                            if (!validation.allow_empty_value) {
+                                result = ['datetime_empty'];
+                            }
                             break;
                         }
 
@@ -1807,19 +1887,19 @@ QueryBuilder.prototype.validateValueInternal = function(rule, value) {
 
                             var datetime = moment(value[i], validation.format);
                             if (!datetime.isValid()) {
-                                result = ['datetime_invalid', validation.format];
+                                result = [this.getValidationMessage(validation, 'format', 'datetime_invalid'), validation.format];
                                 break;
                             }
                             else {
                                 if (validation.min) {
                                     if (datetime < moment(validation.min, validation.format)) {
-                                        result = ['datetime_exceed_min', validation.min];
+                                        result = [this.getValidationMessage(validation, 'min', 'datetime_exceed_min'), validation.min];
                                         break;
                                     }
                                 }
                                 if (validation.max) {
                                     if (datetime > moment(validation.max, validation.format)) {
-                                        result = ['datetime_exceed_max', validation.max];
+                                        result = [this.getValidationMessage(validation, 'max', 'datetime_exceed_max'), validation.max];
                                         break;
                                     }
                                 }
@@ -1828,7 +1908,13 @@ QueryBuilder.prototype.validateValueInternal = function(rule, value) {
                         break;
 
                     case 'boolean':
-                        tmp = value[i].trim().toLowerCase();
+                        if (value[i] === undefined || value[i].length === 0) {
+                            if (!validation.allow_empty_value) {
+                                result = ['boolean_not_valid'];
+                            }
+                            break;
+                        }
+                        tmp = ('' + value[i]).trim().toLowerCase();
                         if (tmp !== 'true' && tmp !== 'false' && tmp !== '1' && tmp !== '0' && value[i] !== 1 && value[i] !== 0) {
                             result = ['boolean_not_valid'];
                             break;
@@ -1900,10 +1986,11 @@ QueryBuilder.prototype.getOperators = function(filter) {
 /**
  * Returns a particular filter by its id
  * @throws UndefinedFilterError
- * @param filterId {string}
+ * @param id {string}
+ * @param [doThrow=true] {boolean}
  * @return {object|null}
  */
-QueryBuilder.prototype.getFilterById = function(id) {
+QueryBuilder.prototype.getFilterById = function(id, doThrow) {
     if (id == '-1') {
         return null;
     }
@@ -1914,16 +2001,19 @@ QueryBuilder.prototype.getFilterById = function(id) {
         }
     }
 
-    Utils.error('UndefinedFilter', 'Undefined filter "{0}"', id);
+    Utils.error(doThrow !== false, 'UndefinedFilter', 'Undefined filter "{0}"', id);
+
+    return null;
 };
 
 /**
  * Return a particular operator by its type
  * @throws UndefinedOperatorError
  * @param type {string}
+ * @param [doThrow=true] {boolean}
  * @return {object|null}
  */
-QueryBuilder.prototype.getOperatorByType = function(type) {
+QueryBuilder.prototype.getOperatorByType = function(type, doThrow) {
     if (type == '-1') {
         return null;
     }
@@ -1934,15 +2024,17 @@ QueryBuilder.prototype.getOperatorByType = function(type) {
         }
     }
 
-    Utils.error('UndefinedOperator', 'Undefined operator "{0}"', type);
+    Utils.error(doThrow !== false, 'UndefinedOperator', 'Undefined operator "{0}"', type);
+
+    return null;
 };
 
 /**
- * Returns rule value
+ * Returns rule's input value
  * @param rule {Rule}
  * @return {mixed}
  */
-QueryBuilder.prototype.getRuleValue = function(rule) {
+QueryBuilder.prototype.getRuleInputValue = function(rule) {
     var filter = rule.filter;
     var operator = rule.operator;
     var value = [];
@@ -1988,6 +2080,12 @@ QueryBuilder.prototype.getRuleValue = function(rule) {
             }
         }
 
+        if (operator.multiple && filter.value_separator) {
+            value = value.map(function(val) {
+                return val.split(filter.value_separator);
+            });
+        }
+
         if (operator.nb_inputs === 1) {
             value = value[0];
         }
@@ -2002,13 +2100,19 @@ QueryBuilder.prototype.getRuleValue = function(rule) {
 };
 
 /**
- * Sets the value of a rule.
+ * Sets the value of a rule's input.
  * @param rule {Rule}
  * @param value {mixed}
  */
-QueryBuilder.prototype.setRuleValue = function(rule, value) {
+QueryBuilder.prototype.setRuleInputValue = function(rule, value) {
     var filter = rule.filter;
     var operator = rule.operator;
+
+    if (!filter || !operator) {
+        return;
+    }
+
+    this._updating_input = true;
 
     if (filter.valueSetter) {
         filter.valueSetter.call(this, rule, value);
@@ -2018,9 +2122,6 @@ QueryBuilder.prototype.setRuleValue = function(rule, value) {
 
         if (operator.nb_inputs == 1) {
             value = [value];
-        }
-        else {
-            value = value;
         }
 
         for (var i = 0; i < operator.nb_inputs; i++) {
@@ -2041,11 +2142,16 @@ QueryBuilder.prototype.setRuleValue = function(rule, value) {
                     break;
 
                 default:
+                    if (operator.multiple && filter.value_separator && $.isArray(value[i])) {
+                        value[i] = value[i].join(filter.value_separator);
+                    }
                     $value.find('[name=' + name + ']').val(value[i]).trigger('change');
                     break;
             }
         }
     }
+
+    this._updating_input = false;
 };
 
 /**
@@ -2104,6 +2210,8 @@ QueryBuilder.prototype.parseGroupFlags = function(group) {
     if (group.readonly) {
         $.extend(flags, {
             condition_readonly: true,
+            no_add_rule: true,
+            no_add_group: true,
             no_delete: true
         });
     }
@@ -2143,6 +2251,17 @@ QueryBuilder.prototype.getGroupFlags = function(flags, all) {
  */
 QueryBuilder.prototype.translateLabel = function(label) {
     return typeof label == 'object' ? (label[this.settings.lang_code] || label['en']) : label;
+};
+
+/**
+ * Return a validation message
+ * @param {object} validation
+ * @param {string} type
+ * @param {string} def
+ * @returns {string}
+ */
+QueryBuilder.prototype.getValidationMessage = function(validation, type, def) {
+    return validation.messages && validation.messages[type] || def;
 };
 
 
@@ -2216,8 +2335,13 @@ QueryBuilder.templates.filterSelect = '\
 </select>';
 
 QueryBuilder.templates.operatorSelect = '\
+{{? it.operators.length === 1 }} \
+<span> \
+{{= it.lang.operators[it.operators[0].type] || it.operators[0].type }} \
+</span> \
+{{?}} \
 {{ var optgroup = null; }} \
-<select class="form-control" name="{{= it.rule.id }}_operator"> \
+<select class="form-control {{? it.operators.length === 1 }}hide{{?}}" name="{{= it.rule.id }}_operator"> \
   {{~ it.operators: operator }} \
     {{? optgroup !== operator.optgroup }} \
       {{? optgroup !== null }}</optgroup>{{?}} \
@@ -2441,7 +2565,7 @@ Model.getModel = function(el) {
  * Define Node properties with getter and setter
  * Update events are emitted in the setter through root Model (if any)
  */
-function defineModelProperties(obj, fields) {
+Model.defineModelProperties = function(obj, fields) {
     fields.forEach(function(field) {
         Object.defineProperty(obj.prototype, field, {
             enumerable: true,
@@ -2461,7 +2585,7 @@ function defineModelProperties(obj, fields) {
             }
         });
     });
-}
+};
 
 
 // Node abstract CLASS
@@ -2488,7 +2612,7 @@ var Node = function(parent, $el) {
     this.parent = parent;
 };
 
-defineModelProperties(Node, ['level', 'error', 'data', 'flags']);
+Model.defineModelProperties(Node, ['level', 'error', 'data', 'flags']);
 
 Object.defineProperty(Node.prototype, 'parent', {
     enumerable: true,
@@ -2580,7 +2704,7 @@ Node.prototype.moveAtEnd = function(target) {
         target = this.parent;
     }
 
-    this._move(target, target.length() - 1);
+    this._move(target, target.length() === 0 ? 0 : target.length() - 1);
 
     return this;
 };
@@ -2620,7 +2744,7 @@ var Group = function(parent, $el) {
 Group.prototype = Object.create(Node.prototype);
 Group.prototype.constructor = Group;
 
-defineModelProperties(Group, ['condition']);
+Model.defineModelProperties(Group, ['condition']);
 
 /**
  * Empty the Group
@@ -2792,6 +2916,9 @@ var Rule = function(parent, $el) {
 
     Node.call(this, parent, $el);
 
+    this._updating_value = false;
+    this._updating_input = false;
+
     this.__.filter = null;
     this.__.operator = null;
     this.__.flags = {};
@@ -2801,7 +2928,7 @@ var Rule = function(parent, $el) {
 Rule.prototype = Object.create(Node.prototype);
 Rule.prototype.constructor = Rule;
 
-defineModelProperties(Rule, ['filter', 'operator', 'value']);
+Model.defineModelProperties(Rule, ['filter', 'operator', 'value']);
 
 
 // EXPORT
@@ -2848,11 +2975,13 @@ Utils.iterateOptions = function(options, tpl) {
 /**
  * Replaces {0}, {1}, ... in a string
  * @param str {string}
- * @param args,... {mixed}
+ * @param args,... {Array|*}
  * @return {string}
  */
-Utils.fmt = function(str/*, args*/) {
-    var args = Array.prototype.slice.call(arguments, 1);
+Utils.fmt = function(str, args) {
+    if (!Array.isArray(args)) {
+        args = Array.prototype.slice.call(arguments, 1);
+    }
 
     return str.replace(/{([0-9]+)}/g, function(m, i) {
         return args[parseInt(i)];
@@ -2860,16 +2989,28 @@ Utils.fmt = function(str/*, args*/) {
 };
 
 /**
- * Throw an Error object with custom name
+ * Throw an Error object with custom name or logs an error
+ * @param [doThrow=true] {boolean}
  * @param type {string}
  * @param message {string}
- * @param args,... {mixed}
+ * @param args,... {Array|*}
  */
-Utils.error = function(type, message/*, args*/) {
-    var err = new Error(Utils.fmt.apply(null, Array.prototype.slice.call(arguments, 1)));
-    err.name = type + 'Error';
-    err.args = Array.prototype.slice.call(arguments, 2);
-    throw err;
+Utils.error = function() {
+    var i = 0;
+    var doThrow = typeof arguments[i] === 'boolean' ? arguments[i++] : true;
+    var type = arguments[i++];
+    var message = arguments[i++];
+    var args = Array.isArray(arguments[i]) ? arguments[i] : Array.prototype.slice.call(arguments, i);
+
+    if (doThrow) {
+        var err = new Error(Utils.fmt(message, args));
+        err.name = type + 'Error';
+        err.args = args;
+        throw err;
+    }
+    else {
+        console.error(type + 'Error: ' + Utils.fmt(message, args));
+    }
 };
 
 /**
@@ -2881,12 +3022,14 @@ Utils.error = function(type, message/*, args*/) {
  */
 Utils.changeType = function(value, type, boolAsInt) {
     switch (type) {
-        case 'integer': return parseInt(value);
-        case 'double': return parseFloat(value);
-        case 'boolean':
-            var bool = value.trim().toLowerCase() === 'true' || value.trim() === '1' || value === 1;
-            return boolAsInt ? (bool ? 1 : 0) : bool;
-        default: return value;
+    // @formatter:off
+    case 'integer': return parseInt(value);
+    case 'double': return parseFloat(value);
+    case 'boolean':
+        var bool = value.trim().toLowerCase() === 'true' || value.trim() === '1' || value === 1;
+        return boolAsInt ? (bool ? 1 : 0) : bool;
+    default: return value;
+    // @formatter:on
     }
 };
 
@@ -2901,18 +3044,20 @@ Utils.escapeString = function(value) {
     }
 
     return value
-      .replace(/[\0\n\r\b\\\'\"]/g, function(s) {
-          switch (s) {
-              case '\0': return '\\0';
-              case '\n': return '\\n';
-              case '\r': return '\\r';
-              case '\b': return '\\b';
-              default:   return '\\' + s;
-          }
-      })
-      // uglify compliant
-      .replace(/\t/g, '\\t')
-      .replace(/\x1a/g, '\\Z');
+        .replace(/[\0\n\r\b\\\'\"]/g, function(s) {
+            switch (s) {
+            // @formatter:off
+            case '\0': return '\\0';
+            case '\n': return '\\n';
+            case '\r': return '\\r';
+            case '\b': return '\\b';
+            default:   return '\\' + s;
+            // @formatter:off
+            }
+        })
+        // uglify compliant
+        .replace(/\t/g, '\\t')
+        .replace(/\x1a/g, '\\Z');
 };
 
 /**
@@ -2974,6 +3119,9 @@ Utils.groupSort = function(items, key) {
 
 
 $.fn.queryBuilder = function(option) {
+    if (this.length === 0) {
+        Utils.error('Config', 'No target defined');
+    }
     if (this.length > 1) {
         Utils.error('Config', 'Unable to initialize on multiple target');
     }
@@ -3185,6 +3333,7 @@ QueryBuilder.extend({
                       self.createRuleFilters(rule);
 
                       rule.$el.find(Selectors.rule_filter).val(rule.filter ? rule.filter.id : '-1');
+                      self.trigger('afterUpdateRuleFilter', rule);
                   }
               },
               updateBuilder
@@ -3539,6 +3688,7 @@ QueryBuilder.extend({
 // ===============================
 QueryBuilder.defaults({
     mongoOperators: {
+        // @formatter:off
         equal:            function(v) { return v[0]; },
         not_equal:        function(v) { return { '$ne': v[0] }; },
         in:               function(v) { return { '$in': v }; },
@@ -3559,6 +3709,7 @@ QueryBuilder.defaults({
         is_not_empty:     function(v) { return { '$ne': '' }; },
         is_null:          function(v) { return null; },
         is_not_null:      function(v) { return { '$ne': null }; }
+        // @formatter:on
     },
 
     mongoRuleOperators: {
@@ -3622,21 +3773,21 @@ QueryBuilder.extend({
 
         var self = this;
 
-        return (function parse(data) {
-            if (!data.condition) {
-                data.condition = self.settings.default_condition;
+        return (function parse(group) {
+            if (!group.condition) {
+                group.condition = self.settings.default_condition;
             }
-            if (['AND', 'OR'].indexOf(data.condition.toUpperCase()) === -1) {
-                Utils.error('UndefinedMongoCondition', 'Unable to build MongoDB query with condition "{0}"', data.condition);
+            if (['AND', 'OR'].indexOf(group.condition.toUpperCase()) === -1) {
+                Utils.error('UndefinedMongoCondition', 'Unable to build MongoDB query with condition "{0}"', group.condition);
             }
 
-            if (!data.rules) {
+            if (!group.rules) {
                 return {};
             }
 
             var parts = [];
 
-            data.rules.forEach(function(rule) {
+            group.rules.forEach(function(rule) {
                 if (rule.rules && rule.rules.length > 0) {
                     parts.push(parse(rule));
                 }
@@ -3659,17 +3810,16 @@ QueryBuilder.extend({
                         });
                     }
 
-                    var part = {};
-                    part[rule.field] = mdb.call(self, values);
-                    parts.push(part);
+                    var ruleExpression = {};
+                    var field = self.change('getMongoDBField', rule.field, rule);
+                    ruleExpression[field] = mdb.call(self, values);
+                    parts.push(self.change('ruleToMongo', ruleExpression, rule, values, mdb));
                 }
             });
 
-            var res = {};
-            if (parts.length > 0) {
-                res['$' + data.condition.toLowerCase()] = parts;
-            }
-            return res;
+            var groupExpression = {};
+            groupExpression['$' + group.condition.toLowerCase()] = parts;
+            return self.change('groupToMongo', groupExpression, group);
         }(data));
     },
 
@@ -3685,33 +3835,47 @@ QueryBuilder.extend({
         }
 
         var self = this;
-        var conditions = {
-            '$and': 'AND',
-            '$or': 'OR'
-        };
 
-        return (function parse(data) {
-            var topKeys = Object.keys(data);
+        // allow plugins to manually parse or handle special cases
+        data = self.change('parseMongoNode', data);
 
-            if (topKeys.length > 1) {
-                Utils.error('MongoParse', 'Invalid MongoDB query format');
-            }
-            if (!conditions[topKeys[0].toLowerCase()]) {
-                Utils.error('UndefinedMongoCondition', 'Unable to build MongoDB query with condition "{0}"', topKeys[0]);
-            }
+        // a plugin returned a group
+        if ('rules' in data && 'condition' in data) {
+            return data;
+        }
 
-            var rules = data[topKeys[0]];
+        var key = andOr(data);
+        if (!key) {
+            Utils.error('MongoParse', 'Invalid MongoDB query format');
+        }
+
+        return (function parse(data, topKey) {
+            var rules = data[topKey];
             var parts = [];
 
-            rules.forEach(function(rule) {
-                var keys = Object.keys(rule);
+            rules.forEach(function(data) {
+                // allow plugins to manually parse or handle special cases
+                data = self.change('parseMongoNode', data);
 
-                if (conditions[keys[0].toLowerCase()]) {
-                    parts.push(parse(rule));
+                // a plugin returned a group
+                if ('rules' in data && 'condition' in data) {
+                    parts.push(data);
+                    return;
+                }
+
+                // a plugin returned a rule
+                if ('id' in data && 'operator' in data && 'value' in data) {
+                    parts.push(data);
+                    return;
+                }
+
+                var key = andOr(data);
+                if (key) {
+                    parts.push(parse(data, key));
                 }
                 else {
-                    var field = keys[0];
-                    var value = rule[field];
+                    var field = Object.keys(data)[0];
+                    var value = data[field];
 
                     var operator = determineMongoOperator(value, field);
                     if (operator === undefined) {
@@ -3724,22 +3888,23 @@ QueryBuilder.extend({
                     }
 
                     var opVal = mdbrl.call(self, value);
-                    parts.push({
+
+                    var rule = self.change('mongoToRule', {
                         id: self.change('getMongoDBFieldID', field, value),
                         field: field,
                         operator: opVal.op,
                         value: opVal.val
-                    });
+                    }, data);
+
+                    parts.push(rule);
                 }
             });
 
-            var res = {};
-            if (parts.length > 0) {
-                res.condition = conditions[topKeys[0].toLowerCase()];
-                res.rules = parts;
-            }
-            return res;
-        }(data));
+            return self.change('mongoToGroup', {
+                condition: topKey.replace('$', '').toUpperCase(),
+                rules: parts
+            }, data);
+        }(data, key));
     },
 
     /**
@@ -3784,6 +3949,161 @@ function determineMongoOperator(value, field) {
     }
 }
 
+/**
+ * Returns the key corresponding to "$or" or "$and"
+ * @param {object} data
+ * @returns {string}
+ */
+function andOr(data) {
+    var keys = Object.keys(data);
+
+    for (var i = 0, l = keys.length; i < l; i++) {
+        if (keys[i].toLowerCase() == '$or' || keys[i].toLowerCase() == '$and') {
+            return keys[i];
+        }
+    }
+
+    return undefined;
+}
+
+
+/*!
+ * jQuery QueryBuilder Not
+ * Adds a "Not" checkbox in front of group conditions.
+ */
+
+Selectors.group_not = Selectors.group_header + ' [data-not=group]';
+
+Model.defineModelProperties(Group, ['not']);
+
+QueryBuilder.define('not-group', function(options) {
+    var self = this;
+
+    /**
+     * Bind events
+     */
+    this.on('afterInit', function() {
+        self.$el.on('click.queryBuilder', '[data-not=group]', function() {
+            var $group = $(this).closest(Selectors.group_container);
+            var group = Model($group);
+            group.not = !group.not;
+        });
+
+        self.model.on('update', function(e, node, field) {
+            if (node instanceof Group && field === 'not') {
+                self.updateGroupNot(node);
+            }
+        });
+    });
+
+    /**
+     * Init "not" property
+     */
+    this.on('afterAddGroup', function(e, group) {
+        group.__.not = false;
+    });
+
+    /**
+     * Modify templates
+     */
+    this.on('getGroupTemplate.filter', function(h, level) {
+        var $h = $(h.value);
+        $h.find(Selectors.condition_container).prepend(
+            '<button type="button" class="btn btn-xs btn-default" data-not="group">' +
+            '<i class="' + options.icon_unchecked + '"></i> ' + self.lang.NOT +
+            '</button>'
+        );
+        h.value = $h.prop('outerHTML');
+    });
+
+    /**
+     * Export "not" to JSON
+     */
+    this.on('groupToJson.filter', function(e, group) {
+        e.value.not = group.not;
+    });
+
+    /**
+     * Read "not" from JSON
+     */
+    this.on('jsonToGroup.filter', function(e, json) {
+        e.value.not = !!json.not;
+    });
+
+    /**
+     * Export "not" to SQL
+     */
+    this.on('groupToSQL.filter', function(e, group) {
+        if (group.not) {
+            e.value = 'NOT ( ' + e.value + ' )';
+        }
+    });
+
+    /**
+     * Parse "NOT" function from sqlparser
+     */
+    this.on('parseSQLNode.filter', function(e) {
+        if (e.value.name && e.value.name.toUpperCase() == 'NOT') {
+            e.value = e.value.arguments.value[0];
+            e.value.not = true;
+        }
+    });
+
+    /**
+     * Read "not" from parsed SQL
+     */
+    this.on('sqlToGroup.filter', function(e, data) {
+        e.value.not = !!data.not;
+    });
+
+    /**
+     * Export "not" to Mongo
+     */
+    this.on('groupToMongo.filter', function(e, group) {
+        var key = '$' + group.condition.toLowerCase();
+        if (group.not && e.value[key]) {
+            e.value = { '$nor': [e.value] };
+        }
+    });
+
+    /**
+     * Parse "$nor" operator from Mongo
+     */
+    this.on('parseMongoNode.filter', function(e) {
+        var keys = Object.keys(e.value);
+
+        if (keys[0] == '$nor') {
+            e.value = e.value[keys[0]][0];
+            e.value.not = true;
+        }
+    });
+
+    /**
+     * Read "not" from parsed Mongo
+     */
+    this.on('mongoToGroup.filter', function(e, data) {
+        e.value.not = !!data.not;
+    });
+}, {
+    icon_unchecked: 'glyphicon glyphicon-unchecked',
+    icon_checked: 'glyphicon glyphicon-check'
+});
+
+QueryBuilder.extend({
+    /**
+     * Apply the "not" property to the DOM
+     * @param group
+     */
+    updateGroupNot: function(group) {
+        var options = this.plugins['not-group'];
+        group.$el.find('>' + Selectors.group_not)
+            .toggleClass('active', group.not)
+            .find('i').attr('class', group.not ? options.icon_checked : options.icon_unchecked);
+
+        this.trigger('afterUpdateGroupNot', group);
+    }
+});
+
 
 /*!
  * jQuery QueryBuilder Sortable
@@ -3791,117 +4111,159 @@ function determineMongoOperator(value, field) {
  */
 
 Selectors.rule_and_group_containers = Selectors.rule_container + ', ' + Selectors.group_container;
+Selectors.drag_handle = '.drag-handle';
+
+QueryBuilder.defaults({
+    default_rule_flags: {
+        no_sortable: false,
+        no_drop: false
+    },
+    default_group_flags: {
+        no_sortable: false,
+        no_drop: false
+    }
+});
 
 QueryBuilder.define('sortable', function(options) {
-    /**
-     * Init HTML5 drag and drop
-     */
-    this.on('afterInit', function(e) {
-        // configure jQuery to use dataTransfer
-        $.event.props.push('dataTransfer');
+    if (!('interact' in window)) {
+        Utils.error('MissingLibrary', 'interact.js is required to use "sortable" plugin. Get it here: http://interactjs.io');
+    }
 
-        var placeholder;
-        var src;
+    if (options.default_no_sortable !== undefined) {
+        Utils.error(false, 'Config', 'Sortable plugin : "default_no_sortable" options is deprecated, use standard "default_rule_flags" and "default_group_flags" instead');
+        this.settings.default_rule_flags.no_sortable = this.settings.default_group_flags.no_sortable = options.default_no_sortable;
+    }
+
+    // recompute drop-zones during drag (when a rule is hidden)
+    interact.dynamicDrop(true);
+
+    // set move threshold to 10px
+    interact.pointerMoveTolerance(10);
+
+    var placeholder;
+    var ghost;
+    var src;
+
+    /**
+     * Init drag and drop
+     */
+    this.on('afterAddRule afterAddGroup', function(e, node) {
+        if (node == placeholder) {
+            return;
+        }
+
         var self = e.builder;
 
-        // only add "draggable" attribute when hovering drag handle
-        // preventing text select bug in Firefox
-        self.$el.on('mouseover.queryBuilder', '.drag-handle', function() {
-            self.$el.find(Selectors.rule_and_group_containers).attr('draggable', true);
-        });
-        self.$el.on('mouseout.queryBuilder', '.drag-handle', function() {
-            self.$el.find(Selectors.rule_and_group_containers).removeAttr('draggable');
-        });
+        /**
+         * Inherit flags
+         */
+        if (options.inherit_no_sortable && node.parent && node.parent.flags.no_sortable) {
+            node.flags.no_sortable = true;
+        }
+        if (options.inherit_no_drop && node.parent && node.parent.flags.no_drop) {
+            node.flags.no_drop = true;
+        }
 
-        // dragstart: create placeholder and hide current element
-        self.$el.on('dragstart.queryBuilder', '[draggable]', function(e) {
-            e.stopPropagation();
+        /**
+         * Configure drag
+         */
+        if (!node.flags.no_sortable) {
+            interact(node.$el[0])
+                .allowFrom(Selectors.drag_handle)
+                .draggable({
+                    onstart: function(event) {
+                        // get model of dragged element
+                        src = Model(event.target);
 
-            // notify drag and drop (only dummy text)
-            e.dataTransfer.setData('text', 'drag');
+                        // create ghost
+                        ghost = src.$el.clone()
+                            .appendTo(src.$el.parent())
+                            .width(src.$el.outerWidth())
+                            .addClass('dragging');
 
-            src = Model(e.target);
+                        // create drop placeholder
+                        var ph = $('<div class="rule-placeholder">&nbsp;</div>')
+                            .height(src.$el.outerHeight());
 
-            // Chrome glitchs
-            // - helper invisible if hidden immediately
-            // - "dragend" is called immediately if we modify the DOM directly
-            setTimeout(function() {
-                var ph = $('<div class="rule-placeholder">&nbsp;</div>');
-                ph.css('min-height', src.$el.height());
+                        placeholder = src.parent.addRule(ph, src.getPos());
 
-                placeholder = src.parent.addRule(ph, src.getPos());
+                        // hide dragged element
+                        src.$el.hide();
+                    },
+                    onmove: function(event) {
+                        // make the ghost follow the cursor
+                        ghost[0].style.top = event.clientY - 15 + 'px';
+                        ghost[0].style.left = event.clientX - 15 + 'px';
+                    },
+                    onend: function() {
+                        // remove ghost
+                        ghost.remove();
+                        ghost = undefined;
 
-                src.$el.hide();
-            }, 0);
-        });
+                        // remove placeholder
+                        placeholder.drop();
+                        placeholder = undefined;
 
-        // dragenter: move the placeholder
-        self.$el.on('dragenter.queryBuilder', '[draggable]', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
+                        // show element
+                        src.$el.show();
 
-            if (placeholder) {
-                moveSortableToTarget(placeholder, $(e.target));
+                        self.trigger('afterMove', src);
+                    }
+                });
+        }
+
+        if (!node.flags.no_drop) {
+            /**
+             * Configure drop on groups and rules
+             */
+            interact(node.$el[0])
+                .dropzone({
+                    accept: Selectors.rule_and_group_containers,
+                    ondragenter: function(event) {
+                        moveSortableToTarget(placeholder, $(event.target));
+                    },
+                    ondrop: function(event) {
+                        moveSortableToTarget(src, $(event.target), self);
+                    }
+                });
+
+            /**
+             * Configure drop on group headers
+             */
+            if (node instanceof Group) {
+                interact(node.$el.find(Selectors.group_header)[0])
+                    .dropzone({
+                        accept: Selectors.rule_and_group_containers,
+                        ondragenter: function(event) {
+                            moveSortableToTarget(placeholder, $(event.target));
+                        },
+                        ondrop: function(event) {
+                            moveSortableToTarget(src, $(event.target), self);
+                        }
+                    });
             }
-        });
-
-        // dragover: prevent glitches
-        self.$el.on('dragover.queryBuilder', '[draggable]', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-        });
-
-        // drop: move current element
-        self.$el.on('drop.queryBuilder', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            moveSortableToTarget(src, $(e.target));
-        });
-
-        // dragend: show current element and delete placeholder
-        self.$el.on('dragend.queryBuilder', '[draggable]', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            src.$el.show();
-            placeholder.drop();
-
-            self.$el.find(Selectors.rule_and_group_containers).removeAttr('draggable');
-
-            self.trigger('afterMove', src);
-
-            src = placeholder = null;
-        });
-    });
-
-    /**
-     * Remove drag handle from non-sortable rules
-     */
-    this.on('parseRuleFlags.filter', function(flags) {
-        if (flags.value.no_sortable === undefined) {
-            flags.value.no_sortable = options.default_no_sortable;
-        }
-    });
-
-    this.on('afterApplyRuleFlags', function(e, rule) {
-        if (rule.flags.no_sortable) {
-            rule.$el.find('.drag-handle').remove();
         }
     });
 
     /**
-     * Remove drag handle from non-sortable groups
+     * Detach interactables
      */
-    this.on('parseGroupFlags.filter', function(flags) {
-        if (flags.value.no_sortable === undefined) {
-            flags.value.no_sortable = options.default_no_sortable;
+    this.on('beforeDeleteRule beforeDeleteGroup', function(e, node) {
+        if (!e.isDefaultPrevented()) {
+            interact(node.$el[0]).unset();
+
+            if (node instanceof Group) {
+                interact(node.$el.find(Selectors.group_header)[0]).unset();
+            }
         }
     });
 
-    this.on('afterApplyGroupFlags', function(e, group) {
-        if (group.flags.no_sortable) {
-            group.$el.find('.drag-handle').remove();
+    /**
+     * Remove drag handle from non-sortable items
+     */
+    this.on('afterApplyRuleFlags afterApplyGroupFlags', function(e, node) {
+        if (node.flags.no_sortable) {
+            node.$el.find('.drag-handle').remove();
         }
     });
 
@@ -3922,38 +4284,50 @@ QueryBuilder.define('sortable', function(options) {
         h.value = $h.prop('outerHTML');
     });
 }, {
-    default_no_sortable: false,
+    inherit_no_sortable: true,
+    inherit_no_drop: true,
     icon: 'glyphicon glyphicon-sort'
 });
 
 /**
  * Move an element (placeholder or actual object) depending on active target
- * @param {Node}
- * @param {jQuery}
+ * @param {Node} node
+ * @param {jQuery} target
+ * @param {QueryBuilder} [builder]
  */
-function moveSortableToTarget(element, target) {
-    var parent;
+function moveSortableToTarget(node, target, builder) {
+    var parent, method;
 
     // on rule
     parent = target.closest(Selectors.rule_container);
     if (parent.length) {
-        element.moveAfter(Model(parent));
-        return;
+        method = 'moveAfter';
     }
 
     // on group header
-    parent = target.closest(Selectors.group_header);
-    if (parent.length) {
-        parent = target.closest(Selectors.group_container);
-        element.moveAtBegin(Model(parent));
-        return;
+    if (!method) {
+        parent = target.closest(Selectors.group_header);
+        if (parent.length) {
+            parent = target.closest(Selectors.group_container);
+            method = 'moveAtBegin';
+        }
     }
 
     // on group
-    parent = target.closest(Selectors.group_container);
-    if (parent.length) {
-        element.moveAtEnd(Model(parent));
-        return;
+    if (!method) {
+        parent = target.closest(Selectors.group_container);
+        if (parent.length) {
+            method = 'moveAtEnd';
+        }
+    }
+
+    if (method) {
+        node[method](Model(parent));
+
+        // refresh radio value
+        if (builder && node instanceof Rule) {
+            builder.setRuleInputValue(node, node.value);
+        }
     }
 }
 
@@ -4025,6 +4399,29 @@ QueryBuilder.defaults({
             }
             else {
                 Utils.error('SQLParse', 'Invalid value for LIKE operator "{0}"', v);
+            }
+        },
+        'NOT LIKE': function(v) {
+            if (v.slice(0, 1) == '%' && v.slice(-1) == '%') {
+                return {
+                    val: v.slice(1, -1),
+                    op: 'not_contains'
+                };
+            }
+            else if (v.slice(0, 1) == '%') {
+                return {
+                    val: v.slice(1),
+                    op: 'not_ends_with'
+                };
+            }
+            else if (v.slice(-1) == '%') {
+                return {
+                    val: v.slice(0, -1),
+                    op: 'not_begins_with'
+                };
+            }
+            else {
+                Utils.error('SQLParse', 'Invalid value for NOT LIKE operator "{0}"', v);
             }
         },
         'IN':           function(v) { return { val: v, op: 'in' }; },
@@ -4166,21 +4563,21 @@ QueryBuilder.extend({
 
         var self = this;
 
-        var sql = (function parse(data) {
-            if (!data.condition) {
-                data.condition = self.settings.default_condition;
+        var sql = (function parse(group) {
+            if (!group.condition) {
+                group.condition = self.settings.default_condition;
             }
-            if (['AND', 'OR'].indexOf(data.condition.toUpperCase()) === -1) {
-                Utils.error('UndefinedSQLCondition', 'Unable to build SQL query with condition "{0}"', data.condition);
+            if (['AND', 'OR'].indexOf(group.condition.toUpperCase()) === -1) {
+                Utils.error('UndefinedSQLCondition', 'Unable to build SQL query with condition "{0}"', group.condition);
             }
 
-            if (!data.rules) {
+            if (!group.rules) {
                 return '';
             }
 
             var parts = [];
 
-            data.rules.forEach(function(rule) {
+            group.rules.forEach(function(rule) {
                 if (rule.rules && rule.rules.length > 0) {
                     parts.push('(' + nl + parse(rule) + nl + ')' + nl);
                 }
@@ -4227,11 +4624,17 @@ QueryBuilder.extend({
                         });
                     }
 
-                    parts.push(rule.field + ' ' + sql.op.replace(/\?/, value));
+                    var sqlFn = function(v) {
+                        return sql.op.replace(/\?/, v);
+                    };
+
+                    var ruleExpression = self.change('getSQLField', rule.field, rule) + ' ' + sqlFn(value);
+                    parts.push(self.change('ruleToSQL', ruleExpression, rule, value, sqlFn));
                 }
             });
 
-            return parts.join(' ' + data.condition + nl);
+            var groupExpression = parts.join(' ' + group.condition + nl);
+            return self.change('groupToSQL', groupExpression, group);
         }(data));
 
         if (stmt) {
@@ -4285,23 +4688,55 @@ QueryBuilder.extend({
             Utils.error('SQLParse', 'No WHERE clause found');
         }
 
-        var out = {
+        // allow plugins to manually parse or handle special cases
+        data = self.change('parseSQLNode', parsed.where.conditions);
+
+        // a plugin returned a group
+        if ('rules' in data && 'condition' in data) {
+            return data;
+        }
+
+        // create root group
+        var out = self.change('sqlToGroup', {
             condition: this.settings.default_condition,
             rules: []
-        };
+        }, data);
+
+        // keep track of current group
         var curr = out;
 
         (function flatten(data, i) {
+            // allow plugins to manually parse or handle special cases
+            data = self.change('parseSQLNode', data);
+
+            // a plugin returned a group
+            if ('rules' in data && 'condition' in data) {
+                curr.rules.push(data);
+                return;
+            }
+
+            // a plugin returned a rule
+            if ('id' in data && 'operator' in data && 'value' in data) {
+                curr.rules.push(data);
+                return;
+            }
+
+            // data must be a SQL parser node
+            if (!('left' in data) || !('right' in data) || !('operation' in data)) {
+                Utils.error('SQLParse', 'Unable to parse WHERE clause');
+            }
+
             // it's a node
             if (['AND', 'OR'].indexOf(data.operation.toUpperCase()) !== -1) {
                 // create a sub-group if the condition is not the same and it's not the first level
                 if (i > 0 && curr.condition != data.operation.toUpperCase()) {
-                    curr.rules.push({
+                    var group = self.change('sqlToGroup', {
                         condition: self.settings.default_condition,
                         rules: []
-                    });
+                    }, data);
 
-                    curr = curr.rules[curr.rules.length - 1];
+                    curr.rules.push(group);
+                    curr = group;
                 }
 
                 curr.condition = data.operation.toUpperCase();
@@ -4316,10 +4751,6 @@ QueryBuilder.extend({
             }
             // it's a leaf
             else {
-                if (data.left.value === undefined || data.right.value === undefined) {
-                    Utils.error('SQLParse', 'Missing field and/or value');
-                }
-
                 if ($.isPlainObject(data.right.value)) {
                     Utils.error('SQLParse', 'Value format not supported for {0}.', data.left.value);
                 }
@@ -4347,33 +4778,28 @@ QueryBuilder.extend({
 
                 // convert operator
                 var operator = data.operation.toUpperCase();
-                if (operator == '<>') operator = '!=';
-
-                var sqlrl;
-                if (operator == 'NOT LIKE') {
-                    sqlrl = self.settings.sqlRuleOperator['LIKE'];
-                }
-                else {
-                    sqlrl = self.settings.sqlRuleOperator[operator];
+                if (operator == '<>') {
+                    operator = '!=';
                 }
 
+                var sqlrl = self.settings.sqlRuleOperator[operator];
                 if (sqlrl === undefined) {
                     Utils.error('UndefinedSQLOperator', 'Invalid SQL operation "{0}".', data.operation);
                 }
 
                 var opVal = sqlrl.call(this, value, data.operation);
-                if (operator == 'NOT LIKE') opVal.op = 'not_' + opVal.op;
+                var field = data.left.values.join('.');
 
-                var left_value = data.left.values.join('.');
-
-                curr.rules.push({
-                    id: self.change('getSQLFieldID', left_value, value),
-                    field: left_value,
+                var rule = self.change('sqlToRule', {
+                    id: self.change('getSQLFieldID', field, value),
+                    field: field,
                     operator: opVal.op,
                     value: opVal.val
-                });
+                }, data);
+
+                curr.rules.push(rule);
             }
-        }(parsed.where.conditions, 0));
+        }(data, 0));
 
         return out;
     },
@@ -4381,6 +4807,7 @@ QueryBuilder.extend({
     /**
      * Set rules from SQL
      * @param data {object}
+     * @param stmt {boolean|string}
      */
     setRulesFromSQL: function(data, stmt) {
         this.setRules(this.getRulesFromSQL(data, stmt));
@@ -4407,9 +4834,37 @@ QueryBuilder.define('unique-filter', function() {
     this.on('afterCreateRuleFilters', this.applyDisabledFilters);
     this.on('afterReset', this.clearDisabledFilters);
     this.on('afterClear', this.clearDisabledFilters);
+
+    /**
+     * Ensure that the default filter is not already used if unique
+     * @throws UniqueFilterError
+     */
+    this.on('getDefaultFilter.filter', function(e, model) {
+        var self = e.builder;
+
+        self.updateDisabledFilters();
+
+        if (e.value.id in self.status.used_filters) {
+            var found = self.filters.some(function(filter) {
+                if (!(filter.id in self.status.used_filters) || self.status.used_filters[filter.id].length > 0 && self.status.used_filters[filter.id].indexOf(model.parent) === -1) {
+                    e.value = filter;
+                    return true;
+                }
+            });
+
+            if (!found) {
+                Utils.error('UniqueFilter', 'No more non-unique filters available');
+                e.value = undefined;
+            }
+        }
+    });
 });
 
 QueryBuilder.extend({
+    /**
+     * Update the list of used filters
+     * @param [e]
+     */
     updateDisabledFilters: function(e) {
         var self = e ? e.builder : this;
 
@@ -4438,6 +4893,10 @@ QueryBuilder.extend({
         self.applyDisabledFilters(e);
     },
 
+    /**
+     * Clear the list of used filters
+     * @param [e]
+     */
     clearDisabledFilters: function(e) {
         var self = e ? e.builder : this;
 
@@ -4446,6 +4905,10 @@ QueryBuilder.extend({
         self.applyDisabledFilters(e);
     },
 
+    /**
+     * Disabled filters depending on the list of used ones
+     * @param [e]
+     */
     applyDisabledFilters: function(e) {
         var self = e ? e.builder : this;
 
@@ -4475,7 +4938,7 @@ QueryBuilder.extend({
 
 
 /*!
- * jQuery QueryBuilder 2.3.3
+ * jQuery QueryBuilder 2.4.1
  * Locale: English (en)
  * Author: Damien "Mistic" Sorel, http://www.strangeplanet.fr
  * Licensed under MIT (http://opensource.org/licenses/MIT)
@@ -4537,7 +5000,8 @@ QueryBuilder.regional['en'] = {
     "boolean_not_valid": "Not a boolean",
     "operator_not_multiple": "Operator {0} cannot accept multiple values"
   },
-  "invert": "Invert"
+  "invert": "Invert",
+  "NOT": "NOT"
 };
 
 QueryBuilder.defaults({ lang_code: 'en' });
