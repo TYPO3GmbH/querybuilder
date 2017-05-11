@@ -3,8 +3,9 @@
 namespace T3G\Querybuilder\Parser;
 
 use stdClass;
-use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 
 /**
  * Class QueryParser.
@@ -72,47 +73,94 @@ class QueryParser
      */
     protected function getWhereClause(stdClass $rule, string $table) : string
     {
-        $dbConnection = $this->getDatabaseConnection();
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
+//        $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+//        $rows = $queryBuilder->select('*')
+//            ->from($table)
+//            ->where(
+//                $queryBuilder->expr()->eq(
+//                    'tx_styleguide_isdemorecord',
+//                    $queryBuilder->createNamedParameter(1, \PDO::PARAM_INT)
+//                )
+//            )
+//            ->execute()
+//            ->fetchAll();
+//        $result = [];
+//        if (is_array($rows)) {
+//            foreach ($rows as $row) {
+//                $result[] = $row['uid'];
+//            }
+//        }
+//        return $result;
+
         $where = '';
-        $field = $dbConnection->quoteStr($rule->field, $table) . ' ';
+        $field = $queryBuilder->quote($rule->field, $table) . ' ';
         $value = $this->getValue($rule);
         $value = !is_array($value)
-            ? $dbConnection->fullQuoteStr($value, $table)
+            ? $queryBuilder->createNamedParameter($value)
             : $value;
         switch ($rule->operator) {
             case self::OPERATOR_EQUAL:
-                $where = $field . '= ' . $value;
+                $where = $queryBuilder->where(
+                            $queryBuilder->expr()->eq(
+                                $field,
+                                $value
+                            )
+                        );
+//                $where = $field . '= ' . $value;
                 break;
             case self::OPERATOR_NOT_EQUAL:
-                $where = $field . '!= ' . $value;
+                $where = $queryBuilder->where(
+                            $queryBuilder->expr()->neq(
+                                $field,
+                                $value
+                            )
+                        );
+//                $where = $field . '!= ' . $value;
                 break;
             case self::OPERATOR_IN:
+                $values = GeneralUtility::trimExplode(',', $rule->value);
+                $escapedValues = [];
+                foreach ($values as $value) {
+                    $escapedValues[] = $queryBuilder->createNamedParameter($value);
+                }
+                $where = $queryBuilder->where(
+                    $queryBuilder->expr()->in(
+                        $field,
+                        implode(',', $escapedValues)
+                    )
+                );
+                break;
             case self::OPERATOR_NOT_IN:
                 $values = GeneralUtility::trimExplode(',', $rule->value);
                 $escapedValues = [];
                 foreach ($values as $value) {
-                    $escapedValues[] = $dbConnection->fullQuoteStr($value, $table);
+                    $escapedValues[] = $queryBuilder->createNamedParameter($value);
                 }
-                $negation = $rule->operator === self::OPERATOR_NOT_IN ? 'NOT ' : '';
-                $where = $field . $negation . 'IN (' . implode(',', $escapedValues) . ')';
+                $where = $queryBuilder->where(
+                    $queryBuilder->expr()->notIn(
+                        $field,
+                        implode(',', $escapedValues)
+                    )
+                );
                 break;
             case self::OPERATOR_BEGINS_WITH:
             case self::OPERATOR_NOT_BEGINS_WITH:
-                $value = $dbConnection->escapeStrForLike($rule->value, $table);
+                $value = $queryBuilder->escapeLikeWildcards($rule->value);
                 $negation = $rule->operator === self::OPERATOR_NOT_BEGINS_WITH ? 'NOT ' : '';
-                $where = $field . $negation . 'LIKE ' . $dbConnection->fullQuoteStr($value . '%', $table);
+                $where = $field . $negation . 'LIKE ' . $queryBuilder->createNamedParameter($value . '%');
                 break;
             case self::OPERATOR_CONTAINS:
             case self::OPERATOR_NOT_CONTAINS:
-                $value = $dbConnection->escapeStrForLike($rule->value, $table);
+                $value = $queryBuilder->escapeLikeWildcards($rule->value);
                 $negation = $rule->operator === self::OPERATOR_NOT_CONTAINS ? 'NOT ' : '';
-                $where = $field . $negation . 'LIKE ' . $dbConnection->fullQuoteStr('%' . $value . '%', $table);
+                $where = $field . $negation . 'LIKE ' . $queryBuilder->createNamedParameter('%' . $value . '%');
                 break;
             case self::OPERATOR_ENDS_WITH:
             case self::OPERATOR_NOT_ENDS_WITH:
-                $value = $dbConnection->escapeStrForLike($rule->value, $table);
+                $value = $queryBuilder->escapeLikeWildcards($rule->value);
                 $negation = $rule->operator === self::OPERATOR_NOT_ENDS_WITH ? 'NOT ' : '';
-                $where = $field . $negation . 'LIKE ' . $dbConnection->fullQuoteStr('%' . $value, $table);
+                $where = $field . $negation . 'LIKE ' . $queryBuilder->createNamedParameter('%' . $value);
                 break;
             case self::OPERATOR_IS_EMPTY:
             case self::OPERATOR_IS_NOT_EMPTY:
@@ -120,27 +168,70 @@ class QueryParser
                 $where = $field . $negation . '= \'\'';
                 break;
             case self::OPERATOR_IS_NULL:
+                $where = $queryBuilder->where(
+                    $queryBuilder->expr()->isNull(
+                        $field
+                    )
+                );
+                break;
             case self::OPERATOR_IS_NOT_NULL:
-                $negation = $rule->operator === self::OPERATOR_IS_NOT_NULL ? 'NOT' : '';
-                $where = $field . 'IS ' . $negation . ' NULL';
+                $where = $queryBuilder->where(
+                    $queryBuilder->expr()->isNotNull(
+                        $field
+                    )
+                );
                 break;
             case self::OPERATOR_LESS:
-                $where = $field . '< ' . $value;
+                $where = $queryBuilder->where(
+                            $queryBuilder->expr()->lt(
+                                $field,
+                                $value
+                            )
+                        );
+//                $where = $field . '< ' . $value;
                 break;
             case self::OPERATOR_LESS_OR_EQUAL:
-                $where = $field . '<= ' . $value;
+                $where = $queryBuilder->where(
+                            $queryBuilder->expr()->lte(
+                                $field,
+                                $value
+                            )
+                        );
+//                $where = $field . '<= ' . $value;
                 break;
             case self::OPERATOR_GREATER:
-                $where = $field . '> ' . $value;
+                $where = $queryBuilder->where(
+                            $queryBuilder->expr()->gt(
+                                $field,
+                                $value
+                            )
+                        );
+//                $where = $field . '> ' . $value;
                 break;
             case self::OPERATOR_GREATER_OR_EQUAL:
-                $where = $field . '>= ' . $value;
+                $where = $queryBuilder->where(
+                            $queryBuilder->expr()->gte(
+                                $field,
+                                $value
+                            )
+                        );
+//                $where = $field . '>= ' . $value;
                 break;
             case self::OPERATOR_BETWEEN:
+                $where = $queryBuilder->where(
+                    $queryBuilder->expr()->between(
+                        $field,
+                        $value1,
+                        $value2
+                    )
+                );
+                break;
             case self::OPERATOR_NOT_BETWEEN:
+                //todo ??
+
                 $negation = $rule->operator === self::OPERATOR_NOT_BETWEEN ? 'NOT ' : '';
-                $value1 = $dbConnection->fullQuoteStr($value[0], $table);
-                $value2 = $dbConnection->fullQuoteStr($value[1], $table);
+                $value1 = $queryBuilder->createNamedParameter($value[0]);
+                $value2 = $queryBuilder->createNamedParameter($value[1]);
                 $where = $field . $negation . 'BETWEEN ' . $value1 . ' AND ' . $value2;
                 break;
         }
@@ -185,13 +276,5 @@ class QueryParser
             }
         }
         return count($values) === 1 ? $values[0] : $values;
-    }
-
-    /**
-     * @return DatabaseConnection
-     */
-    protected function getDatabaseConnection()
-    {
-        return $GLOBALS['TYPO3_DB'];
     }
 }
