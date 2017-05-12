@@ -74,23 +74,23 @@ class QueryParser
     protected function getWhereClause(stdClass $rule, string $table) : string
     {
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
-//        $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
-//        $rows = $queryBuilder->select('*')
-//            ->from($table)
-//            ->where(
-//                $queryBuilder->expr()->eq(
-//                    'tx_styleguide_isdemorecord',
-//                    $queryBuilder->createNamedParameter(1, \PDO::PARAM_INT)
-//                )
-//            )
-//            ->execute()
-//            ->fetchAll();
-//        $result = [];
-//        if (is_array($rows)) {
-//            foreach ($rows as $row) {
-//                $result[] = $row['uid'];
-//            }
-//        }
+        $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+        $rows = $queryBuilder->select('*')
+            ->from($table)
+            ->where(
+                $queryBuilder->expr()->eq(
+                    'tx_styleguide_isdemorecord',
+                    $queryBuilder->createNamedParameter(1, \PDO::PARAM_INT)
+                )
+            )
+            ->execute()
+            ->fetchAll();
+        $result = [];
+        if (is_array($rows)) {
+            foreach ($rows as $row) {
+                $result[] = $row['uid'];
+            }
+        }
 //        return $result;
 
         $where = '';
@@ -145,22 +145,56 @@ class QueryParser
                 );
                 break;
             case self::OPERATOR_BEGINS_WITH:
+                $value = $queryBuilder->escapeLikeWildcards($rule->value);
+                $where = $queryBuilder->where(
+                    $queryBuilder->expr()->like(
+                        $field,
+                        $queryBuilder->createNamedParameter($value . '%')
+                    )
+                );
+                break;
             case self::OPERATOR_NOT_BEGINS_WITH:
                 $value = $queryBuilder->escapeLikeWildcards($rule->value);
-                $negation = $rule->operator === self::OPERATOR_NOT_BEGINS_WITH ? 'NOT ' : '';
-                $where = $field . $negation . 'LIKE ' . $queryBuilder->createNamedParameter($value . '%');
+                $where = $queryBuilder->where(
+                    $queryBuilder->expr()->notLike(
+                        $field,
+                        $queryBuilder->createNamedParameter($value . '%')
+                    )
+                );
                 break;
             case self::OPERATOR_CONTAINS:
+                $value = $queryBuilder->escapeLikeWildcards($rule->value);
+                $where = $queryBuilder->where(
+                    $queryBuilder->expr()->like(
+                        $field,
+                        $queryBuilder->createNamedParameter('%' . $value . '%')                    )
+                );
+                break;
             case self::OPERATOR_NOT_CONTAINS:
                 $value = $queryBuilder->escapeLikeWildcards($rule->value);
-                $negation = $rule->operator === self::OPERATOR_NOT_CONTAINS ? 'NOT ' : '';
-                $where = $field . $negation . 'LIKE ' . $queryBuilder->createNamedParameter('%' . $value . '%');
+                $where = $queryBuilder->where(
+                    $queryBuilder->expr()->notLike(
+                        $field,
+                        $queryBuilder->createNamedParameter('%' . $value . '%')                    )
+                );
                 break;
             case self::OPERATOR_ENDS_WITH:
+                $value = $queryBuilder->escapeLikeWildcards($rule->value);
+                $where = $queryBuilder->where(
+                    $queryBuilder->expr()->like(
+                        $field,
+                        $queryBuilder->createNamedParameter('%' . $value)
+                    )
+                );
+                break;
             case self::OPERATOR_NOT_ENDS_WITH:
                 $value = $queryBuilder->escapeLikeWildcards($rule->value);
-                $negation = $rule->operator === self::OPERATOR_NOT_ENDS_WITH ? 'NOT ' : '';
-                $where = $field . $negation . 'LIKE ' . $queryBuilder->createNamedParameter('%' . $value);
+                $where = $queryBuilder->where(
+                    $queryBuilder->expr()->like(
+                        $field,
+                        $queryBuilder->createNamedParameter('%' . $value)
+                    )
+                );
                 break;
             case self::OPERATOR_IS_EMPTY:
             case self::OPERATOR_IS_NOT_EMPTY:
