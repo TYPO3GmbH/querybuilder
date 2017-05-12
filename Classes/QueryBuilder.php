@@ -192,12 +192,4 @@ class QueryBuilder
 
         return $formDataCompiler->compile($formDataCompilerInput);
     }
-
-    /**
-     * @return DatabaseConnection
-     */
-    protected function getDatabaseConnection()
-    {
-        return $GLOBALS['TYPO3_DB'];
-    }
 }
