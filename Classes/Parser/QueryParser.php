@@ -73,6 +73,7 @@ class QueryParser
         $where = '';
         $field = $rule->field;
         $value = $queryBuilder->quote($rule->value);
+
         switch ($rule->operator) {
             case self::OPERATOR_EQUAL:
                 $where = $queryBuilder->expr()->eq(
@@ -91,11 +92,11 @@ class QueryParser
                 $escapedValues = [];
                 foreach ($values as $value) {
                     // todo delete/change
-                    $escapedValues[] = $queryBuilder->createNamedParameter($value);
+                    $escapedValues[] = $value;
                 }
                 $where = $queryBuilder->expr()->in(
                         $field,
-                        implode(',', $escapedValues)
+                        implode(', ', $escapedValues)
                 );
                 break;
             case self::OPERATOR_NOT_IN:
@@ -103,7 +104,7 @@ class QueryParser
                 $escapedValues = [];
                 foreach ($values as $value) {
                     // todo delete/change
-                    $escapedValues[] = $queryBuilder->createNamedParameter($value);
+                    $escapedValues[] = $value;
                 }
                 $where = $queryBuilder->expr()->notIn(
                         $field,
@@ -113,37 +114,37 @@ class QueryParser
             case self::OPERATOR_BEGINS_WITH:
                 $where = $queryBuilder->expr()->like(
                         $field,
-                        $queryBuilder->literal($rule->value . '%')
+                        $queryBuilder->expr()->literal($rule->value . '%')
                 );
                 break;
             case self::OPERATOR_NOT_BEGINS_WITH:
                 $where = $queryBuilder->expr()->notLike(
                         $field,
-                        $queryBuilder->literal($rule->value . '%')
+                        $queryBuilder->expr()->literal($rule->value . '%')
                 );
                 break;
             case self::OPERATOR_CONTAINS:
                 $where = $queryBuilder->expr()->like(
                         $field,
-                        $queryBuilder->literal('%' . $rule->value . '%')
+                        $queryBuilder->expr()->literal('%' . $rule->value . '%')
                 );
                 break;
             case self::OPERATOR_NOT_CONTAINS:
                 $where = $queryBuilder->expr()->notLike(
                         $field,
-                        $queryBuilder->literal('%' . $rule->value . '%')
+                        $queryBuilder->expr()->literal('%' . $rule->value . '%')
                 );
                 break;
             case self::OPERATOR_ENDS_WITH:
                 $where = $queryBuilder->expr()->like(
                         $field,
-                        $queryBuilder->literal('%' . $rule->value)
+                        $queryBuilder->expr()->literal('%' . $rule->value)
                 );
                 break;
             case self::OPERATOR_NOT_ENDS_WITH:
                 $where = $queryBuilder->expr()->notLike(
                         $field,
-                        $queryBuilder->literal('%' . $rule->value)
+                        $queryBuilder->expr()->literal('%' . $rule->value)
                 );
                 break;
             case self::OPERATOR_IS_NULL:

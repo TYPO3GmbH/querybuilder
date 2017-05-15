@@ -3,7 +3,7 @@
  *
  * Copyright 2014-2016 Damien "Mistic" Sorel (http://www.strangeplanet.fr)
  * Licensed under MIT (http://opensource.org/licenses/MIT)
- * 
+ *
  * Based on jQuery.extend by jQuery Foundation, Inc. and other contributors
  */
 
@@ -486,7 +486,10 @@ var Selectors = QueryBuilder.selectors = {
     add_rule:             '[data-add=rule]',
     delete_rule:          '[data-delete=rule]',
     add_group:            '[data-add=group]',
-    delete_group:         '[data-delete=group]'
+    delete_group:         '[data-delete=group]',
+
+	apply_button:		  '[data-action=apply]',
+	reset_button:		  '[data-action=reset]'
 };
 
 /**
@@ -511,16 +514,12 @@ QueryBuilder.OPERATORS = {
     less_or_equal:    { type: 'less_or_equal',    nb_inputs: 1, multiple: false, apply_to: ['number', 'datetime'] },
     greater:          { type: 'greater',          nb_inputs: 1, multiple: false, apply_to: ['number', 'datetime'] },
     greater_or_equal: { type: 'greater_or_equal', nb_inputs: 1, multiple: false, apply_to: ['number', 'datetime'] },
-    between:          { type: 'between',          nb_inputs: 2, multiple: false, apply_to: ['number', 'datetime'] },
-    not_between:      { type: 'not_between',      nb_inputs: 2, multiple: false, apply_to: ['number', 'datetime'] },
     begins_with:      { type: 'begins_with',      nb_inputs: 1, multiple: false, apply_to: ['string'] },
     not_begins_with:  { type: 'not_begins_with',  nb_inputs: 1, multiple: false, apply_to: ['string'] },
     contains:         { type: 'contains',         nb_inputs: 1, multiple: false, apply_to: ['string'] },
     not_contains:     { type: 'not_contains',     nb_inputs: 1, multiple: false, apply_to: ['string'] },
     ends_with:        { type: 'ends_with',        nb_inputs: 1, multiple: false, apply_to: ['string'] },
     not_ends_with:    { type: 'not_ends_with',    nb_inputs: 1, multiple: false, apply_to: ['string'] },
-    is_empty:         { type: 'is_empty',         nb_inputs: 0, multiple: false, apply_to: ['string'] },
-    is_not_empty:     { type: 'is_not_empty',     nb_inputs: 0, multiple: false, apply_to: ['string'] },
     is_null:          { type: 'is_null',          nb_inputs: 0, multiple: false, apply_to: ['string', 'number', 'datetime', 'boolean'] },
     is_not_null:      { type: 'is_not_null',      nb_inputs: 0, multiple: false, apply_to: ['string', 'number', 'datetime', 'boolean'] }
 };
@@ -577,16 +576,12 @@ QueryBuilder.DEFAULTS = {
         'less_or_equal',
         'greater',
         'greater_or_equal',
-        'between',
-        'not_between',
         'begins_with',
         'not_begins_with',
         'contains',
         'not_contains',
         'ends_with',
         'not_ends_with',
-        'is_empty',
-        'is_not_empty',
         'is_null',
         'is_not_null'
     ],
@@ -863,6 +858,11 @@ QueryBuilder.prototype.bindEvents = function() {
     this.$el.on('click.queryBuilder', Selectors.add_rule, function() {
         var $group = $(this).closest(Selectors.group_container);
         self.addRule(Model($group));
+		// @TODO add button enabling
+		//var $buttons = find(Selectors.apply_button);
+		//$buttons.removeAttr('disabled');
+		//var $buttons = self.$el.find(Selectors.apply_button).prop('disabled', true);
+		//console.log($buttons);
     });
 
     // delete rule button
@@ -1308,6 +1308,16 @@ QueryBuilder.prototype.applyRuleFlags = function(rule) {
     }
 
     this.trigger('afterApplyRuleFlags', rule);
+};
+
+/**
+ * Disable and enable buttons depending on rule.
+ * @param rule {Rule}
+ */
+QueryBuilder.prototype.buttonEnabling = function(rule) {
+	if(rule.length > 0) {
+
+	}
 };
 
 /**
@@ -3551,16 +3561,12 @@ QueryBuilder.defaults({
         'less_or_equal':    'greater',
         'greater':          'less_or_equal',
         'greater_or_equal': 'less',
-        'between':          'not_between',
-        'not_between':      'between',
         'begins_with':      'not_begins_with',
         'not_begins_with':  'begins_with',
         'contains':         'not_contains',
         'not_contains':     'contains',
         'ends_with':        'not_ends_with',
         'not_ends_with':    'ends_with',
-        'is_empty':         'is_not_empty',
-        'is_not_empty':     'is_empty',
         'is_null':          'is_not_null',
         'is_not_null':      'is_null'
     },
@@ -4350,16 +4356,12 @@ QueryBuilder.defaults({
         less_or_equal:    { op: '<= ?' },
         greater:          { op: '> ?' },
         greater_or_equal: { op: '>= ?' },
-        between:          { op: 'BETWEEN ?',      sep: ' AND ' },
-        not_between:      { op: 'NOT BETWEEN ?',  sep: ' AND ' },
         begins_with:      { op: 'LIKE(?)',        mod: '{0}%' },
         not_begins_with:  { op: 'NOT LIKE(?)',    mod: '{0}%' },
         contains:         { op: 'LIKE(?)',        mod: '%{0}%' },
         not_contains:     { op: 'NOT LIKE(?)',    mod: '%{0}%' },
         ends_with:        { op: 'LIKE(?)',        mod: '%{0}' },
         not_ends_with:    { op: 'NOT LIKE(?)',    mod: '%{0}' },
-        is_empty:         { op: '= \'\'' },
-        is_not_empty:     { op: '!= \'\'' },
         is_null:          { op: 'IS NULL' },
         is_not_null:      { op: 'IS NOT NULL' }
     },
@@ -4964,16 +4966,12 @@ QueryBuilder.regional['en'] = {
     "less_or_equal": "less or equal",
     "greater": "greater",
     "greater_or_equal": "greater or equal",
-    "between": "between",
-    "not_between": "not between",
     "begins_with": "begins with",
     "not_begins_with": "doesn't begin with",
     "contains": "contains",
     "not_contains": "doesn't contain",
     "ends_with": "ends with",
     "not_ends_with": "doesn't end with",
-    "is_empty": "is empty",
-    "is_not_empty": "is not empty",
     "is_null": "is null",
     "is_not_null": "is not null"
   },

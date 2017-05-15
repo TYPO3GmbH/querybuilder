@@ -52,7 +52,11 @@ define(['jquery', 'moment', 'twbs/bootstrap-datetimepicker', 'query-builder'], f
             {
                 title: 'Apply',
                 action: 'apply'
-            }
+            },
+			{
+				title: 'Reset',
+				action: 'reset'
+			}
         ]
     };
 
@@ -68,11 +72,11 @@ define(['jquery', 'moment', 'twbs/bootstrap-datetimepicker', 'query-builder'], f
             var $buttonGroup = $queryBuilderContainer.find('.btn-group');
             for (var i=0; i<QueryBuilder.buttons.length; i++) {
                 var button = QueryBuilder.buttons[i];
-                var $button = $('<button type="button" class="btn btn-default" data-action="' + button.action + '">' + button.title + '</button>');
+                var $button = $('<button type="button" class="btn btn-default" data-action="' + button.action + '" >' + button.title + '</button>');
                 $button.appendTo($buttonGroup);
             }
         }
-        QueryBuilder.initialzeEvents();
+		QueryBuilder.initialzeEvents();
         QueryBuilder.instance = $queryBuilderContainer.find(QueryBuilder.selectorBuilder).queryBuilder({
             allow_empty: true,
             icons: {
@@ -104,17 +108,26 @@ define(['jquery', 'moment', 'twbs/bootstrap-datetimepicker', 'query-builder'], f
         $builderElement.parent().find('.btn-group button').click(function() {
             var $button = $(this);
             var action = $button.data('action');
+			var url = self.location.href;
             switch (action) {
                 case 'apply':
                     if (!QueryBuilder.instance.queryBuilder('validate')) {
                         break;
                     }
-                    var url = self.location.href;
                     if (url.indexOf('&query=') !== -1) {
                         url = url.substring(0, url.indexOf('&query='));
                     }
                     self.location.href = url + '&query=' + JSON.stringify(QueryBuilder.instance.queryBuilder('getRules'), null, 2);
                     break;
+				case 'reset':
+					if (!QueryBuilder.instance.queryBuilder('validate')) {
+						break;
+					}
+					if (url.indexOf('&query=') !== -1) {
+						url = url.substring(0, url.indexOf('&query='));
+					}
+					self.location.href = url + '&query=' + JSON.stringify(QueryBuilder.instance.queryBuilder('getRules'), null, 2);
+					break;
             }
         });
     };
