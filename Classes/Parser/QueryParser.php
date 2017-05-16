@@ -58,7 +58,12 @@ class QueryParser
             }
         }
 
-        return ' ( ' . implode(' ' . $condition . ' ', $whereParts) . ' ) ';
+        if(empty($whereParts)) {
+            return null;
+        }
+        else {
+            return ' ( ' . implode(' ' . $condition . ' ', $whereParts) . ' ) ';
+        }
     }
 
     /**
