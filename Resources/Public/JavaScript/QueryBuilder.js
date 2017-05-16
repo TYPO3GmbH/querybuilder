@@ -72,7 +72,7 @@ define(['jquery', 'moment', 'twbs/bootstrap-datetimepicker', 'query-builder'], f
             var $buttonGroup = $queryBuilderContainer.find('.btn-group');
             for (var i=0; i<QueryBuilder.buttons.length; i++) {
                 var button = QueryBuilder.buttons[i];
-                var $button = $('<button type="button" class="btn btn-default" data-action="' + button.action + '" >' + button.title + '</button>');
+                var $button = $('<button type="button" class="btn btn-default" data-action="' + button.action + '">' + button.title + '</button>');
                 $button.appendTo($buttonGroup);
             }
         }
@@ -126,7 +126,7 @@ define(['jquery', 'moment', 'twbs/bootstrap-datetimepicker', 'query-builder'], f
 					if (url.indexOf('&query=') !== -1) {
 						url = url.substring(0, url.indexOf('&query='));
 					}
-					self.location.href = url + '&query=' + JSON.stringify(QueryBuilder.instance.queryBuilder('getRules'), null, 2);
+					self.location.href = url;
 					break;
             }
         });
