@@ -74,14 +74,16 @@ class QueryBuilder
                 break;
             case 'select':
             case 'input':
-                if (strpos($fieldConfig['config']['eval'], 'double2') !== false) {
-                    $type = 'double';
-                }
-                if (strpos($fieldConfig['config']['eval'], 'date') !== false) {
-                    $type = 'date';
-                }
-                if (strpos($fieldConfig['config']['eval'], 'datetime') !== false) {
-                    $type = 'datetime';
+                if (isset($fieldConfig['config']['eval'])) {
+                    if (strpos($fieldConfig['config']['eval'], 'double2') !== false) {
+                        $type = 'double';
+                    }
+                    if (strpos($fieldConfig['config']['eval'], 'date') !== false) {
+                        $type = 'date';
+                    }
+                    if (strpos($fieldConfig['config']['eval'], 'datetime') !== false) {
+                        $type = 'datetime';
+                    }
                 }
                 break;
         }
