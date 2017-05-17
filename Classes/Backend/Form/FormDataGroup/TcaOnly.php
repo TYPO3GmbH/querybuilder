@@ -1,5 +1,5 @@
 <?php
-
+declare(strict_types=1);
 namespace T3G\Querybuilder\Backend\Form\FormDataGroup;
 
 /*
@@ -35,7 +35,7 @@ class TcaOnly implements FormDataGroupInterface
      * @throws \InvalidArgumentException
      * @throws \UnexpectedValueException
      */
-    public function compile(array $result)
+    public function compile(array $result) : array
     {
         $dataProvider = $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['formDataGroup']['tcaOnly'];
         $orderingService = GeneralUtility::makeInstance(DependencyOrderingService::class);
