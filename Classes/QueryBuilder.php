@@ -6,7 +6,6 @@ use InvalidArgumentException;
 use stdClass;
 use T3G\Querybuilder\Backend\Form\FormDataGroup\TcaOnly;
 use TYPO3\CMS\Backend\Form\FormDataCompiler;
-use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use UnexpectedValueException;
 

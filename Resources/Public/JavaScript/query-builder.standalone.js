@@ -487,9 +487,6 @@ var Selectors = QueryBuilder.selectors = {
     delete_rule:          '[data-delete=rule]',
     add_group:            '[data-add=group]',
     delete_group:         '[data-delete=group]',
-
-	apply_button:		  '[data-action=apply]',
-	reset_button:		  '[data-action=reset]'
 };
 
 /**
@@ -858,11 +855,6 @@ QueryBuilder.prototype.bindEvents = function() {
     this.$el.on('click.queryBuilder', Selectors.add_rule, function() {
         var $group = $(this).closest(Selectors.group_container);
         self.addRule(Model($group));
-		// @TODO add button enabling
-		//var $buttons = find(Selectors.apply_button);
-		//$buttons.removeAttr('disabled');
-		//var $buttons = self.$el.find(Selectors.apply_button).prop('disabled', true);
-		//console.log($buttons);
     });
 
     // delete rule button
@@ -890,7 +882,6 @@ QueryBuilder.prototype.bindEvents = function() {
         'drop': function(e, node) {
             node.$el.remove();
             self.refreshGroupsConditions();
-            self.buttonEnabling(index);
         },
         'add': function(e, node, index) {
             if (index === 0) {
@@ -900,7 +891,6 @@ QueryBuilder.prototype.bindEvents = function() {
                 node.$el.insertAfter(node.parent.rules[index - 1].$el);
             }
             self.refreshGroupsConditions();
-            self.buttonEnabling(index);
         },
         'move': function(e, node, group, index) {
             node.$el.detach();
@@ -1082,25 +1072,6 @@ QueryBuilder.prototype.refreshGroupsConditions = function() {
             walk(group);
         }, this);
     }(this.model.root));
-};
-
-/**
- * Disable and enable buttons depending on based on number of rules.
- */
-QueryBuilder.prototype.buttonEnabling = function(index) {
-	//(function walk(group) {
-	//	if (!group.flags || (group.flags && !group.flags.condition_readonly)) {
-	//		group.$el.find('>' + Selectors.apply_button).prop('disabled', group.rules.length < 0)
-	//			.parent().toggleClass('disabled', group.rules.length <= 1);
-	//	}
-    //
-	//	group.each(function(rule) {}, function(group) {
-	//		walk(group);
-	//	}, this);
-	//}(this.model.root));
-	//var $count = self.find('.rule-container');
-	//console.log(index);
-	index == 0 ? console.log("funkt"): console.log("test");
 };
 
 /**

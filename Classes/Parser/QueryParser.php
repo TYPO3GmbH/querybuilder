@@ -59,7 +59,7 @@ class QueryParser
         }
 
         if(empty($whereParts)) {
-            return null;
+            return '';
         }
         else {
             return ' ( ' . implode(' ' . $condition . ' ', $whereParts) . ' ) ';
