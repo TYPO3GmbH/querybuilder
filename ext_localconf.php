@@ -173,11 +173,6 @@ $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['formDataGroup']['tcaOnly'] = a
             \TYPO3\CMS\Backend\Form\FormDataProvider\TcaInlineIsOnSymmetricSide::class,
         ),
     ),
-    \TYPO3\CMS\Backend\Form\FormDataProvider\EvaluateDisplayConditions::class => array(
-        'depends' => array(
-            \TYPO3\CMS\Backend\Form\FormDataProvider\TcaRecordTitle::class,
-        ),
-    ),
     \TYPO3\CMS\Backend\Form\FormDataProvider\DatabaseRecordOverrideValues::class => array(
         'depends' => array(
             \TYPO3\CMS\Backend\Form\FormDataProvider\DatabaseRowDefaultValues::class,
