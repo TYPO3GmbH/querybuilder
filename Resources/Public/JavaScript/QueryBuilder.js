@@ -130,6 +130,17 @@ define(['jquery', 'moment', 'twbs/bootstrap-datetimepicker', 'query-builder'], f
 					break;
             }
         });
+		$builderElement.on('keyup', '.rule-value-container input, .rule-operator-container select', function(e) {
+			if (e.which === 13) {
+				var url = self.location.href;
+				if (QueryBuilder.instance.queryBuilder('validate')) {
+					if (url.indexOf('&query=') !== -1) {
+						url = url.substring(0, url.indexOf('&query='));
+					}
+					self.location.href = url + '&query=' + JSON.stringify(QueryBuilder.instance.queryBuilder('getRules'), null, 2);
+				}
+			}
+		});
     };
 
     return QueryBuilder;

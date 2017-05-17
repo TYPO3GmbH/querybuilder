@@ -44,7 +44,7 @@ class QueryParser
      *
      * @return string
      */
-    public function parse($queryObject, $table)
+    public function parse($queryObject, $table) : string
     {
         $condition = $queryObject->condition === self::CONDITION_AND ? self::CONDITION_AND : self::CONDITION_OR;
         $whereParts = [];
