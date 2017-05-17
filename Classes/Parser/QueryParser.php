@@ -92,30 +92,6 @@ class QueryParser
                                 $value
                         );
                 break;
-            case self::OPERATOR_IN:
-                $values = GeneralUtility::trimExplode(',', $rule->value);
-                $escapedValues = [];
-                foreach ($values as $value) {
-                    // todo delete/change
-                    $escapedValues[] = $value;
-                }
-                $where = $queryBuilder->expr()->in(
-                        $field,
-                        implode(', ', $escapedValues)
-                );
-                break;
-            case self::OPERATOR_NOT_IN:
-                $values = GeneralUtility::trimExplode(',', $rule->value);
-                $escapedValues = [];
-                foreach ($values as $value) {
-                    // todo delete/change
-                    $escapedValues[] = $value;
-                }
-                $where = $queryBuilder->expr()->notIn(
-                        $field,
-                        implode(',', $escapedValues)
-                );
-                break;
             case self::OPERATOR_BEGINS_WITH:
                 $where = $queryBuilder->expr()->like(
                         $field,
