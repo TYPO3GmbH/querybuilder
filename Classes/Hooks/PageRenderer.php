@@ -23,7 +23,7 @@ class PageRenderer
     public function renderPreProcess(array $params)
     {
         $table = GeneralUtility::_GP('table');
-        if ($table != false && GeneralUtility::_GP('M') === 'web_list') {
+        if (!empty($table) && GeneralUtility::_GP('M') === 'web_list') {
             $pageRenderer = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Page\PageRenderer::class);
 
             $pageRenderer->addCssFile(
