@@ -58,7 +58,20 @@ class QueryParser
             }
         }
 
-        return empty($whereParts) ? '' : ' ( ' . implode(' ' . $condition . ' ', $whereParts) . ' ) ';
+//        var_dump($GLOBALS['BE_USER']->user['uid']);die();
+        $completedAddition = empty($whereParts) ? '' : ' ( ' . implode(' ' . $condition . ' ', $whereParts) . ' ) ';
+//        $fields = [
+//            'where_parts' => $completedAddition,
+//            'user' => $GLOBALS['BE_USER']->user['uid'],
+//            'affected_table' => $table
+//        ];
+//        if (!empty($completedAddition)) {
+//            $safeQuery = GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionForTable('sys_querybuilder');
+//            $safeQuery->insert('sys_querybuilder', $fields);
+//            return $completedAddition;
+//        }
+//        return '';
+        return $completedAddition;
     }
 
     /**
