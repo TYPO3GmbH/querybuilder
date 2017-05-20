@@ -15,7 +15,7 @@
  * Module: TYPO3/CMS/Querybuilder/QueryBuilder
  * Javascript functions regarding the permissions module
  */
-define(['jquery', 'moment', 'twbs/bootstrap-datetimepicker', 'query-builder'], function($, moment) {
+define(['jquery', 'moment','TYPO3/CMS/Backend/Storage', 'twbs/bootstrap-datetimepicker', 'query-builder'], function($, moment, Storage) {
     'use strict';
 
     /**
@@ -56,6 +56,10 @@ define(['jquery', 'moment', 'twbs/bootstrap-datetimepicker', 'query-builder'], f
 			{
 				title: 'Reset',
 				action: 'reset'
+			},
+			{
+				title: 'Safe query',
+				action: 'safe'
 			}
         ]
     };
@@ -76,7 +80,7 @@ define(['jquery', 'moment', 'twbs/bootstrap-datetimepicker', 'query-builder'], f
                 $button.appendTo($buttonGroup);
             }
         }
-		QueryBuilder.initialzeEvents();
+		QueryBuilder.initializeEvents();
         QueryBuilder.instance = $queryBuilderContainer.find(QueryBuilder.selectorBuilder).queryBuilder({
             allow_empty: true,
             icons: {
@@ -90,12 +94,13 @@ define(['jquery', 'moment', 'twbs/bootstrap-datetimepicker', 'query-builder'], f
             filters: filter.length ? filter : QueryBuilder.filters,
             rules: rules || QueryBuilder.basicRules
         });
-    };
+		//QueryBuilder.getStoredQuery();
+	};
 
     /**
      *
      */
-    QueryBuilder.initialzeEvents = function() {
+    QueryBuilder.initializeEvents = function() {
         var $builderElement = $(QueryBuilder.selectorBuilder);
         $builderElement.on('afterCreateRuleInput.queryBuilder', function(e, rule) {
             if (rule.filter.plugin === 'datetimepicker') {
@@ -117,6 +122,12 @@ define(['jquery', 'moment', 'twbs/bootstrap-datetimepicker', 'query-builder'], f
                     if (url.indexOf('&query=') !== -1) {
                         url = url.substring(0, url.indexOf('&query='));
                     }
+					var storage = Storage.Client;
+					var table = 'tt_content';
+					var configuration = url + '&query=' + JSON.stringify(QueryBuilder.instance.queryBuilder('getRules'), null, 2);
+					//storage.set('var1', $var1);
+					storage.set('extkey-query-' + table, configuration);
+
                     self.location.href = url + '&query=' + JSON.stringify(QueryBuilder.instance.queryBuilder('getRules'), null, 2);
                     break;
 				case 'reset':
@@ -126,6 +137,17 @@ define(['jquery', 'moment', 'twbs/bootstrap-datetimepicker', 'query-builder'], f
 					if (url.indexOf('&query=') !== -1) {
 						url = url.substring(0, url.indexOf('&query='));
 					}
+					self.location.href = url;
+					break;
+				case 'safe':
+					if (!QueryBuilder.instance.queryBuilder('validate')) {
+						break;
+					}
+					if (url.indexOf('&query=') !== -1) {
+						url = url.substring(0, url.indexOf('&query='));
+					}
+					//$.getJSON(TYPO3.settings.ajaxUrls['querybuilder_safe_query']);
+					return $.ajax({url: TYPO3.settings.ajaxUrls['querybuilder_safe_query']});
 					self.location.href = url;
 					break;
             }
@@ -142,6 +164,13 @@ define(['jquery', 'moment', 'twbs/bootstrap-datetimepicker', 'query-builder'], f
 			}
 		});
     };
+
+	QueryBuilder.getStoredQuery = function(Storage) {
+		var storage = Storage.Client;
+		var table = 'tt_content';
+		//var configuration = '&query=' + JSON.stringify(QueryBuilder.instance.queryBuilder('getRules'), null, 2);
+		storage.get('extkey-query-' + table, configuration);
+	};
 
     return QueryBuilder;
 });
