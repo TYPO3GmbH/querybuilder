@@ -147,7 +147,7 @@ define(['jquery', 'moment','TYPO3/CMS/Backend/Storage', 'twbs/bootstrap-datetime
 						url = url.substring(0, url.indexOf('&query='));
 					}
 					//$.getJSON(TYPO3.settings.ajaxUrls['querybuilder_safe_query']);
-					return $.ajax({url: TYPO3.settings.ajaxUrls['querybuilder_safe_query']});
+					$.ajax({url: TYPO3.settings.ajaxUrls['querybuilder_safe_query']});
 					self.location.href = url;
 					break;
             }
