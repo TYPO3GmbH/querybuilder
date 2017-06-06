@@ -10,9 +10,9 @@ use T3G\Querybuilder\Controller;
  */
 return [
 
-    // Safe query
-    'querybuilder_safe_query' => [
-        'path' => '/querybuilder/query/safe',
-        'target' => Controller\QuerybuilderController::class . '::ajaxSafeQuery'
+    // Save query
+    'querybuilder_save_query' => [
+        'path' => '/querybuilder/query/save',
+        'target' => Controller\QuerybuilderController::class . '::ajaxSaveQuery'
     ],
 ];

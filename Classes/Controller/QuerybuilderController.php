@@ -20,30 +20,39 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+
 /**
  * Main script class for saving query
  */
 class QuerybuilderController
 {
 
-    public function ajaxSafeQuery()
+    /**
+     * @param $table
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
+     *
+     * @return string
+     */
+    public function ajaxSaveQuery(ServerRequestInterface $request, ResponseInterface $response)
     {
-        die('here I am');
 
-//        var_dump($GLOBALS['BE_USER']->user['uid']);die();
+//        var_dump(get_defined_vars());die();
+
+        $requestParams = $request->getQueryParams();
 //        $completedAddition = empty($whereParts) ? '' : ' ( ' . implode(' ' . $condition . ' ', $whereParts) . ' ) ';
-//        $fields = [
-//            'where_parts' => $completedAddition,
-//            'user' => $GLOBALS['BE_USER']->user['uid'],
-//            'affected_table' => $table
-//        ];
+        $fields = [
+            'where_parts' => $requestParams['query'],
+            'user' => $GLOBALS['BE_USER']->user['uid'],
+            'affected_table' => $requestParams['table'],
+//            'queryname' => $requestParams['queryname']
+        ];
 //        if (!empty($completedAddition)) {
-//            $safeQuery = GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionForTable('sys_querybuilder');
-//            $safeQuery->insert('sys_querybuilder', $fields);
-//            return $completedAddition;
+            $saveQuery = GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionForTable('sys_querybuilder');
+            $saveQuery->insert('sys_querybuilder', $fields);
 //        }
-//        return '';
-//        return $completedAddition;
     }
 }
 

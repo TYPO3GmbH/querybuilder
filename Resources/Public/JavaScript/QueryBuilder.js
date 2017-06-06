@@ -15,7 +15,7 @@
  * Module: TYPO3/CMS/Querybuilder/QueryBuilder
  * Javascript functions regarding the permissions module
  */
-define(['jquery', 'moment','TYPO3/CMS/Backend/Storage', 'twbs/bootstrap-datetimepicker', 'query-builder'], function($, moment, Storage) {
+define(['jquery', 'moment','TYPO3/CMS/Backend/Severity','TYPO3/CMS/Backend/Storage','TYPO3/CMS/Backend/Modal','twbs/bootstrap-datetimepicker','query-builder'], function($, moment, Severity, Storage, Modal) {
     'use strict';
 
     /**
@@ -59,8 +59,8 @@ define(['jquery', 'moment','TYPO3/CMS/Backend/Storage', 'twbs/bootstrap-datetime
 				action: 'reset'
 			},
 			{
-				title: 'Safe query',
-				action: 'safe'
+				title: 'Save query',
+				action: 'save'
 			}
         ]
     };
@@ -133,8 +133,7 @@ define(['jquery', 'moment','TYPO3/CMS/Backend/Storage', 'twbs/bootstrap-datetime
                     }
 					var storage = Storage.Client;
 					var configuration = JSON.stringify(QueryBuilder.instance.queryBuilder('getRules'), null, 2);
-					console.log(QueryBuilder.table);
-					storage.set('extkey-query-' + QueryBuilder.table, configuration);
+					//storage.set('extkey-query-' + QueryBuilder.table, configuration);
                     self.location.href = url + '&query=' + configuration;
                     break;
 				case 'reset':
@@ -146,16 +145,47 @@ define(['jquery', 'moment','TYPO3/CMS/Backend/Storage', 'twbs/bootstrap-datetime
 					}
 					self.location.href = url;
 					break;
-				case 'safe':
-					if (!QueryBuilder.instance.queryBuilder('validate')) {
-						break;
-					}
-					if (url.indexOf('&query=') !== -1) {
-						url = url.substring(0, url.indexOf('&query='));
-					}
-					$.ajax({
-						url: TYPO3.settings.ajaxUrls['querybuilder_safe_query']
-					});
+				case 'save':
+					var $list = $('<dl></dl>');
+					$list.append(
+						$('<dt />').text("Save your Query"),
+						$('<dd />').append(
+							$('<label />', {for:'queryname'}).text('Name: '),
+							$('<input />', {name:'queryname'})
+						)
+					);
+					Modal.show(
+						"test",
+						$list,
+						Severity.info,
+						[{
+							text: 'Cancel',
+							active: true,
+							btnClass: 'btn-default',
+							name: 'ok',
+							trigger: function() {
+								Modal.currentModal.trigger('modal-dismiss');
+							}
+						},
+						{
+							text: 'Save',
+							active: true,
+							btnClass: 'btn-info',
+							name: 'ok',
+							trigger: function() {
+								$.ajax({
+									url: TYPO3.settings.ajaxUrls['querybuilder_save_query'],
+									cache: false,
+									data: {
+										table: QueryBuilder.table,
+										query: JSON.stringify(QueryBuilder.instance.queryBuilder('getRules'), null, 2)
+										//queryname: $('input[name=queryname]').data('value')
+									}
+								});
+							}
+						}],
+						['modal-inner-scroll']
+					);
 					break;
             }
         });

@@ -33,6 +33,16 @@ return [
                 'eval' => ''
             ]
         ],
+        'queryname' => [
+            'exclude' => true,
+            'label' => 'queryname',
+            'config' => [
+                'type' => 'input',
+                'size' => 50,
+                'max' => 50,
+                'eval' => ''
+            ]
+        ],
         'user' => [
             'exclude' => true,
             'label' => 'userid',
