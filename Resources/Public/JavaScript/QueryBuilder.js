@@ -94,7 +94,15 @@ define(['jquery', 'moment','TYPO3/CMS/Backend/Storage', 'twbs/bootstrap-datetime
             filters: filter.length ? filter : QueryBuilder.filters,
             rules: rules || QueryBuilder.basicRules
         });
-		//QueryBuilder.getStoredQuery();
+		var lastQuery = QueryBuilder.getStoredQuery();
+		if (lastQuery !== null) {
+			try {
+				lastQuery = JSON.parse(lastQuery);
+				QueryBuilder.instance.queryBuilder('setRules', lastQuery);
+ 			} catch (e) {
+				console.log(e);
+			}
+		}
 	};
 
     /**
@@ -124,11 +132,9 @@ define(['jquery', 'moment','TYPO3/CMS/Backend/Storage', 'twbs/bootstrap-datetime
                     }
 					var storage = Storage.Client;
 					var table = 'tt_content';
-					var configuration = url + '&query=' + JSON.stringify(QueryBuilder.instance.queryBuilder('getRules'), null, 2);
-					//storage.set('var1', $var1);
+					var configuration = JSON.stringify(QueryBuilder.instance.queryBuilder('getRules'), null, 2);
 					storage.set('extkey-query-' + table, configuration);
-
-                    self.location.href = url + '&query=' + JSON.stringify(QueryBuilder.instance.queryBuilder('getRules'), null, 2);
+                    self.location.href = url + '&query=' + configuration;
                     break;
 				case 'reset':
 					if (!QueryBuilder.instance.queryBuilder('validate')) {
@@ -165,11 +171,11 @@ define(['jquery', 'moment','TYPO3/CMS/Backend/Storage', 'twbs/bootstrap-datetime
 		});
     };
 
-	QueryBuilder.getStoredQuery = function(Storage) {
+	QueryBuilder.getStoredQuery = function() {
 		var storage = Storage.Client;
 		var table = 'tt_content';
-		//var configuration = '&query=' + JSON.stringify(QueryBuilder.instance.queryBuilder('getRules'), null, 2);
-		storage.get('extkey-query-' + table, configuration);
+		var configuration = storage.get('extkey-query-' + table, configuration);
+		return configuration;
 	};
 
     return QueryBuilder;
