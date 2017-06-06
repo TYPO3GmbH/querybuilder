@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-namespace TYPO3\CMS\Querybuilder\Controller;
+namespace T3G\Querybuilder\Controller;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -28,8 +28,7 @@ class QuerybuilderController
 
     public function ajaxSafeQuery()
     {
-
-        die();
+        die('here I am');
 
 //        var_dump($GLOBALS['BE_USER']->user['uid']);die();
 //        $completedAddition = empty($whereParts) ? '' : ' ( ' . implode(' ' . $condition . ' ', $whereParts) . ' ) ';

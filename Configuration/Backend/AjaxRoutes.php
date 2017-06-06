@@ -1,5 +1,5 @@
 <?php
-use TYPO3\CMS\Querybuilder\Controller;
+use T3G\Querybuilder\Controller;
 
 /**
  * Definitions for routes provided by EXT:querybuilder
