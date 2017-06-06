@@ -28,7 +28,8 @@ define(['jquery', 'moment','TYPO3/CMS/Backend/Storage', 'twbs/bootstrap-datetime
         selectorBuilderContainer: '.t3js-querybuilder',
         selectorBuilder: '.t3js-querybuilder-builder',
         template: '<div class="t3js-querybuilder"><div class="t3js-querybuilder-builder"></div><div class="btn-group"></div></div>',
-        instance: null,
+        table: $('table[data-table]').data('table'),
+		instance: null,
         plugins: {
             'bt-tooltip-errors': { delay: 100 },
             //'sortable': { icon: 'fa fa-sort' },
@@ -131,9 +132,9 @@ define(['jquery', 'moment','TYPO3/CMS/Backend/Storage', 'twbs/bootstrap-datetime
                         url = url.substring(0, url.indexOf('&query='));
                     }
 					var storage = Storage.Client;
-					var table = 'tt_content';
 					var configuration = JSON.stringify(QueryBuilder.instance.queryBuilder('getRules'), null, 2);
-					storage.set('extkey-query-' + table, configuration);
+					console.log(QueryBuilder.table);
+					storage.set('extkey-query-' + QueryBuilder.table, configuration);
                     self.location.href = url + '&query=' + configuration;
                     break;
 				case 'reset':
@@ -172,10 +173,7 @@ define(['jquery', 'moment','TYPO3/CMS/Backend/Storage', 'twbs/bootstrap-datetime
     };
 
 	QueryBuilder.getStoredQuery = function() {
-		var storage = Storage.Client;
-		var table = 'tt_content';
-		var configuration = storage.get('extkey-query-' + table, configuration);
-		return configuration;
+		return Storage.Client.get('extkey-query-' + QueryBuilder.table);
 	};
 
     return QueryBuilder;
