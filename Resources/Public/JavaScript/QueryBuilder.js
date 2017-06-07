@@ -27,7 +27,7 @@ define(['jquery', 'moment', 'TYPO3/CMS/Backend/Severity', 'TYPO3/CMS/Backend/Sto
 		selectorBuilderPosition: '.t3js-module-body h1',
 		selectorBuilderContainer: '.t3js-querybuilder',
 		selectorBuilder: '.t3js-querybuilder-builder',
-		template: '<div class="t3js-querybuilder"><div class="t3js-querybuilder-builder"></div><div class="btn-group"></div><div class="t3js-querybuilder-queries"><select name="recent-queries" id="t3js-querybuilder-recent-queries"><option class="first-opt" value="-1">No query chosen</option></select></div></div>',
+		template: '<div class="t3js-querybuilder"><div class="t3js-querybuilder-builder"></div><div class="btn-group"></div><div class="t3js-querybuilder-queries"><select name="recent-queries" class="form-control" id="t3js-querybuilder-recent-queries"><option class="first-opt" value="-1">No query chosen</option></select></div></div>',
 		table: $('table[data-table]').data('table'),
 		instance: null,
 		plugins: {
@@ -82,6 +82,10 @@ define(['jquery', 'moment', 'TYPO3/CMS/Backend/Severity', 'TYPO3/CMS/Backend/Sto
 				$button.appendTo($buttonGroup);
 			}
 		}
+		var $queryContainer = $queryBuilderContainer.find('.t3js-querybuilder-queries');
+		var $queryHeader = $('<h3> Saved queries</h3>');
+		$queryHeader.prependTo($queryContainer);
+
 		var $queryGroup = $queryBuilderContainer.find('.first-opt');
 		for (var j = 0; j < 3; j++) {
 			//var query = QueryBuilder.buttons[i];
