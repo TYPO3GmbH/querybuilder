@@ -131,7 +131,6 @@ define(['jquery', 'moment','TYPO3/CMS/Backend/Severity','TYPO3/CMS/Backend/Stora
                     if (url.indexOf('&query=') !== -1) {
                         url = url.substring(0, url.indexOf('&query='));
                     }
-					var storage = Storage.Client;
 					var configuration = JSON.stringify(QueryBuilder.instance.queryBuilder('getRules'), null, 2);
 					//storage.set('extkey-query-' + QueryBuilder.table, configuration);
                     self.location.href = url + '&query=' + configuration;
@@ -143,6 +142,7 @@ define(['jquery', 'moment','TYPO3/CMS/Backend/Severity','TYPO3/CMS/Backend/Stora
 					if (url.indexOf('&query=') !== -1) {
 						url = url.substring(0, url.indexOf('&query='));
 					}
+					Storage.Client.set('extkey-query-' + QueryBuilder.table, null);
 					self.location.href = url;
 					break;
 				case 'save':
