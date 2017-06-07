@@ -52,5 +52,37 @@ class QuerybuilderController
         $response->getBody()->write('{"status": "ok"}');
         return $response;
     }
+
+    /**
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
+     *
+     * @return ResponseInterface
+     * @throws \InvalidArgumentException
+     */
+    public function ajaxGetRecentQueries(ServerRequestInterface $request, ResponseInterface $response) : ResponseInterface
+    {
+        $requestParams = $request->getQueryParams();
+        $data = [
+            // 'pid' => ??
+            'where_parts' => $requestParams['query'],
+            'user' => (int)$GLOBALS['BE_USER']->user['uid'],
+            'affected_table' => $requestParams['table'],
+            'queryname' => $requestParams['queryName']
+        ];
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('sys_querybuilder');
+        $queryBuilder
+            ->select('queryname')
+            ->where(
+                $queryBuilder->expr()->andX(
+                    $queryBuilder->expr()->eq('queryname', $requestParams['queryName']),
+                    $queryBuilder->expr()->eq('affected_table', $requestParams['table'])
+            ))
+            ->setMaxResults(5);
+//            ->execute();
+
+//        $response->getBody()->write('{"status": "ok"}');
+//        return $response;
+    }
 }
 

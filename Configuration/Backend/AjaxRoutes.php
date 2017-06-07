@@ -15,4 +15,9 @@ return [
         'path' => '/querybuilder/query/save',
         'target' => Controller\QuerybuilderController::class . '::ajaxSaveQuery'
     ],
+    // Get recent queries
+    'querybuilder_get_recent_queries' => [
+        'path' => '/querybuilder/query/get',
+        'target' => Controller\QuerybuilderController::class . '::ajaxGetRecentQueries'
+    ],
 ];
