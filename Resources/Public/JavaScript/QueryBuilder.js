@@ -129,7 +129,7 @@ define(['jquery', 'moment', 'TYPO3/CMS/Backend/Severity', 'TYPO3/CMS/Backend/Sto
 				case 'apply':
 					var configuration = JSON.stringify(QueryBuilder.instance.queryBuilder('getRules'), null, 2);
 					QueryBuilder.setStoredQuery(configuration);
-					QueryBuilder.applyFilter();
+					QueryBuilder.applyFilter(configuration);
 					break;
 				case 'reset':
 					if (!QueryBuilder.instance.queryBuilder('validate')) {
@@ -150,7 +150,7 @@ define(['jquery', 'moment', 'TYPO3/CMS/Backend/Severity', 'TYPO3/CMS/Backend/Sto
 			if (e.which === 13) {
 				var configuration = JSON.stringify(QueryBuilder.instance.queryBuilder('getRules'), null, 2);
 				QueryBuilder.setStoredQuery(configuration);
-				QueryBuilder.applyFilter();
+				QueryBuilder.applyFilter(configuration);
 			}
 		});
 	};
@@ -174,7 +174,7 @@ define(['jquery', 'moment', 'TYPO3/CMS/Backend/Severity', 'TYPO3/CMS/Backend/Sto
 		);
 		var queryBuilderAjaxUrl = TYPO3.settings.ajaxUrls.querybuilder_save_query;
 		Modal.show(
-			"test",
+			"Querybuilder - Save query",
 			$list,
 			Severity.info,
 			[{
@@ -186,38 +186,38 @@ define(['jquery', 'moment', 'TYPO3/CMS/Backend/Severity', 'TYPO3/CMS/Backend/Sto
 					Modal.currentModal.trigger('modal-dismiss');
 				}
 			},
-				{
-					text: 'Save',
-					active: true,
-					btnClass: 'btn-info',
-					name: 'ok',
-					trigger: function () {
-						$.ajax({
-							url: queryBuilderAjaxUrl,
-							cache: false,
-							data: {
-								table: QueryBuilder.table,
-								query: JSON.stringify(QueryBuilder.instance.queryBuilder('getRules'), null, 2),
-								queryName: $('input[name=queryname]', Modal.currentModal).val(),
-								override: $('input[name=override]', Modal.currentModal).is(':checked')
-							},
-							success: function(data) {
-								if (data.status === 'ok') {
-									Modal.currentModal.trigger('modal-dismiss');
-									Notification.success('Query saved', 'Your query was saved');
-								} else {
-									Modal.currentModal.trigger('modal-dismiss');
-									Notification.error('Query not saved', 'Sorry, your query can\'t be saved');
-								}
+			{
+				text: 'Save',
+				active: true,
+				btnClass: 'btn-info',
+				name: 'ok',
+				trigger: function () {
+					$.ajax({
+						url: queryBuilderAjaxUrl,
+						cache: false,
+						data: {
+							table: QueryBuilder.table,
+							query: JSON.stringify(QueryBuilder.instance.queryBuilder('getRules'), null, 2),
+							queryName: $('input[name=queryname]', Modal.currentModal).val(),
+							override: $('input[name=override]', Modal.currentModal).is(':checked')
+						},
+						success: function(data) {
+							if (data.status === 'ok') {
+								Modal.currentModal.trigger('modal-dismiss');
+								Notification.success('Query saved', 'Your query was saved');
+							} else {
+								Modal.currentModal.trigger('modal-dismiss');
+								Notification.error('Query not saved', 'Sorry, your query can\'t be saved');
 							}
-						});
-					}
-				}],
+						}
+					});
+				}
+			}],
 			['modal-inner-scroll']
 		);
 	};
 
-	QueryBuilder.applyFilter = function() {
+	QueryBuilder.applyFilter = function(configuration) {
 		if (!QueryBuilder.instance.queryBuilder('validate')) {
 			return;
 		}
@@ -225,7 +225,6 @@ define(['jquery', 'moment', 'TYPO3/CMS/Backend/Severity', 'TYPO3/CMS/Backend/Sto
 		if (url.indexOf('&query=') !== -1) {
 			url = url.substring(0, url.indexOf('&query='));
 		}
-		var configuration = JSON.stringify(QueryBuilder.instance.queryBuilder('getRules'), null, 2);
 		self.location.href = url + '&query=' + configuration;
 	};
 
