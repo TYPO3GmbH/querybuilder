@@ -151,7 +151,15 @@ define(['jquery', 'moment','TYPO3/CMS/Backend/Severity','TYPO3/CMS/Backend/Stora
 						$('<dt />').text("Save your Query"),
 						$('<dd />').append(
 							$('<label />', {for:'queryname'}).text('Name: '),
-							$('<input />', {name:'queryname'})
+							$('<input />', {name:'queryname', class: 'form-control'})
+						),
+						$('<dd />').append(
+							$('<div />', {class: 'checkbox'}).append(
+								$('<label />').append(
+									$('<input />', {name:'override', type: 'checkbox'}),
+									$('<span />').text('Override saved query?')
+								)
+							)
 						)
 					);
 					Modal.show(
