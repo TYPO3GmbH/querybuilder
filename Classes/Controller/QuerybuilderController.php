@@ -15,11 +15,8 @@ namespace T3G\Querybuilder\Controller;
  * The TYPO3 project - inspiring people to share!
  */
 
-use stdClass;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
-use TYPO3\CMS\Backend\Utility\BackendUtility;
-
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -30,29 +27,30 @@ class QuerybuilderController
 {
 
     /**
-     * @param $table
      * @param ServerRequestInterface $request
      * @param ResponseInterface $response
      *
-     * @return string
+     * @return ResponseInterface
+     * @throws \InvalidArgumentException
      */
-    public function ajaxSaveQuery(ServerRequestInterface $request, ResponseInterface $response)
+    public function ajaxSaveQuery(ServerRequestInterface $request, ResponseInterface $response) : ResponseInterface
     {
-
-//        var_dump(get_defined_vars());die();
-
         $requestParams = $request->getQueryParams();
-//        $completedAddition = empty($whereParts) ? '' : ' ( ' . implode(' ' . $condition . ' ', $whereParts) . ' ) ';
-        $fields = [
+        $data = [
+            // 'pid' => ??
             'where_parts' => $requestParams['query'],
-            'user' => $GLOBALS['BE_USER']->user['uid'],
+            'user' => (int)$GLOBALS['BE_USER']->user['uid'],
             'affected_table' => $requestParams['table'],
-//            'queryname' => $requestParams['queryname']
+            'queryname' => $requestParams['queryName']
         ];
-//        if (!empty($completedAddition)) {
-            $saveQuery = GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionForTable('sys_querybuilder');
-            $saveQuery->insert('sys_querybuilder', $fields);
-//        }
+        GeneralUtility::makeInstance(ConnectionPool::class)
+            ->getQueryBuilderForTable('sys_querybuilder')
+            ->insert('sys_querybuilder')
+            ->values($data)
+            ->execute();
+
+        $response->getBody()->write('{"status": "ok"}');
+        return $response;
     }
 }
 

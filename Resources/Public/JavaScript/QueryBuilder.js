@@ -15,7 +15,7 @@
  * Module: TYPO3/CMS/Querybuilder/QueryBuilder
  * Javascript functions regarding the permissions module
  */
-define(['jquery', 'moment', 'TYPO3/CMS/Backend/Severity', 'TYPO3/CMS/Backend/Storage', 'TYPO3/CMS/Backend/Modal', 'twbs/bootstrap-datetimepicker', 'query-builder'], function ($, moment, Severity, Storage, Modal) {
+define(['jquery', 'moment', 'TYPO3/CMS/Backend/Severity', 'TYPO3/CMS/Backend/Storage', 'TYPO3/CMS/Backend/Modal', 'TYPO3/CMS/Backend/Notification', 'twbs/bootstrap-datetimepicker', 'query-builder'], function ($, moment, Severity, Storage, Modal, Notification) {
 	'use strict';
 
 	/**
@@ -142,54 +142,7 @@ define(['jquery', 'moment', 'TYPO3/CMS/Backend/Severity', 'TYPO3/CMS/Backend/Sto
 					self.location.href = url;
 					break;
 				case 'save':
-					var $list = $('<dl></dl>');
-					$list.append(
-						$('<dt />').text("Save your Query"),
-						$('<dd />').append(
-							$('<label />', {for: 'queryname'}).text('Name: '),
-							$('<input />', {name: 'queryname', class: 'form-control'})
-						),
-						$('<dd />').append(
-							$('<div />', {class: 'checkbox'}).append(
-								$('<label />').append(
-									$('<input />', {name: 'override', type: 'checkbox'}),
-									$('<span />').text('Override saved query?')
-								)
-							)
-						)
-					);
-					Modal.show(
-						"test",
-						$list,
-						Severity.info,
-						[{
-							text: 'Cancel',
-							active: true,
-							btnClass: 'btn-default',
-							name: 'ok',
-							trigger: function () {
-								Modal.currentModal.trigger('modal-dismiss');
-							}
-						},
-							{
-								text: 'Save',
-								active: true,
-								btnClass: 'btn-info',
-								name: 'ok',
-								trigger: function () {
-									$.ajax({
-										url: TYPO3.settings.ajaxUrls['querybuilder_save_query'],
-										cache: false,
-										data: {
-											table: QueryBuilder.table,
-											query: JSON.stringify(QueryBuilder.instance.queryBuilder('getRules'), null, 2)
-											//queryname: $('input[name=queryname]').data('value')
-										}
-									});
-								}
-							}],
-						['modal-inner-scroll']
-					);
+					QueryBuilder.showSaveModal();
 					break;
 			}
 		});
@@ -204,6 +157,68 @@ define(['jquery', 'moment', 'TYPO3/CMS/Backend/Severity', 'TYPO3/CMS/Backend/Sto
 				}
 			}
 		});
+	};
+
+	QueryBuilder.showSaveModal = function() {
+		var $list = $('<dl></dl>');
+		$list.append(
+			$('<dt />').text("Save your Query"),
+			$('<dd />').append(
+				$('<label />', {for: 'queryname'}).text('Name: '),
+				$('<input />', {name: 'queryname', class: 'form-control'})
+			),
+			$('<dd />').append(
+				$('<div />', {class: 'checkbox'}).append(
+					$('<label />').append(
+						$('<input />', {name: 'override', type: 'checkbox', value: 1}),
+						$('<span />').text('Override saved query?')
+					)
+				)
+			)
+		);
+		var queryBuilderAjaxUrl = TYPO3.settings.ajaxUrls.querybuilder_save_query;
+		Modal.show(
+			"test",
+			$list,
+			Severity.info,
+			[{
+				text: 'Cancel',
+				active: true,
+				btnClass: 'btn-default',
+				name: 'ok',
+				trigger: function () {
+					Modal.currentModal.trigger('modal-dismiss');
+				}
+			},
+				{
+					text: 'Save',
+					active: true,
+					btnClass: 'btn-info',
+					name: 'ok',
+					trigger: function () {
+						$.ajax({
+							url: queryBuilderAjaxUrl,
+							cache: false,
+							data: {
+								table: QueryBuilder.table,
+								query: JSON.stringify(QueryBuilder.instance.queryBuilder('getRules'), null, 2),
+								queryName: $('input[name=queryname]', Modal.currentModal).val(),
+								override: $('input[name=override]', Modal.currentModal).is(':checked')
+							},
+							success: function(data) {
+								if (data.status === 'ok') {
+									Modal.currentModal.trigger('modal-dismiss');
+									Notification.success('Query saved', 'Your query was saved');
+								} else {
+									Modal.currentModal.trigger('modal-dismiss');
+									Notification.error('Query not saved', 'Sorry, your query can\'t be saved');
+								}
+							}
+						});
+					}
+				}],
+			['modal-inner-scroll']
+		);
 	};
 
 	QueryBuilder.applyFilter = function() {
