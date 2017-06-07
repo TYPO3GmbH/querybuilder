@@ -89,6 +89,7 @@ define(['jquery', 'moment', 'TYPO3/CMS/Backend/Severity', 'TYPO3/CMS/Backend/Sto
 		$queryHeader.prependTo($queryContainer);
 		var $queryGroup = $queryBuilderContainer.find('.first-opt');
 		QueryBuilder.initializeRecentQueries($queryGroup);
+		QueryBuilder.initializeEvents();
 		QueryBuilder.instance = $queryBuilderContainer.find(QueryBuilder.selectorBuilder).queryBuilder({
 			allow_empty: true,
 			icons: {
