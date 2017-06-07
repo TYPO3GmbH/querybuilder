@@ -63,19 +63,18 @@ class QuerybuilderController
     public function ajaxGetRecentQueries(ServerRequestInterface $request, ResponseInterface $response) : ResponseInterface
     {
         $requestParams = $request->getQueryParams();
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('sys_querybuilder');
-        $queryBuilder
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
+            ->getQueryBuilderForTable('sys_querybuilder');
+        $results = $queryBuilder
             ->select('uid','queryname')
+            ->from('sys_querybuilder')
             ->where(
-                $queryBuilder->expr()->andX(
-                    $queryBuilder->expr()->eq('hidden', 0),
-                    $queryBuilder->expr()->eq('affected_table', $requestParams['table'])
-            ))
-            ->setMaxResults(5);
-//            ->execute();
-
-//        $response->getBody()->write('{"queries": "ok"}');
-//        return $response;
+                $queryBuilder->expr()->eq('affected_table', $queryBuilder->createNamedParameter($requestParams['table']))
+            )
+            ->execute()
+            ->fetchAll();
+        $response->getBody()->write(json_encode($results));
+        return $response;
     }
 }
 

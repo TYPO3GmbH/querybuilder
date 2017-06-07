@@ -88,12 +88,7 @@ define(['jquery', 'moment', 'TYPO3/CMS/Backend/Severity', 'TYPO3/CMS/Backend/Sto
 		var $queryHeader = $('<h3> Saved queries</h3>');
 		$queryHeader.prependTo($queryContainer);
 		var $queryGroup = $queryBuilderContainer.find('.first-opt');
-		QueryBuilder.initializeRecentQueries();
-		for (var j = 0; j < 3; j++) {
-			//var query = QueryBuilder.buttons[i];
-			var $query = $('<option value="' + j + '"> test </option>');
-			$query.insertAfter($queryGroup);
-		}
+		QueryBuilder.initializeRecentQueries($queryGroup);
 		QueryBuilder.instance = $queryBuilderContainer.find(QueryBuilder.selectorBuilder).queryBuilder({
 			allow_empty: true,
 			icons: {
@@ -166,22 +161,19 @@ define(['jquery', 'moment', 'TYPO3/CMS/Backend/Severity', 'TYPO3/CMS/Backend/Sto
 		});
 	};
 
-	QueryBuilder.initializeRecentQueries = function() {
+	QueryBuilder.initializeRecentQueries = function($queryGroup) {
 		$.ajax({
 			url: TYPO3.settings.ajaxUrls.querybuilder_get_recent_queries,
 			cache: false,
 			data: {
 				table: QueryBuilder.table
+			},
+			success: function(data) {
+				for (var j = 0; j < data.length; j++) {
+					var $query = $('<option />', {value: data[j].uid}).text(data[j].queryname);
+					$query.insertAfter($queryGroup);
+				}
 			}
-			//success: function(data) {
-			//	if (data.status === 'ok') {
-			//		Modal.currentModal.trigger('modal-dismiss');
-			//		Notification.success('Query saved', 'Your query was saved');
-			//	} else {
-			//		Modal.currentModal.trigger('modal-dismiss');
-			//		Notification.error('Query not saved', 'Sorry, your query can\'t be saved');
-			//	}
-			//}
 		});
 	};
 
