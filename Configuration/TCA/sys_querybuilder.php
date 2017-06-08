@@ -2,8 +2,11 @@
 return [
     'ctrl' => [
         'title' => 'Querybuilder Queries',
-        'label' => 'uid',
+        'label' => 'queryname',
         'delete' => 'deleted',
+        'enablecolumns' => [
+            'disabled' => 'hidden',
+        ],
     ],
     'types' => [
         '1' => [
@@ -52,6 +55,17 @@ return [
                 'foreign_table' => 'be_users',
                 'foreign_table_field' => 'uid',
                 'maxitems' => 1,
+            ],
+        ],
+        'hidden' => [
+            'exclude' => 1,
+            'config' => [
+                'type' => 'check',
+                'items' => [
+                    '1' => [
+                        '0' => 'Disable',
+                    ],
+                ],
             ],
         ]
     ],
