@@ -7,15 +7,16 @@ return [
         'enablecolumns' => [
             'disabled' => 'hidden',
         ],
+        'iconfile' => 'EXT:querybuilder/Resources/Public/Icons/search.svg',
     ],
     'types' => [
         '1' => [
-            'showitem' => 'where_parts, affected_table, user'
+            'showitem' => 'queryname, affected_table, where_parts, user'
         ],
     ],
     'palettes' => [
         '1' => [
-            'showitem' => 'where_parts, affected_table, user'
+            'showitem' => 'queryname, affected_table, where_parts, user'
         ],
     ],
     'columns' => [
