@@ -80,7 +80,8 @@ class QuerybuilderController
             ->select('uid','queryname', 'where_parts')
             ->from('sys_querybuilder')
             ->where(
-                $queryBuilder->expr()->eq('affected_table', $queryBuilder->createNamedParameter($requestParams['table']))
+                $queryBuilder->expr()->eq('affected_table', $queryBuilder->createNamedParameter($requestParams['table'])),
+                $queryBuilder->expr()->eq('user', (int)$GLOBALS['BE_USER']->user['uid'])
             )
             ->execute()
             ->fetchAll();
