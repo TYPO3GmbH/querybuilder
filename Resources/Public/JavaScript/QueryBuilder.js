@@ -87,8 +87,8 @@ define(['jquery', 'moment', 'TYPO3/CMS/Backend/Severity', 'TYPO3/CMS/Backend/Sto
 		var $queryContainer = $queryBuilderContainer.find('.t3js-querybuilder-queries');
 		var $queryHeader = $('<h3> Saved queries</h3>');
 		$queryHeader.prependTo($queryContainer);
-		var $queryGroup = $queryBuilderContainer.find('.first-opt');
-		QueryBuilder.initializeRecentQueries($queryGroup);
+		var $querySelector = $('#t3js-querybuilder-recent-queries');
+		QueryBuilder.initializeRecentQueries($querySelector);
 		QueryBuilder.initializeEvents();
 		QueryBuilder.instance = $queryBuilderContainer.find(QueryBuilder.selectorBuilder).queryBuilder({
 			allow_empty: true,
@@ -162,7 +162,7 @@ define(['jquery', 'moment', 'TYPO3/CMS/Backend/Severity', 'TYPO3/CMS/Backend/Sto
 		});
 	};
 
-	QueryBuilder.initializeRecentQueries = function($queryGroup) {
+	QueryBuilder.initializeRecentQueries = function($querySelector) {
 		$.ajax({
 			url: TYPO3.settings.ajaxUrls.querybuilder_get_recent_queries,
 			cache: false,
@@ -171,9 +171,13 @@ define(['jquery', 'moment', 'TYPO3/CMS/Backend/Severity', 'TYPO3/CMS/Backend/Sto
 			},
 			success: function(data) {
 				for (var j = 0; j < data.length; j++) {
-					var $query = $('<option />', {value: data[j].uid}).text(data[j].queryname);
-					$query.insertAfter($queryGroup);
+					var $query = $('<option />', {value: data[j].uid, 'data-query': data[j].where_parts}).text(data[j].queryname);
+					$querySelector.append($query);
 				}
+				$querySelector.on('change', function() {
+					var $option = $(this.options[this.selectedIndex]);
+					QueryBuilder.instance.queryBuilder('setRules', $option.data('query'));
+				});
 			}
 		});
 	};

@@ -66,7 +66,7 @@ class QuerybuilderController
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
             ->getQueryBuilderForTable('sys_querybuilder');
         $results = $queryBuilder
-            ->select('uid','queryname')
+            ->select('uid','queryname', 'where_parts')
             ->from('sys_querybuilder')
             ->where(
                 $queryBuilder->expr()->eq('affected_table', $queryBuilder->createNamedParameter($requestParams['table']))
