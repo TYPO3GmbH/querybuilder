@@ -197,6 +197,14 @@ define(['jquery', 'moment', 'TYPO3/CMS/Backend/Severity', 'TYPO3/CMS/Backend/Sto
 						$('<span />').text('Override saved query?')
 					)
 				)
+			),
+			$('<dd />').append(
+				$('<div />', {class: 'checkbox'}).append(
+					$('<label />').append(
+						$('<input />', {name: 'private', type: 'checkbox', value: 1}),
+						$('<span />').text('Save query as private?')
+					)
+				)
 			)
 		);
 		var queryBuilderAjaxUrl = TYPO3.settings.ajaxUrls.querybuilder_save_query;
@@ -226,7 +234,8 @@ define(['jquery', 'moment', 'TYPO3/CMS/Backend/Severity', 'TYPO3/CMS/Backend/Sto
 							table: QueryBuilder.table,
 							query: JSON.stringify(QueryBuilder.instance.queryBuilder('getRules'), null, 2),
 							queryName: $('input[name=queryname]', Modal.currentModal).val(),
-							override: $('input[name=override]', Modal.currentModal).is(':checked')
+							override: $('input[name=override]', Modal.currentModal).is(':checked'),
+							private: $('input[name=private]', Modal.currentModal).is(':checked')
 						},
 						success: function(data) {
 							if (data.status === 'ok') {

@@ -41,13 +41,24 @@ class QuerybuilderController
             'where_parts' => $requestParams['query'],
             'user' => (int)$GLOBALS['BE_USER']->user['uid'],
             'affected_table' => $requestParams['table'],
-            'queryname' => $requestParams['queryName']
+            'queryname' => $requestParams['queryName'],
+            'private' => $requestParams['private']
         ];
-        GeneralUtility::makeInstance(ConnectionPool::class)
-            ->getQueryBuilderForTable('sys_querybuilder')
-            ->insert('sys_querybuilder')
-            ->values($data)
-            ->execute();
+
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
+            ->getQueryBuilderForTable('sys_querybuilder');
+
+//        if ($requestParams['override']) {
+//            $queryBuilder
+//                ->update('sys_querybuilder')
+//                ->values($data)
+//                ->execute();
+//        } else {
+            $queryBuilder
+                ->insert('sys_querybuilder')
+                ->values($data)
+                ->execute();
+//        }
 
         $response->getBody()->write('{"status": "ok"}');
         return $response;
