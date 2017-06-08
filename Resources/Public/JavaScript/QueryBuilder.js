@@ -177,6 +177,9 @@ define(['jquery', 'moment', 'TYPO3/CMS/Backend/Severity', 'TYPO3/CMS/Backend/Sto
 				$querySelector.on('change', function() {
 					var $option = $(this.options[this.selectedIndex]);
 					QueryBuilder.instance.queryBuilder('setRules', $option.data('query'));
+					var $bla = selectorBuilder.find('.rules-list');
+					var $queryId = $('data-query-id');
+					$queryId.prependTo($bla);
 				});
 			}
 		});
@@ -193,7 +196,7 @@ define(['jquery', 'moment', 'TYPO3/CMS/Backend/Severity', 'TYPO3/CMS/Backend/Sto
 			$('<dd />').append(
 				$('<div />', {class: 'checkbox'}).append(
 					$('<label />').append(
-						$('<input />', {name: 'override', type: 'checkbox', value: 1}),
+						$('<input />', {name: 'override', type: 'checkbox'}),
 						$('<span />').text('Override saved query?')
 					)
 				)
@@ -226,7 +229,7 @@ define(['jquery', 'moment', 'TYPO3/CMS/Backend/Severity', 'TYPO3/CMS/Backend/Sto
 							table: QueryBuilder.table,
 							query: JSON.stringify(QueryBuilder.instance.queryBuilder('getRules'), null, 2),
 							queryName: $('input[name=queryname]', Modal.currentModal).val(),
-							override: $('input[name=override]', Modal.currentModal).is(':checked'),
+							override: $('input[name=override]', Modal.currentModal).is(':checked') ? 1 : 0
 						},
 						success: function(data) {
 							if (data.status === 'ok') {

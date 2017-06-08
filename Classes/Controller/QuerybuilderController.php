@@ -57,13 +57,13 @@ class QuerybuilderController
 //                ->execute();
 //        $response->getBody()->write('{"status": "updated"}');
 //        } else {
+
             $queryBuilder
                 ->insert('sys_querybuilder')
                 ->values($data)
                 ->execute();
                 $response->getBody()->write('{"status": "ok"}');
 //        }
-
         return $response;
     }
 
