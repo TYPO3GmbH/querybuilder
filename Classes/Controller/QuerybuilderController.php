@@ -42,7 +42,6 @@ class QuerybuilderController
             'user' => (int)$GLOBALS['BE_USER']->user['uid'],
             'affected_table' => $requestParams['table'],
             'queryname' => $requestParams['queryName'],
-            'private' => $requestParams['private']
         ];
 
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
@@ -52,15 +51,19 @@ class QuerybuilderController
 //            $queryBuilder
 //                ->update('sys_querybuilder')
 //                ->values($data)
+//                 ->where
+//                 ->$queryBuilder->expr()->eq('user', $GLOBALS['BE_USER']->user['uid'])),
+
 //                ->execute();
+//        $response->getBody()->write('{"status": "updated"}');
 //        } else {
             $queryBuilder
                 ->insert('sys_querybuilder')
                 ->values($data)
                 ->execute();
+                $response->getBody()->write('{"status": "ok"}');
 //        }
 
-        $response->getBody()->write('{"status": "ok"}');
         return $response;
     }
 
