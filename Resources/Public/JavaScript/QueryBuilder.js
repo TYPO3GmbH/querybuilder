@@ -71,7 +71,7 @@ define(['jquery', 'moment', 'TYPO3/CMS/Backend/Severity', 'TYPO3/CMS/Backend/Sto
 	QueryBuilder.initialize = function (rules, filter) {
 		// Add moment to the global windows space, because query-builder checks again window.moment
 		window.moment = moment;
-		QueryBuilder.table = $('table[data-table]').data('table');
+		QueryBuilder.table = $('table[data-table]').data('table') || QueryBuilder.getUrlVars()['table'];
 		$(QueryBuilder.template).insertAfter(QueryBuilder.selectorBuilderPosition);
 		var $queryBuilderContainer = $(QueryBuilder.selectorBuilderContainer);
 		if (QueryBuilder.buttons.length > 0) {
@@ -113,6 +113,18 @@ define(['jquery', 'moment', 'TYPO3/CMS/Backend/Severity', 'TYPO3/CMS/Backend/Sto
 				console.log(err.message);
 			}
 		}
+	};
+
+	QueryBuilder.getUrlVars = function() {
+		var vars = [], hash;
+		var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+		for(var i = 0; i < hashes.length; i++)
+		{
+			hash = hashes[i].split('=');
+			vars.push(hash[0]);
+			vars[hash[0]] = hash[1];
+		}
+		return vars;
 	};
 
 	/**
