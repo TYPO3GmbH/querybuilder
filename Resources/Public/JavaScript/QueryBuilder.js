@@ -27,7 +27,7 @@ define(['jquery', 'moment', 'TYPO3/CMS/Backend/Severity', 'TYPO3/CMS/Backend/Sto
 		selectorBuilderPosition: '.t3js-module-body h1',
 		selectorBuilderContainer: '.t3js-querybuilder',
 		selectorBuilder: '.t3js-querybuilder-builder',
-		template: '<div class="t3js-querybuilder"><div class="t3js-querybuilder-builder"></div><div class="btn-group"></div><div class="t3js-querybuilder-queries"><select name="recent-queries" class="form-control" id="t3js-querybuilder-recent-queries"><option class="first-opt" value="-1">No query chosen</option></select></div></div>',
+		template: '<div class="t3js-querybuilder"><div class="t3js-querybuilder-builder"></div><div class="btn-group"></div><div class="t3js-querybuilder-queries"><select name="recent-queries" class="form-control" id="t3js-querybuilder-recent-queries"><option class="first-opt" value="-1"></option></select></div></div>',
 		table: $('table[data-table]').data('table'),
 		instance: null,
 		plugins: {
@@ -189,9 +189,6 @@ define(['jquery', 'moment', 'TYPO3/CMS/Backend/Severity', 'TYPO3/CMS/Backend/Sto
 				$querySelector.on('change', function() {
 					var $option = $(this.options[this.selectedIndex]);
 					QueryBuilder.instance.queryBuilder('setRules', $option.data('query'));
-					//var $rules = selectorBuilder.find('.rules-list');
-					//var $queryId = $('data-query-id');
-					//$queryId.prependTo($rules);
 				});
 			}
 		});
@@ -254,9 +251,11 @@ define(['jquery', 'moment', 'TYPO3/CMS/Backend/Severity', 'TYPO3/CMS/Backend/Sto
 							if (data.status === 'ok') {
 								Modal.currentModal.trigger('modal-dismiss');
 								Notification.success('Query saved', 'Your query was saved');
-							} else if (data.status === 'updated') {
-								Modal.currentModal.trigger('modal-dismiss');
-								Notification.success('Query updated', 'Your query was updated');
+								var savedquery = JSON.stringify(QueryBuilder.instance.queryBuilder('getRules'), null, 2);
+								QueryBuilder.setStoredQuery(savedquery);
+								$( "option" ).remove( "[data-query]" );
+								var $querySelector = $('#t3js-querybuilder-recent-queries');
+								QueryBuilder.initializeRecentQueries($querySelector);
 							} else {
 								Modal.currentModal.trigger('modal-dismiss');
 								Notification.error('Query not saved', 'Sorry, your query can\'t be saved');
