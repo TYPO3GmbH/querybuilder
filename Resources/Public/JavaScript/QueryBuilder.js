@@ -177,9 +177,9 @@ define(['jquery', 'moment', 'TYPO3/CMS/Backend/Severity', 'TYPO3/CMS/Backend/Sto
 				$querySelector.on('change', function() {
 					var $option = $(this.options[this.selectedIndex]);
 					QueryBuilder.instance.queryBuilder('setRules', $option.data('query'));
-					var $bla = selectorBuilder.find('.rules-list');
-					var $queryId = $('data-query-id');
-					$queryId.prependTo($bla);
+					//var $rules = selectorBuilder.find('.rules-list');
+					//var $queryId = $('data-query-id');
+					//$queryId.prependTo($rules);
 				});
 			}
 		});
@@ -229,7 +229,7 @@ define(['jquery', 'moment', 'TYPO3/CMS/Backend/Severity', 'TYPO3/CMS/Backend/Sto
 							table: QueryBuilder.table,
 							query: JSON.stringify(QueryBuilder.instance.queryBuilder('getRules'), null, 2),
 							queryName: $('input[name=queryname]', Modal.currentModal).val(),
-							override: $('input[name=override]', Modal.currentModal).is(':checked') ? 1 : 0
+							override: $('input[name=override]', Modal.currentModal).is(':checked') ? $('input[name=override]', Modal.currentModal).val() : 0
 						},
 						success: function(data) {
 							if (data.status === 'ok') {
