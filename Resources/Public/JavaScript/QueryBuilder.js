@@ -234,6 +234,10 @@ define(['jquery', 'moment', 'TYPO3/CMS/Backend/Severity', 'TYPO3/CMS/Backend/Sto
 				btnClass: 'btn-info',
 				name: 'ok',
 				trigger: function () {
+					if ($('input[name=queryname]', Modal.currentModal).val() === '') {
+						$('input[name=queryname]', Modal.currentModal).parent().addClass('has-error');
+						return;
+					}
 					$.ajax({
 						url: queryBuilderAjaxUrl,
 						cache: false,
