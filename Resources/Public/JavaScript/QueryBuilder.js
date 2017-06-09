@@ -199,11 +199,13 @@ define(['jquery', 'moment', 'TYPO3/CMS/Backend/Severity', 'TYPO3/CMS/Backend/Sto
 
 	QueryBuilder.showSaveModal = function() {
 		var $list = $('<dl></dl>');
+		// get current query name as default value for the modal
+		var queryName = $('#t3js-querybuilder-recent-queries option[value=' + $('#t3js-querybuilder-recent-queries').val() + ']').text() || '';
 		$list.append(
 			$('<dt />').text("Save your Query"),
 			$('<dd />').append(
 				$('<label />', {for: 'queryname'}).text('Name: '),
-				$('<input />', {name: 'queryname', class: 'form-control'})
+				$('<input />', {name: 'queryname', class: 'form-control', value: queryName})
 			),
 			$('<dd />').append(
 				$('<div />', {class: 'checkbox'}).append(
@@ -245,6 +247,7 @@ define(['jquery', 'moment', 'TYPO3/CMS/Backend/Severity', 'TYPO3/CMS/Backend/Sto
 							table: QueryBuilder.table,
 							query: JSON.stringify(QueryBuilder.instance.queryBuilder('getRules'), null, 2),
 							queryName: $('input[name=queryname]', Modal.currentModal).val(),
+							uid: $('#t3js-querybuilder-recent-queries').val(),
 							override: $('input[name=override]', Modal.currentModal).is(':checked') ? $('input[name=override]', Modal.currentModal).val() : 0
 						},
 						success: function(data) {

@@ -36,34 +36,32 @@ class QuerybuilderController
     public function ajaxSaveQuery(ServerRequestInterface $request, ResponseInterface $response) : ResponseInterface
     {
         $requestParams = $request->getQueryParams();
-        $data = [
-            // 'pid' => ??
-            'where_parts' => $requestParams['query'],
-            'user' => (int)$GLOBALS['BE_USER']->user['uid'],
-            'affected_table' => $requestParams['table'],
-            'queryname' => $requestParams['queryName'],
-        ];
 
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
-            ->getQueryBuilderForTable('sys_querybuilder');
+        if ($requestParams['override']) {
+            $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
+                ->getQueryBuilderForTable('sys_querybuilder');
 
-//        if ($requestParams['override']) {
-//            $queryBuilder
-//                ->update('sys_querybuilder')
-//                ->values($data)
-//                 ->where
-//                 ->$queryBuilder->expr()->eq('user', $GLOBALS['BE_USER']->user['uid'])),
-
-//                ->execute();
-//        $response->getBody()->write('{"status": "updated"}');
-//        } else {
-
-            $queryBuilder
+            $queryBuilder->update('sys_querybuilder')
+                ->set('where_parts', $requestParams['query'])
+                ->set('queryname', $requestParams['queryName'])
+                ->where($queryBuilder->expr()->eq('uid', (int)$requestParams['uid']))
+                ->andWhere($queryBuilder->expr()->eq('user', (int)$GLOBALS['BE_USER']->user['uid']))
+                ->execute();
+        } else {
+            $data = [
+                'where_parts' => $requestParams['query'],
+                'user' => (int)$GLOBALS['BE_USER']->user['uid'],
+                'affected_table' => $requestParams['table'],
+                'queryname' => $requestParams['queryName'],
+            ];
+            GeneralUtility::makeInstance(ConnectionPool::class)
+                ->getQueryBuilderForTable('sys_querybuilder')
                 ->insert('sys_querybuilder')
                 ->values($data)
                 ->execute();
-                $response->getBody()->write('{"status": "ok"}');
-//        }
+        }
+
+        $response->getBody()->write('{"status": "ok"}');
         return $response;
     }
 
