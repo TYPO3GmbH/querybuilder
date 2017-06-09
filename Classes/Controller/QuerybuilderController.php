@@ -37,9 +37,9 @@ class QuerybuilderController
     {
         $requestParams = $request->getQueryParams();
 
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
+            ->getQueryBuilderForTable('sys_querybuilder');
         if ($requestParams['override']) {
-            $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
-                ->getQueryBuilderForTable('sys_querybuilder');
 
             $queryBuilder->update('sys_querybuilder')
                 ->set('where_parts', $requestParams['query'])
@@ -54,9 +54,7 @@ class QuerybuilderController
                 'affected_table' => $requestParams['table'],
                 'queryname' => $requestParams['queryName'],
             ];
-            GeneralUtility::makeInstance(ConnectionPool::class)
-                ->getQueryBuilderForTable('sys_querybuilder')
-                ->insert('sys_querybuilder')
+            $queryBuilder->insert('sys_querybuilder')
                 ->values($data)
                 ->execute();
         }
