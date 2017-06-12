@@ -15,7 +15,15 @@
  * Module: TYPO3/CMS/Querybuilder/QueryBuilder
  * Javascript functions regarding the permissions module
  */
-define(['jquery', 'moment', 'TYPO3/CMS/Backend/Severity', 'TYPO3/CMS/Backend/Storage', 'TYPO3/CMS/Backend/Modal', 'TYPO3/CMS/Backend/Notification', 'twbs/bootstrap-datetimepicker', 'query-builder'], function ($, moment, Severity, Storage, Modal, Notification) {
+define(['jquery',
+		'moment',
+		'TYPO3/CMS/Backend/Severity',
+		'TYPO3/CMS/Backend/Storage',
+		'TYPO3/CMS/Backend/Modal',
+		'TYPO3/CMS/Backend/Notification',
+		'twbs/bootstrap-datetimepicker',
+		'query-builder'
+		], function ($, moment, Severity, Storage, Modal, Notification) {
 	'use strict';
 
 	/**
@@ -27,7 +35,15 @@ define(['jquery', 'moment', 'TYPO3/CMS/Backend/Severity', 'TYPO3/CMS/Backend/Sto
 		selectorBuilderPosition: '.t3js-module-body h1',
 		selectorBuilderContainer: '.t3js-querybuilder',
 		selectorBuilder: '.t3js-querybuilder-builder',
-		template: '<div class="t3js-querybuilder"><div class="t3js-querybuilder-builder"></div><div class="btn-group"></div><div class="t3js-querybuilder-queries"><select name="recent-queries" class="form-control" id="t3js-querybuilder-recent-queries"><option class="first-opt" value="-1"></option></select></div></div>',
+		template: '<div class="t3js-querybuilder">' +
+					'<div class="t3js-querybuilder-builder"></div>' +
+					'<div class="btn-group"></div>' +
+					'<div class="t3js-querybuilder-queries">' +
+						'<select name="recent-queries" class="form-control" id="t3js-querybuilder-recent-queries">' +
+							'<option class="first-opt" value="-1"></option>' +
+						'</select>' +
+					'</div>' +
+				   '</div>',
 		table: $('table[data-table]').data('table'),
 		instance: null,
 		plugins: {
@@ -237,6 +253,9 @@ define(['jquery', 'moment', 'TYPO3/CMS/Backend/Severity', 'TYPO3/CMS/Backend/Sto
 						$('input[name=queryname]', Modal.currentModal).parent().addClass('has-error');
 						return;
 					}
+					//if ($('#t3js-querybuilder-recent-queries').val() == -1) {
+					//	$('input[name=override]', Modal.currentModal).hide();
+					//}
 					$.ajax({
 						url: queryBuilderAjaxUrl,
 						cache: false,
@@ -263,8 +282,7 @@ define(['jquery', 'moment', 'TYPO3/CMS/Backend/Severity', 'TYPO3/CMS/Backend/Sto
 						}
 					});
 				}
-			}],
-			['modal-inner-scroll']
+			}]
 		);
 	};
 
