@@ -36,11 +36,10 @@ class QuerybuilderController
     public function ajaxSaveQuery(ServerRequestInterface $request, ResponseInterface $response) : ResponseInterface
     {
         $requestParams = $request->getQueryParams();
-
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
             ->getQueryBuilderForTable('sys_querybuilder');
-        if ($requestParams['override']) {
 
+        if ($requestParams['override']) {
             $queryBuilder->update('sys_querybuilder')
                 ->set('where_parts', $requestParams['query'])
                 ->set('queryname', $requestParams['queryName'])
@@ -75,6 +74,7 @@ class QuerybuilderController
         $requestParams = $request->getQueryParams();
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
             ->getQueryBuilderForTable('sys_querybuilder');
+
         $results = $queryBuilder
             ->select('uid','queryname', 'where_parts')
             ->from('sys_querybuilder')
@@ -84,6 +84,7 @@ class QuerybuilderController
             )
             ->execute()
             ->fetchAll();
+
         $response->getBody()->write(json_encode($results));
         return $response;
     }
