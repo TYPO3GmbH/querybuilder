@@ -253,8 +253,8 @@ define(['jquery',
 						$('input[name=queryname]', Modal.currentModal).parent().addClass('has-error');
 						return;
 					}
-					//if ($('#t3js-querybuilder-recent-queries').val() == -1) {
-					//	$('input[name=override]', Modal.currentModal).hide();
+					//if ($('#t3js-querybuilder-recent-queries').val() < 1) {
+					//	$('input[name=override]', Modal.currentModal).style.visibility = "hidden";
 					//}
 					$.ajax({
 						url: queryBuilderAjaxUrl,

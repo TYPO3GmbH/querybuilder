@@ -40,7 +40,7 @@ class QuerybuilderController
             ->getQueryBuilderForTable('sys_querybuilder');
 
         if ($requestParams['override']) {
-            if ((int)$requestParams['uid'] < 0) {
+            if ((int)$requestParams['uid'] < 1) {
                 $response->getBody()->write('{"status": "fail"}');
                 return $response;
             }
