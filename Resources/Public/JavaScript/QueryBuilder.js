@@ -204,7 +204,11 @@ define(['jquery',
 				}
 				$querySelector.on('change', function() {
 					var $option = $(this.options[this.selectedIndex]);
-					QueryBuilder.instance.queryBuilder('setRules', $option.data('query'));
+					try {
+						QueryBuilder.instance.queryBuilder('setRules', $option.data('query'));
+					} catch (err) {
+						console.log(err.message);
+					}
 				});
 			}
 		});
