@@ -218,7 +218,7 @@ define(['jquery',
 	QueryBuilder.showSaveModal = function() {
 		var $list = $('<dl></dl>');
 		// get current query name as default value for the modal
-		var queryName = $('option[value=' + $('#t3js-querybuilder-recent-queries').val() + ']', QueryBuilder.querySelector).text() || '';
+		var queryName = $('option[value=' + QueryBuilder.querySelector.val() + ']', QueryBuilder.querySelector).text() || '';
 		$list.append(
 			$('<dt />').text("Save your Query"),
 			$('<dd />').append(
@@ -292,7 +292,7 @@ define(['jquery',
 				}
 			}]
 		).on('shown.bs.modal', function() {
-			($('#t3js-querybuilder-recent-queries').val() < 1)
+			(QueryBuilder.querySelector.val() < 1)
 				? $('input[name=override]', Modal.currentModal).attr('disabled', true)
 				: $('input[name=override]', Modal.currentModal).attr('disabled', false);
 		});
