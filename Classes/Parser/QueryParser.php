@@ -21,12 +21,16 @@ class QueryParser
     const OPERATOR_NOT_CONTAINS = 'not_contains';
     const OPERATOR_ENDS_WITH = 'ends_with';
     const OPERATOR_NOT_ENDS_WITH = 'not_ends_with';
+    const OPERATOR_IS_EMPTY = 'is_empty';
+    const OPERATOR_IS_NOT_EMPTY = 'is_not_empty';
     const OPERATOR_IS_NULL = 'is_null';
     const OPERATOR_IS_NOT_NULL = 'is_not_null';
     const OPERATOR_LESS = 'less';
     const OPERATOR_LESS_OR_EQUAL = 'less_or_equal';
     const OPERATOR_GREATER = 'greater';
     const OPERATOR_GREATER_OR_EQUAL = 'greater_or_equal';
+    const OPERATOR_BETWEEN = 'between';
+    const OPERATOR_NOT_BETWEEN = 'not_between';
 
     const CONDITION_AND = 'AND';
     const CONDITION_OR = 'OR';
@@ -87,6 +91,28 @@ class QueryParser
                                 $value
                         );
                 break;
+            case self::OPERATOR_IN:
+                $values = GeneralUtility::trimExplode(',', $rule->value);
+                $escapedValues = [];
+                foreach ($values as $value) {
+                    $escapedValues[] = $queryBuilder->quote($value);
+                }
+                $where = $queryBuilder->expr()->in(
+                    $field,
+                    implode(',', $escapedValues)
+                );
+                break;
+            case self::OPERATOR_NOT_IN:
+                $values = GeneralUtility::trimExplode(',', $rule->value);
+                $escapedValues = [];
+                foreach ($values as $value) {
+                    $escapedValues[] = $queryBuilder->quote($value);
+                }
+                $where = $queryBuilder->expr()->notIn(
+                    $field,
+                    implode(',', $escapedValues)
+                );
+                break;
             case self::OPERATOR_BEGINS_WITH:
                 $where = $queryBuilder->expr()->like(
                         $field,
@@ -123,6 +149,18 @@ class QueryParser
                         $queryBuilder->expr()->literal('%' . $rule->value)
                 );
                 break;
+            case self::OPERATOR_IS_EMPTY:
+                $where = $queryBuilder->expr()->eq(
+                        $field,
+                        $queryBuilder->expr()->literal('')
+                    );
+                break;
+            case self::OPERATOR_IS_NOT_EMPTY:
+                $where = $queryBuilder->expr()->neq(
+                        $field,
+                        $queryBuilder->expr()->literal('')
+                    );
+                break;
             case self::OPERATOR_IS_NULL:
                 $where = $queryBuilder->expr()->isNull(
                         $field
@@ -157,6 +195,20 @@ class QueryParser
                                 $value
                         );
                 break;
+//            case self::OPERATOR_BETWEEN:
+//                $where = $queryBuilder->expr()->andX(
+//                            $queryBuilder->expr()->gt($field,$value[0]),
+//                            $queryBuilder->expr()->lt($field,$value[1])
+//                        );
+//                break;
+//            case self::OPERATOR_NOT_BETWEEN:
+//                //todo ??
+//
+//                $negation = $rule->operator === self::OPERATOR_NOT_BETWEEN ? 'NOT ' : '';
+//                $value1 = $queryBuilder->createNamedParameter($value[0]);
+//                $value2 = $queryBuilder->createNamedParameter($value[1]);
+//                $where = $field . $negation . 'BETWEEN ' . $value1 . ' AND ' . $value2;
+//                break;
         }
 
         return $where;
