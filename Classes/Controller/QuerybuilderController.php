@@ -41,17 +41,18 @@ class QuerybuilderController
         $requestParams = $request->getQueryParams();
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
             ->getQueryBuilderForTable('sys_querybuilder');
-
-        if (!empty($requestParams['override'])) {
-            if ((int)$requestParams['uid'] < 1) {
-                $result->status = 'fail';
-            } else {
+        $uid = (int)$requestParams['uid'];
+        if (!empty($requestParams['uid'])) {
+            if ($uid > 0) {
+                $result->uid = $uid;
                 $queryBuilder->update('sys_querybuilder')
                     ->set('where_parts', $requestParams['query'])
                     ->set('queryname', $requestParams['queryName'])
-                    ->where($queryBuilder->expr()->eq('uid', (int)$requestParams['uid']))
+                    ->where($queryBuilder->expr()->eq('uid', $uid))
                     ->andWhere($queryBuilder->expr()->eq('user', (int)$GLOBALS['BE_USER']->user['uid']))
                     ->execute();
+            } else {
+                $result->status = 'fail';
             }
         } else {
             $data = [
@@ -63,6 +64,8 @@ class QuerybuilderController
             $queryBuilder->insert('sys_querybuilder')
                 ->values($data)
                 ->execute();
+            $uid = $queryBuilder->getConnection()->lastInsertId('sys_querybuilder');
+            $result->uid = $uid;
         }
 
         $response->getBody()->write(json_encode($result));

@@ -28,7 +28,7 @@ define(['jquery',
 
 	/**
 	 *
-	 * @type {{selectorBuilderPosition: string, selectorBuilderContainer: string, selectorBuilder: string, template: string, instance: null, plugins: string[], filters: *[], basicRules: {condition: string, rules: Array}, buttons: *[]}}
+	 * @type {{selectorBuilderPosition: string, selectorBuilderContainer: string, selectorBuilder: string, template: string, table: (*), querySelector: null, instance: null, plugins: {bt-tooltip-errors: {delay: number}, invert: {}, filter-description: {icon: string}}, icon: string, filters: [*], basicRules: {condition: string, rules: Array}, buttons: [*]}}
 	 * @exports TYPO3/CMS/Querybuilder/QueryBuilder
 	 */
 	var QueryBuilder = {
@@ -45,6 +45,7 @@ define(['jquery',
 					'</div>' +
 				   '</div>',
 		table: $('table[data-table]').data('table'),
+		querySelector: null,
 		instance: null,
 		plugins: {
 			'bt-tooltip-errors': {delay: 100},
@@ -89,6 +90,7 @@ define(['jquery',
 		window.moment = moment;
 		QueryBuilder.table = $('table[data-table]').data('table') || QueryBuilder.getUrlVars()['table'];
 		$(QueryBuilder.template).insertAfter(QueryBuilder.selectorBuilderPosition);
+		QueryBuilder.querySelector = $('#t3js-querybuilder-recent-queries');
 		var $queryBuilderContainer = $(QueryBuilder.selectorBuilderContainer);
 		if (QueryBuilder.buttons.length > 0) {
 			var $buttonGroup = $queryBuilderContainer.find('.btn-group');
@@ -103,8 +105,7 @@ define(['jquery',
 		var $queryContainer = $queryBuilderContainer.find('.t3js-querybuilder-queries');
 		var $queryHeader = $('<h3> Saved queries</h3>');
 		$queryHeader.prependTo($queryContainer);
-		var $querySelector = $('#t3js-querybuilder-recent-queries');
-		QueryBuilder.initializeRecentQueries($querySelector);
+		QueryBuilder.initializeRecentQueries(QueryBuilder.querySelector);
 		QueryBuilder.initializeEvents();
 		QueryBuilder.instance = $queryBuilderContainer.find(QueryBuilder.selectorBuilder).queryBuilder({
 			allow_empty: true,
@@ -217,7 +218,7 @@ define(['jquery',
 	QueryBuilder.showSaveModal = function() {
 		var $list = $('<dl></dl>');
 		// get current query name as default value for the modal
-		var queryName = $('#t3js-querybuilder-recent-queries option[value=' + $('#t3js-querybuilder-recent-queries').val() + ']').text() || '';
+		var queryName = $('option[value=' + $('#t3js-querybuilder-recent-queries').val() + ']', QueryBuilder.querySelector).text() || '';
 		$list.append(
 			$('<dt />').text("Save your Query"),
 			$('<dd />').append(
@@ -257,25 +258,31 @@ define(['jquery',
 						$('input[name=queryname]', Modal.currentModal).parent().addClass('has-error');
 						return;
 					}
+					var uid = QueryBuilder.querySelector.val();
+					var queryName = $('input[name=queryname]', Modal.currentModal).val();
+					var override = $('input[name=override]', Modal.currentModal).is(':checked');
+					var query = JSON.stringify(QueryBuilder.instance.queryBuilder('getRules'), null, 2);
 					$.ajax({
 						url: queryBuilderAjaxUrl,
 						cache: false,
 						data: {
 							table: QueryBuilder.table,
-							query: JSON.stringify(QueryBuilder.instance.queryBuilder('getRules'), null, 2),
-							queryName: $('input[name=queryname]', Modal.currentModal).val(),
-							uid: $('#t3js-querybuilder-recent-queries').val(),
-							override: $('input[name=override]', Modal.currentModal).is(':checked') ? $('input[name=override]', Modal.currentModal).val() : 0
+							query: query,
+							queryName: queryName,
+							uid: uid,
+							override: override ? 1 : 0
 						},
 						success: function(data) {
 							if (data.status === 'ok') {
 								Modal.currentModal.trigger('modal-dismiss');
-								Notification.success('Query saved', 'Your query was saved');
-								var savedquery = JSON.stringify(QueryBuilder.instance.queryBuilder('getRules'), null, 2);
-								QueryBuilder.setStoredQuery(savedquery);
-								$( "option" ).remove( "[data-query]" );
-								var $querySelector = $('#t3js-querybuilder-recent-queries');
-								QueryBuilder.initializeRecentQueries($querySelector);
+								Notification.success('Query saved', 'Your query has been saved');
+								if (override) {
+									$('option[value="' + uid + '"]', QueryBuilder.querySelector).text(queryName);
+								} else {
+									var $query = $('<option />', {value: data.uid, 'data-query': query}).text(queryName);
+									QueryBuilder.querySelector.append($query);
+									QueryBuilder.querySelector.val('' + uid);
+								}
 							} else {
 								Modal.currentModal.trigger('modal-dismiss');
 								Notification.error('Query not saved', 'Sorry, your query can\'t be saved');
