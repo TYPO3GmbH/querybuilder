@@ -35,21 +35,24 @@ class QuerybuilderController
      */
     public function ajaxSaveQuery(ServerRequestInterface $request, ResponseInterface $response) : ResponseInterface
     {
+        $result = new \stdClass();
+        $result->status = 'ok';
+
         $requestParams = $request->getQueryParams();
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
             ->getQueryBuilderForTable('sys_querybuilder');
 
-        if ($requestParams['override']) {
+        if (!empty($requestParams['override'])) {
             if ((int)$requestParams['uid'] < 1) {
-                $response->getBody()->write('{"status": "fail"}');
-                return $response;
+                $result->status = 'fail';
+            } else {
+                $queryBuilder->update('sys_querybuilder')
+                    ->set('where_parts', $requestParams['query'])
+                    ->set('queryname', $requestParams['queryName'])
+                    ->where($queryBuilder->expr()->eq('uid', (int)$requestParams['uid']))
+                    ->andWhere($queryBuilder->expr()->eq('user', (int)$GLOBALS['BE_USER']->user['uid']))
+                    ->execute();
             }
-            $queryBuilder->update('sys_querybuilder')
-                ->set('where_parts', $requestParams['query'])
-                ->set('queryname', $requestParams['queryName'])
-                ->where($queryBuilder->expr()->eq('uid', (int)$requestParams['uid']))
-                ->andWhere($queryBuilder->expr()->eq('user', (int)$GLOBALS['BE_USER']->user['uid']))
-                ->execute();
         } else {
             $data = [
                 'where_parts' => $requestParams['query'],
@@ -62,7 +65,7 @@ class QuerybuilderController
                 ->execute();
         }
 
-        $response->getBody()->write('{"status": "ok"}');
+        $response->getBody()->write(json_encode($result));
         return $response;
     }
 
