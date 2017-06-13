@@ -149,18 +149,18 @@ class QueryParser
                         $queryBuilder->expr()->literal('%' . $rule->value)
                 );
                 break;
-            case self::OPERATOR_IS_EMPTY:
-                $where = $queryBuilder->expr()->eq(
-                        $field,
-                        $queryBuilder->expr()->literal('')
-                    );
-                break;
-            case self::OPERATOR_IS_NOT_EMPTY:
-                $where = $queryBuilder->expr()->neq(
-                        $field,
-                        $queryBuilder->expr()->literal('')
-                    );
-                break;
+//            case self::OPERATOR_IS_EMPTY:
+//                $where = $queryBuilder->expr()->orX(
+//                            $queryBuilder->expr()->eq($field,$queryBuilder->expr()->literal('')),
+//                            $queryBuilder->expr()->isNull($field)
+//                        );
+//                break;
+//            case self::OPERATOR_IS_NOT_EMPTY:
+//                $where = $queryBuilder->expr()->orX(
+//                            $queryBuilder->expr()->neq($field,$queryBuilder->expr()->literal('')),
+//                            $queryBuilder->expr()->isNotNull($field)
+//                        );
+//                break;
             case self::OPERATOR_IS_NULL:
                 $where = $queryBuilder->expr()->isNull(
                         $field
