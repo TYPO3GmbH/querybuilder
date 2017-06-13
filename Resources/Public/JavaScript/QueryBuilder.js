@@ -257,9 +257,6 @@ define(['jquery',
 						$('input[name=queryname]', Modal.currentModal).parent().addClass('has-error');
 						return;
 					}
-					//if ($('#t3js-querybuilder-recent-queries').val() < 1) {
-					//	$('input[name=override]', Modal.currentModal).style.visibility = "hidden";
-					//}
 					$.ajax({
 						url: queryBuilderAjaxUrl,
 						cache: false,
@@ -287,7 +284,11 @@ define(['jquery',
 					});
 				}
 			}]
-		);
+		).on('shown.bs.modal', function() {
+			($('#t3js-querybuilder-recent-queries').val() < 1)
+				? $('input[name=override]', Modal.currentModal).attr('disabled', true)
+				: $('input[name=override]', Modal.currentModal).attr('disabled', false);
+		});
 	};
 
 	QueryBuilder.applyFilter = function(configuration) {
