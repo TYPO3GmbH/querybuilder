@@ -386,13 +386,13 @@ class QueryParserTest extends FunctionalTestCase
               "type": "string",
               "input": "integer",
               "operator": "less",
-              "value": 42
+              "value": "42"
             }
           ],
           "valid": true
         }';
         $query = json_decode($query);
-        $expectedResult = ' ( `title` < 42 ) ';
+        $expectedResult = ' ( `title` < \'42\' ) ';
         self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
     }
 
@@ -410,13 +410,13 @@ class QueryParserTest extends FunctionalTestCase
               "type": "string",
               "input": "integer",
               "operator": "less_or_equal",
-              "value": 42
+              "value": "42"
             }
           ],
           "valid": true
         }';
         $query = json_decode($query);
-        $expectedResult = ' ( `title` <= 42 ) ';
+        $expectedResult = ' ( `title` <= \'42\' ) ';
         self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
     }
 
@@ -434,13 +434,13 @@ class QueryParserTest extends FunctionalTestCase
               "type": "string",
               "input": "integer",
               "operator": "greater",
-              "value": 42
+              "value": "42"
             }
           ],
           "valid": true
         }';
         $query = json_decode($query);
-        $expectedResult = ' ( `title` > 42 ) ';
+        $expectedResult = ' ( `title` > \'42\' ) ';
         self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
     }
 
@@ -458,13 +458,13 @@ class QueryParserTest extends FunctionalTestCase
               "type": "string",
               "input": "integer",
               "operator": "greater_or_equal",
-              "value": 42
+              "value": "42"
             }
           ],
           "valid": true
         }';
         $query = json_decode($query);
-        $expectedResult = ' ( `title` >= 42 ) ';
+        $expectedResult = ' ( `title` >= \'42\' ) ';
         self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
     }
 
@@ -488,7 +488,7 @@ class QueryParserTest extends FunctionalTestCase
           "valid": true
         }';
         $query = json_decode($query);
-        $expectedResult = ' ( (`title` > 42) AND (`title` < 62) ) ';
+        $expectedResult = ' ( (`title` > \'42\') AND (`title` < \'62\') ) ';
         self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
     }
 
@@ -512,7 +512,7 @@ class QueryParserTest extends FunctionalTestCase
           "valid": true
         }';
         $query = json_decode($query);
-        $expectedResult = ' ( (`title` < 42) AND (`title` > 62) ) ';
+        $expectedResult = ' ( (`title` < \'42\') AND (`title` > \'62\') ) ';
         self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
     }
 }

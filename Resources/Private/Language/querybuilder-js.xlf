@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="en" datatype="plaintext" original="messages" date="2017-15-06T11:21:20Z" product-name="querybuilder">
+		<header/>
+		<body>
+			<trans-unit id="tx_querybuilder_js.Querybuilder.button.apply">
+				<source>Teeeeest</source>
+			</trans-unit>
+			<trans-unit id="tx_querybuilder_js.querybuilder.button.reset">
+				<source>Reset</source>
+			</trans-unit>
+			<trans-unit id="tx_querybuilder_js.querybuilder.button.save">
+				<source>Save</source>
+			</trans-unit>
+
+			<trans-unit id="tx_querybuilder_js.querybuilder.modal.title">
+				<source>Querybuilder - Save query</source>
+			</trans-unit>
+			<trans-unit id="tx_querybuilder_js.querybuilder.modal.headline">
+				<source>Save your Query</source>
+			</trans-unit>
+			<trans-unit id="tx_querybuilder_js.querybuilder.modal.queryname">
+				<source>Name: </source>
+			</trans-unit>
+			<trans-unit id="tx_querybuilder_js.querybuilder.modal.override">
+				<source>Save your Query</source>
+			</trans-unit>
+			<trans-unit id="tx_querybuilder_js.querybuilder.modal.cancel">
+				<source>Override saved query?</source>
+			</trans-unit>
+			<trans-unit id="tx_querybuilder_js.querybuilder.modal.save">
+				<source>save</source>
+			</trans-unit>
+			<trans-unit id="tx_querybuilder_js.querybuilder.modal.success.headline">
+				<source>Query saved</source>
+			</trans-unit>
+			<trans-unit id="tx_querybuilder_js.querybuilder.modal.success.text">
+				<source>Your query has been saved</source>
+			</trans-unit>
+			<trans-unit id="tx_querybuilder_js.querybuilder.modal.error.headline">
+				<source>Query not saved</source>
+			</trans-unit>
+			<trans-unit id="tx_querybuilder_js.querybuilder.modal.error.text">
+				<source>Sorry, your query can't be saved</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

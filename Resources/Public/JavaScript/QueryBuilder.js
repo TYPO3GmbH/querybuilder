@@ -68,15 +68,15 @@ define(['jquery',
 		},
 		buttons: [
 			{
-				title: 'Apply',
+				title: TYPO3.lang['button.apply'] || 'Apply',
 				action: 'apply'
 			},
 			{
-				title: 'Reset',
+				title: TYPO3.lang['button.reset'] || 'Reset',
 				action: 'reset'
 			},
 			{
-				title: 'Save query',
+				title: TYPO3.lang['button.save'] || 'Save query',
 				action: 'save'
 			}
 		]
@@ -103,7 +103,8 @@ define(['jquery',
 
 		//QueryBuilder.initializeQueries();
 		var $queryContainer = $queryBuilderContainer.find('.t3js-querybuilder-queries');
-		var $queryHeader = $('<h3> Saved queries</h3>');
+		// todo translate
+		var $queryHeader = $('<h3>Saved queries</h3>');
 		$queryHeader.prependTo($queryContainer);
 		QueryBuilder.initializeRecentQueries(QueryBuilder.querySelector);
 		QueryBuilder.initializeEvents();
@@ -220,27 +221,27 @@ define(['jquery',
 		// get current query name as default value for the modal
 		var queryName = $('option[value=' + QueryBuilder.querySelector.val() + ']', QueryBuilder.querySelector).text() || '';
 		$list.append(
-			$('<dt />').text("Save your Query"),
+			$('<dt />').text(TYPO3.lang['modal.headline'] || "Save your Query"),
 			$('<dd />').append(
-				$('<label />', {for: 'queryname'}).text('Name: '),
+				$('<label />', {for: 'queryname'}).text(TYPO3.lang['modal.queryname'] || 'Name: '),
 				$('<input />', {name: 'queryname', class: 'form-control', value: queryName})
 			),
 			$('<dd />').append(
 				$('<div />', {class: 'checkbox'}).append(
 					$('<label />').append(
 						$('<input />', {name: 'override', type: 'checkbox'}),
-						$('<span />').text('Override saved query?')
+						$('<span />').text(TYPO3.lang['modal.override'] || 'Override saved query?')
 					)
 				)
 			)
 		);
 		var queryBuilderAjaxUrl = TYPO3.settings.ajaxUrls.querybuilder_save_query;
 		Modal.show(
-			"Querybuilder - Save query",
+			TYPO3.lang['modal.title'] || "Querybuilder - Save query",
 			$list,
 			Severity.info,
 			[{
-				text: 'Cancel',
+				text: TYPO3.lang['modal.cancel'] || 'Cancel',
 				active: true,
 				btnClass: 'btn-default',
 				name: 'ok',
@@ -249,7 +250,7 @@ define(['jquery',
 				}
 			},
 			{
-				text: 'Save',
+				text: TYPO3.lang['modal.save'] || 'Save',
 				active: true,
 				btnClass: 'btn-info',
 				name: 'ok',
@@ -275,7 +276,7 @@ define(['jquery',
 						success: function(data) {
 							if (data.status === 'ok') {
 								Modal.currentModal.trigger('modal-dismiss');
-								Notification.success('Query saved', 'Your query has been saved');
+								Notification.success(TYPO3.lang['modal.success.headline'] || 'Query saved', TYPO3.lang['modal.save'] || 'Your query has been saved');
 								if (override) {
 									$('option[value="' + uid + '"]', QueryBuilder.querySelector).text(queryName);
 								} else {
@@ -285,7 +286,7 @@ define(['jquery',
 								}
 							} else {
 								Modal.currentModal.trigger('modal-dismiss');
-								Notification.error('Query not saved', 'Sorry, your query can\'t be saved');
+								Notification.error(TYPO3.lang['modal.error.headline'] || 'Query not saved', TYPO3.lang['modal.error.text'] || 'Sorry, your query can\'t be saved');
 							}
 						}
 					});
