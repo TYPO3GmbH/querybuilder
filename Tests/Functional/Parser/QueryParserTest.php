@@ -27,6 +27,11 @@ class QueryParserTest extends FunctionalTestCase
     protected $subject;
 
     /**
+     * @var string the database table
+     */
+    protected $table = 'pages';
+
+    /**
      *
      */
     protected function setUp()
@@ -56,7 +61,7 @@ class QueryParserTest extends FunctionalTestCase
         }';
         $query = json_decode($query);
         $expectedResult = ' ( `title` = \'foo\' ) ';
-        self::assertEquals($expectedResult, $this->subject->parse($query, 'demo'));
+        self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
     }
 
     /**
@@ -80,7 +85,7 @@ class QueryParserTest extends FunctionalTestCase
         }';
         $query = json_decode($query);
         $expectedResult = ' ( `title` <> \'foo\' ) ';
-        self::assertEquals($expectedResult, $this->subject->parse($query, 'demo'));
+        self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
     }
 
     /**
@@ -104,7 +109,7 @@ class QueryParserTest extends FunctionalTestCase
         }';
         $query = json_decode($query);
         $expectedResult = ' ( `title` IN (\'foo\',\'bar\') ) ';
-        self::assertEquals($expectedResult, $this->subject->parse($query, 'demo'));
+        self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
     }
 
     /*
@@ -128,7 +133,7 @@ class QueryParserTest extends FunctionalTestCase
         }';
         $query = json_decode($query);
         $expectedResult = ' ( `title` != \'foo\' || `title` != \'bar\' ) ';
-        self::assertEquals($expectedResult, $this->subject->parse($query, 'demo'));
+        self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
     }
 
     /**
@@ -152,7 +157,7 @@ class QueryParserTest extends FunctionalTestCase
         }';
         $query = json_decode($query);
         $expectedResult = ' ( `title` LIKE \'foo%\' ) ';
-        self::assertEquals($expectedResult, $this->subject->parse($query, 'demo'));
+        self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
     }
 
     /**
@@ -176,7 +181,7 @@ class QueryParserTest extends FunctionalTestCase
         }';
         $query = json_decode($query);
         $expectedResult = ' ( `title` NOT LIKE \'foo%\' ) ';
-        self::assertEquals($expectedResult, $this->subject->parse($query, 'demo'));
+        self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
     }
 
     /**
@@ -200,7 +205,7 @@ class QueryParserTest extends FunctionalTestCase
         }';
         $query = json_decode($query);
         $expectedResult = ' ( `title` LIKE \'%foo%\' ) ';
-        self::assertEquals($expectedResult, $this->subject->parse($query, 'demo'));
+        self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
     }
 
     /**
@@ -224,7 +229,7 @@ class QueryParserTest extends FunctionalTestCase
         }';
         $query = json_decode($query);
         $expectedResult = ' ( `title` NOT LIKE \'%foo%\' ) ';
-        self::assertEquals($expectedResult, $this->subject->parse($query, 'demo'));
+        self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
     }
 
     /**
@@ -240,7 +245,7 @@ class QueryParserTest extends FunctionalTestCase
               "field": "title",
               "type": "string",
               "input": "text",
-              "operator": "ends_with"
+              "operator": "ends_with",
               "value": "foo"
             }
           ],
@@ -248,7 +253,7 @@ class QueryParserTest extends FunctionalTestCase
         }';
         $query = json_decode($query);
         $expectedResult = ' ( `title` LIKE \'%foo\' ) ';
-        self::assertEquals($expectedResult, $this->subject->parse($query, 'demo'));
+        self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
     }
 
     /**
@@ -264,15 +269,15 @@ class QueryParserTest extends FunctionalTestCase
               "field": "title",
               "type": "string",
               "input": "text",
-              "operator": "ends_not_with",
+              "operator": "not_ends_with",
               "value": "foo"
             }
           ],
           "valid": true
         }';
         $query = json_decode($query);
-        $expectedResult = ' ( `title` != \'%foo\' ) ';
-        self::assertEquals($expectedResult, $this->subject->parse($query, 'demo'));
+        $expectedResult = ' ( `title` NOT LIKE \'%foo\' ) ';
+        self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
     }
 
     /**
@@ -288,14 +293,14 @@ class QueryParserTest extends FunctionalTestCase
               "field": "title",
               "type": "string",
               "input": "text",
-              "operator": "is_empty",
+              "operator": "is_empty"
             }
           ],
           "valid": true
         }';
         $query = json_decode($query);
-        $expectedResult = ' ( `title` = \'\' || `title` = null) ';
-        self::assertEquals($expectedResult, $this->subject->parse($query, 'demo'));
+        $expectedResult = ' ( (`title` = \'\') OR (`title` IS NULL) ) ';
+        self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
     }
 
     /**
@@ -311,14 +316,14 @@ class QueryParserTest extends FunctionalTestCase
               "field": "title",
               "type": "string",
               "input": "text",
-              "operator": "is_not_empty",
+              "operator": "is_not_empty"
             }
           ],
           "valid": true
         }';
         $query = json_decode($query);
-        $expectedResult = ' ( `title` != \'\' && `title` != null) ';
-        self::assertEquals($expectedResult, $this->subject->parse($query, 'demo'));
+        $expectedResult = ' ( (`title` <> \'\') AND (`title` IS NOT NULL) ) ';
+        self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
     }
 
     /**
@@ -334,14 +339,14 @@ class QueryParserTest extends FunctionalTestCase
               "field": "title",
               "type": "string",
               "input": "text",
-              "operator": "is_null",
+              "operator": "is_null"
             }
           ],
           "valid": true
         }';
         $query = json_decode($query);
-        $expectedResult = ' ( `title` = null) ';
-        self::assertEquals($expectedResult, $this->subject->parse($query, 'demo'));
+        $expectedResult = ' ( `title` IS NULL ) ';
+        self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
     }
 
     /**
@@ -357,14 +362,14 @@ class QueryParserTest extends FunctionalTestCase
               "field": "title",
               "type": "string",
               "input": "text",
-              "operator": "is_not_null",
+              "operator": "is_not_null"
             }
           ],
           "valid": true
         }';
         $query = json_decode($query);
-        $expectedResult = ' ( `title` != null) ';
-        self::assertEquals($expectedResult, $this->subject->parse($query, 'demo'));
+        $expectedResult = ' ( `title` IS NOT NULL ) ';
+        self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
     }
 
     /**
@@ -381,14 +386,14 @@ class QueryParserTest extends FunctionalTestCase
               "type": "string",
               "input": "integer",
               "operator": "less",
-              "value": 42,
+              "value": 42
             }
           ],
           "valid": true
         }';
         $query = json_decode($query);
-        $expectedResult = ' ( `title` < 42) ';
-        self::assertEquals($expectedResult, $this->subject->parse($query, 'demo'));
+        $expectedResult = ' ( `title` < 42 ) ';
+        self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
     }
 
     /**
@@ -405,14 +410,14 @@ class QueryParserTest extends FunctionalTestCase
               "type": "string",
               "input": "integer",
               "operator": "less_or_equal",
-              "value": 42,
+              "value": 42
             }
           ],
           "valid": true
         }';
         $query = json_decode($query);
-        $expectedResult = ' ( `title` <= 42) ';
-        self::assertEquals($expectedResult, $this->subject->parse($query, 'demo'));
+        $expectedResult = ' ( `title` <= 42 ) ';
+        self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
     }
 
     /**
@@ -429,14 +434,14 @@ class QueryParserTest extends FunctionalTestCase
               "type": "string",
               "input": "integer",
               "operator": "greater",
-              "value": 42,
+              "value": 42
             }
           ],
           "valid": true
         }';
         $query = json_decode($query);
-        $expectedResult = ' ( `title` > 42) ';
-        self::assertEquals($expectedResult, $this->subject->parse($query, 'demo'));
+        $expectedResult = ' ( `title` > 42 ) ';
+        self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
     }
 
     /**
@@ -453,14 +458,14 @@ class QueryParserTest extends FunctionalTestCase
               "type": "string",
               "input": "integer",
               "operator": "greater_or_equal",
-              "value": 42,
+              "value": 42
             }
           ],
           "valid": true
         }';
         $query = json_decode($query);
-        $expectedResult = ' ( `title` >= 42) ';
-        self::assertEquals($expectedResult, $this->subject->parse($query, 'demo'));
+        $expectedResult = ' ( `title` >= 42 ) ';
+        self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
     }
 
     /**
@@ -477,14 +482,14 @@ class QueryParserTest extends FunctionalTestCase
               "type": "string",
               "input": "integer",
               "operator": "between",
-              "value": 42,62
+              "value": "42,62"
             }
           ],
           "valid": true
         }';
         $query = json_decode($query);
-        $expectedResult = ' ( `title` > 42 && `title` < 62) ';
-        self::assertEquals($expectedResult, $this->subject->parse($query, 'demo'));
+        $expectedResult = ' ( (`title` > 42) AND (`title` < 62) ) ';
+        self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
     }
 
     /**
@@ -501,13 +506,13 @@ class QueryParserTest extends FunctionalTestCase
               "type": "string",
               "input": "integer",
               "operator": "not_between",
-              "value": 42,62
+              "value": "42,62"
             }
           ],
           "valid": true
         }';
         $query = json_decode($query);
-        $expectedResult = ' ( `title` < 42 && `title` > 62) ';
-        self::assertEquals($expectedResult, $this->subject->parse($query, 'demo'));
+        $expectedResult = ' ( (`title` < 42) AND (`title` > 62) ) ';
+        self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
     }
 }
