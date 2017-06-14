@@ -82,4 +82,432 @@ class QueryParserTest extends FunctionalTestCase
         $expectedResult = ' ( `title` <> \'foo\' ) ';
         self::assertEquals($expectedResult, $this->subject->parse($query, 'demo'));
     }
+
+    /**
+     * @test
+     */
+    public function parseReturnsValidWhereClauseForSimpleInQuery()
+    {
+        $query = '{
+          "condition": "AND",
+          "rules": [
+            {
+              "id": "title",
+              "field": "title",
+              "type": "string",
+              "input": "text",
+              "operator": "in",
+              "value": "foo, bar"
+            }
+          ],
+          "valid": true
+        }';
+        $query = json_decode($query);
+        $expectedResult = ' ( `title` = \'foo\' || `title` = \'bar\' ) ';
+        self::assertEquals($expectedResult, $this->subject->parse($query, 'demo'));
+    }
+
+    /*
+     %* @test
+     */
+    public function parseReturnsValidWhereClauseForSimpleNotInQuery()
+    {
+        $query = '{
+          "condition": "AND",
+          "rules": [
+            {
+              "id": "title",
+              "field": "title",
+              "type": "string",
+              "input": "text",
+              "operator": "not_in",
+              "value": "foo, bar"
+            }
+          ],
+          "valid": true
+        }';
+        $query = json_decode($query);
+        $expectedResult = ' ( `title` != \'foo\' || `title` != \'bar\' ) ';
+        self::assertEquals($expectedResult, $this->subject->parse($query, 'demo'));
+    }
+
+    /**
+     * @test
+     */
+    public function parseReturnsValidWhereClauseForSimpleBeginsQuery()
+    {
+        $query = '{
+          "condition": "AND",
+          "rules": [
+            {
+              "id": "title",
+              "field": "title",
+              "type": "string",
+              "input": "text",
+              "operator": "begins_with",
+              "value": "foo"
+            }
+          ],
+          "valid": true
+        }';
+        $query = json_decode($query);
+        $expectedResult = ' ( `title` = \'foo%\' ) ';
+        self::assertEquals($expectedResult, $this->subject->parse($query, 'demo'));
+    }
+
+    /**
+     * @test
+     */
+    public function parseReturnsValidWhereClauseForSimpleNotBeginsQuery()
+    {
+        $query = '{
+          "condition": "AND",
+          "rules": [
+            {
+              "id": "title",
+              "field": "title",
+              "type": "string",
+              "input": "text",
+              "operator": "not_begins_with",
+              "value": "foo"
+            }
+          ],
+          "valid": true
+        }';
+        $query = json_decode($query);
+        $expectedResult = ' ( `title` != \'foo%\' ) ';
+        self::assertEquals($expectedResult, $this->subject->parse($query, 'demo'));
+    }
+
+    /**
+     * @test
+     */
+    public function parseReturnsValidWhereClauseForSimpleContainsQuery()
+    {
+        $query = '{
+          "condition": "AND",
+          "rules": [
+            {
+              "id": "title",
+              "field": "title",
+              "type": "string",
+              "input": "text",
+              "operator": "contains",
+              "value": "foo"
+            }
+          ],
+          "valid": true
+        }';
+        $query = json_decode($query);
+        $expectedResult = ' ( `title` = \'%foo%\' ) ';
+        self::assertEquals($expectedResult, $this->subject->parse($query, 'demo'));
+    }
+
+    /**
+     * @test
+     */
+    public function parseReturnsValidWhereClauseForSimpleNotContainsQuery()
+    {
+        $query = '{
+          "condition": "AND",
+          "rules": [
+            {
+              "id": "title",
+              "field": "title",
+              "type": "string",
+              "input": "text",
+              "operator": "not_contains",
+              "value": "foo"
+            }
+          ],
+          "valid": true
+        }';
+        $query = json_decode($query);
+        $expectedResult = ' ( `title` != \'%foo%\' ) ';
+        self::assertEquals($expectedResult, $this->subject->parse($query, 'demo'));
+    }
+
+    /**
+     * @test
+     */
+    public function parseReturnsValidWhereClauseForSimpleEndsQuery()
+    {
+        $query = '{
+          "condition": "AND",
+          "rules": [
+            {
+              "id": "title",
+              "field": "title",
+              "type": "string",
+              "input": "text",
+              "operator": "ends_with"
+              "value": "foo"
+            }
+          ],
+          "valid": true
+        }';
+        $query = json_decode($query);
+        $expectedResult = ' ( `title` = \'%foo\' ) ';
+        self::assertEquals($expectedResult, $this->subject->parse($query, 'demo'));
+    }
+
+    /**
+     * @test
+     */
+    public function parseReturnsValidWhereClauseForSimpleNotEndsQuery()
+    {
+        $query = '{
+          "condition": "AND",
+          "rules": [
+            {
+              "id": "title",
+              "field": "title",
+              "type": "string",
+              "input": "text",
+              "operator": "ends_not_with",
+              "value": "foo"
+            }
+          ],
+          "valid": true
+        }';
+        $query = json_decode($query);
+        $expectedResult = ' ( `title` != \'%foo\' ) ';
+        self::assertEquals($expectedResult, $this->subject->parse($query, 'demo'));
+    }
+
+    /**
+     * @test
+     */
+    public function parseReturnsValidWhereClauseForSimpleEmptyQuery()
+    {
+        $query = '{
+          "condition": "AND",
+          "rules": [
+            {
+              "id": "title",
+              "field": "title",
+              "type": "string",
+              "input": "text",
+              "operator": "is_empty",
+            }
+          ],
+          "valid": true
+        }';
+        $query = json_decode($query);
+        $expectedResult = ' ( `title` = \'\' || `title` = null) ';
+        self::assertEquals($expectedResult, $this->subject->parse($query, 'demo'));
+    }
+
+    /**
+     * @test
+     */
+    public function parseReturnsValidWhereClauseForSimpleNotEmptyQuery()
+    {
+        $query = '{
+          "condition": "AND",
+          "rules": [
+            {
+              "id": "title",
+              "field": "title",
+              "type": "string",
+              "input": "text",
+              "operator": "is_not_empty",
+            }
+          ],
+          "valid": true
+        }';
+        $query = json_decode($query);
+        $expectedResult = ' ( `title` != \'\' && `title` != null) ';
+        self::assertEquals($expectedResult, $this->subject->parse($query, 'demo'));
+    }
+
+    /**
+     * @test
+     */
+    public function parseReturnsValidWhereClauseForSimpleNullQuery()
+    {
+        $query = '{
+          "condition": "AND",
+          "rules": [
+            {
+              "id": "title",
+              "field": "title",
+              "type": "string",
+              "input": "text",
+              "operator": "is_null",
+            }
+          ],
+          "valid": true
+        }';
+        $query = json_decode($query);
+        $expectedResult = ' ( `title` = null) ';
+        self::assertEquals($expectedResult, $this->subject->parse($query, 'demo'));
+    }
+
+    /**
+     * @test
+     */
+    public function parseReturnsValidWhereClauseForSimpleNotNullQuery()
+    {
+        $query = '{
+          "condition": "AND",
+          "rules": [
+            {
+              "id": "title",
+              "field": "title",
+              "type": "string",
+              "input": "text",
+              "operator": "is_not_null",
+            }
+          ],
+          "valid": true
+        }';
+        $query = json_decode($query);
+        $expectedResult = ' ( `title` != null) ';
+        self::assertEquals($expectedResult, $this->subject->parse($query, 'demo'));
+    }
+
+    /**
+     * @test
+     */
+    public function parseReturnsValidWhereClauseForSimpleLessQuery()
+    {
+        $query = '{
+          "condition": "AND",
+          "rules": [
+            {
+              "id": "title",
+              "field": "title",
+              "type": "string",
+              "input": "integer",
+              "operator": "less",
+              "value": 42,
+            }
+          ],
+          "valid": true
+        }';
+        $query = json_decode($query);
+        $expectedResult = ' ( `title` < 42) ';
+        self::assertEquals($expectedResult, $this->subject->parse($query, 'demo'));
+    }
+
+    /**
+     * @test
+     */
+    public function parseReturnsValidWhereClauseForSimpleLessOrEqualQuery()
+    {
+        $query = '{
+          "condition": "AND",
+          "rules": [
+            {
+              "id": "title",
+              "field": "title",
+              "type": "string",
+              "input": "integer",
+              "operator": "less_or_equal",
+              "value": 42,
+            }
+          ],
+          "valid": true
+        }';
+        $query = json_decode($query);
+        $expectedResult = ' ( `title` <= 42) ';
+        self::assertEquals($expectedResult, $this->subject->parse($query, 'demo'));
+    }
+
+    /**
+     * @test
+     */
+    public function parseReturnsValidWhereClauseForSimpleGreaterQuery()
+    {
+        $query = '{
+          "condition": "AND",
+          "rules": [
+            {
+              "id": "title",
+              "field": "title",
+              "type": "string",
+              "input": "integer",
+              "operator": "greater",
+              "value": 42,
+            }
+          ],
+          "valid": true
+        }';
+        $query = json_decode($query);
+        $expectedResult = ' ( `title` > 42) ';
+        self::assertEquals($expectedResult, $this->subject->parse($query, 'demo'));
+    }
+
+    /**
+     * @test
+     */
+    public function parseReturnsValidWhereClauseForSimpleGreaterOrEqualQuery()
+    {
+        $query = '{
+          "condition": "AND",
+          "rules": [
+            {
+              "id": "title",
+              "field": "title",
+              "type": "string",
+              "input": "integer",
+              "operator": "greater_or_equal",
+              "value": 42,
+            }
+          ],
+          "valid": true
+        }';
+        $query = json_decode($query);
+        $expectedResult = ' ( `title` >= 42) ';
+        self::assertEquals($expectedResult, $this->subject->parse($query, 'demo'));
+    }
+
+    /**
+     * @test
+     */
+    public function parseReturnsValidWhereClauseForSimpleBetweenQuery()
+    {
+        $query = '{
+          "condition": "AND",
+          "rules": [
+            {
+              "id": "title",
+              "field": "title",
+              "type": "string",
+              "input": "integer",
+              "operator": "between",
+              "value": 42,62
+            }
+          ],
+          "valid": true
+        }';
+        $query = json_decode($query);
+        $expectedResult = ' ( `title` > 42 && `title` < 62) ';
+        self::assertEquals($expectedResult, $this->subject->parse($query, 'demo'));
+    }
+
+    /**
+     * @test
+     */
+    public function parseReturnsValidWhereClauseForSimpleNotBetweenQuery()
+    {
+        $query = '{
+          "condition": "AND",
+          "rules": [
+            {
+              "id": "title",
+              "field": "title",
+              "type": "string",
+              "input": "integer",
+              "operator": "not_between",
+              "value": 42,62
+            }
+          ],
+          "valid": true
+        }';
+        $query = json_decode($query);
+        $expectedResult = ' ( `title` < 42 && `title` > 62) ';
+        self::assertEquals($expectedResult, $this->subject->parse($query, 'demo'));
+    }
 }
