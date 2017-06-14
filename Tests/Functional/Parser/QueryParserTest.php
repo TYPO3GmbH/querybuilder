@@ -103,7 +103,7 @@ class QueryParserTest extends FunctionalTestCase
           "valid": true
         }';
         $query = json_decode($query);
-        $expectedResult = ' ( `title` = \'foo\' || `title` = \'bar\' ) ';
+        $expectedResult = ' ( `title` IN (\'foo\',\'bar\') ) ';
         self::assertEquals($expectedResult, $this->subject->parse($query, 'demo'));
     }
 
@@ -151,7 +151,7 @@ class QueryParserTest extends FunctionalTestCase
           "valid": true
         }';
         $query = json_decode($query);
-        $expectedResult = ' ( `title` = \'foo%\' ) ';
+        $expectedResult = ' ( `title` LIKE \'foo%\' ) ';
         self::assertEquals($expectedResult, $this->subject->parse($query, 'demo'));
     }
 
@@ -175,7 +175,7 @@ class QueryParserTest extends FunctionalTestCase
           "valid": true
         }';
         $query = json_decode($query);
-        $expectedResult = ' ( `title` != \'foo%\' ) ';
+        $expectedResult = ' ( `title` NOT LIKE \'foo%\' ) ';
         self::assertEquals($expectedResult, $this->subject->parse($query, 'demo'));
     }
 
@@ -199,7 +199,7 @@ class QueryParserTest extends FunctionalTestCase
           "valid": true
         }';
         $query = json_decode($query);
-        $expectedResult = ' ( `title` = \'%foo%\' ) ';
+        $expectedResult = ' ( `title` LIKE \'%foo%\' ) ';
         self::assertEquals($expectedResult, $this->subject->parse($query, 'demo'));
     }
 
@@ -223,7 +223,7 @@ class QueryParserTest extends FunctionalTestCase
           "valid": true
         }';
         $query = json_decode($query);
-        $expectedResult = ' ( `title` != \'%foo%\' ) ';
+        $expectedResult = ' ( `title` NOT LIKE \'%foo%\' ) ';
         self::assertEquals($expectedResult, $this->subject->parse($query, 'demo'));
     }
 
@@ -247,7 +247,7 @@ class QueryParserTest extends FunctionalTestCase
           "valid": true
         }';
         $query = json_decode($query);
-        $expectedResult = ' ( `title` = \'%foo\' ) ';
+        $expectedResult = ' ( `title` LIKE \'%foo\' ) ';
         self::assertEquals($expectedResult, $this->subject->parse($query, 'demo'));
     }
 
