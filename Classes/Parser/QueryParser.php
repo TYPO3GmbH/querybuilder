@@ -1,10 +1,11 @@
 <?php
 declare(strict_types=1);
+
 namespace T3G\Querybuilder\Parser;
 
 use stdClass;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class QueryParser.
@@ -44,13 +45,15 @@ class QueryParser
     /**
      * @param stdClass $queryObject
      * @param string $table
-
      *
      * @return string
      */
     public function parse($queryObject, $table) : string
     {
-        $condition = $queryObject->condition === self::CONDITION_AND ? self::CONDITION_AND : self::CONDITION_OR;
+        $condition = $queryObject->condition ===
+        self::CONDITION_AND ?
+            self::CONDITION_AND :
+            self::CONDITION_OR;
         $whereParts = [];
         if (!empty($queryObject->rules)) {
             foreach ($queryObject->rules as $rule) {
@@ -62,7 +65,13 @@ class QueryParser
             }
         }
 
-        return empty($whereParts) ? '' : ' ( ' . implode(' ' . $condition . ' ', $whereParts) . ' ) ';
+        return empty($whereParts) ?
+            '' :
+            ' ( ' .
+            implode(' ' .
+                $condition .
+                ' ', $whereParts) .
+            ' ) ';
     }
 
     /**
@@ -70,26 +79,22 @@ class QueryParser
      * @param string $table
      *
      * @return string
+     * @throws \InvalidArgumentException
      */
     protected function getWhereClause(stdClass $rule, string $table) : string
     {
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
+            ->getQueryBuilderForTable($table);
         $where = '';
         $field = $rule->field;
         $value = $queryBuilder->quote($rule->value);
 
         switch ($rule->operator) {
             case self::OPERATOR_EQUAL:
-                $where = $queryBuilder->expr()->eq(
-                                $field,
-                                $value
-                        );
+                $where = $queryBuilder->expr()->eq($field, $value);
                 break;
             case self::OPERATOR_NOT_EQUAL:
-                $where = $queryBuilder->expr()->neq(
-                                $field,
-                                $value
-                        );
+                $where = $queryBuilder->expr()->neq($field, $value);
                 break;
             case self::OPERATOR_IN:
                 $values = GeneralUtility::trimExplode(',', $rule->value);
@@ -97,10 +102,7 @@ class QueryParser
                 foreach ($values as $value) {
                     $escapedValues[] = $queryBuilder->quote($value);
                 }
-                $where = $queryBuilder->expr()->in(
-                    $field,
-                    implode(',', $escapedValues)
-                );
+                $where = $queryBuilder->expr()->in($field, implode(',', $escapedValues));
                 break;
             case self::OPERATOR_NOT_IN:
                 $values = GeneralUtility::trimExplode(',', $rule->value);
@@ -108,103 +110,84 @@ class QueryParser
                 foreach ($values as $value) {
                     $escapedValues[] = $queryBuilder->quote($value);
                 }
-                $where = $queryBuilder->expr()->notIn(
-                    $field,
-                    implode(',', $escapedValues)
-                );
+                $where = $queryBuilder->expr()->notIn($field, implode(',', $escapedValues));
                 break;
             case self::OPERATOR_BEGINS_WITH:
                 $where = $queryBuilder->expr()->like(
-                        $field,
-                        $queryBuilder->expr()->literal($rule->value . '%')
+                    $field,
+                    $queryBuilder->expr()->literal($rule->value . '%')
                 );
                 break;
             case self::OPERATOR_NOT_BEGINS_WITH:
                 $where = $queryBuilder->expr()->notLike(
-                        $field,
-                        $queryBuilder->expr()->literal($rule->value . '%')
+                    $field,
+                    $queryBuilder->expr()->literal($rule->value . '%')
                 );
                 break;
             case self::OPERATOR_CONTAINS:
                 $where = $queryBuilder->expr()->like(
-                        $field,
-                        $queryBuilder->expr()->literal('%' . $rule->value . '%')
+                    $field,
+                    $queryBuilder->expr()->literal('%' . $rule->value . '%')
                 );
                 break;
             case self::OPERATOR_NOT_CONTAINS:
                 $where = $queryBuilder->expr()->notLike(
-                        $field,
-                        $queryBuilder->expr()->literal('%' . $rule->value . '%')
+                    $field,
+                    $queryBuilder->expr()->literal('%' . $rule->value . '%')
                 );
                 break;
             case self::OPERATOR_ENDS_WITH:
                 $where = $queryBuilder->expr()->like(
-                        $field,
-                        $queryBuilder->expr()->literal('%' . $rule->value)
+                    $field,
+                    $queryBuilder->expr()->literal('%' . $rule->value)
                 );
                 break;
             case self::OPERATOR_NOT_ENDS_WITH:
                 $where = $queryBuilder->expr()->notLike(
-                        $field,
-                        $queryBuilder->expr()->literal('%' . $rule->value)
+                    $field,
+                    $queryBuilder->expr()->literal('%' . $rule->value)
                 );
                 break;
             case self::OPERATOR_IS_EMPTY:
-                $where = $queryBuilder->expr()->orX(
+                $where = (string)$queryBuilder->expr()->orX(
                     $queryBuilder->expr()->eq($field, $queryBuilder->expr()->literal('')),
                     $queryBuilder->expr()->isNull($field)
                 );
                 break;
             case self::OPERATOR_IS_NOT_EMPTY:
-                $where = $queryBuilder->expr()->andX(
-                    $queryBuilder->expr()->neq($field,$queryBuilder->expr()->literal('')),
+                $where = (string)$queryBuilder->expr()->andX(
+                    $queryBuilder->expr()->neq($field, $queryBuilder->expr()->literal('')),
                     $queryBuilder->expr()->isNotNull($field)
                 );
                 break;
             case self::OPERATOR_IS_NULL:
-                $where = $queryBuilder->expr()->isNull(
-                        $field
-                );
+                $where = $queryBuilder->expr()->isNull($field);
                 break;
             case self::OPERATOR_IS_NOT_NULL:
-                $where = $queryBuilder->expr()->isNotNull(
-                        $field
-                );
+                $where = $queryBuilder->expr()->isNotNull($field);
                 break;
             case self::OPERATOR_LESS:
-                $where = $queryBuilder->expr()->lt(
-                                $field,
-                                $value
-                        );
+                $where = $queryBuilder->expr()->lt($field, $value);
                 break;
             case self::OPERATOR_LESS_OR_EQUAL:
-                $where = $queryBuilder->expr()->lte(
-                                $field,
-                                $value
-                        );
+                $where = $queryBuilder->expr()->lte($field, $value);
                 break;
             case self::OPERATOR_GREATER:
-                $where = $queryBuilder->expr()->gt(
-                                $field,
-                                $value
-                        );
+                $where = $queryBuilder->expr()->gt($field, $value);
                 break;
             case self::OPERATOR_GREATER_OR_EQUAL:
-                $where = $queryBuilder->expr()->gte(
-                                $field,
-                                $value
-                        );
+                $where = $queryBuilder->expr()->gte($field, $value);
                 break;
             case self::OPERATOR_BETWEEN:
-                $where = $queryBuilder->expr()->andX(
-                    $queryBuilder->expr()->gt($field,$value[0]),
-                    $queryBuilder->expr()->lt($field,$value[1])
+                $where = (string)$queryBuilder->expr()->andX(
+                    $queryBuilder->expr()->gt($field, $value[0]),
+                    $queryBuilder->expr()->lt($field, $value[1])
                 );
                 break;
             case self::OPERATOR_NOT_BETWEEN:
-                $where = $queryBuilder->expr()->andX(
-                    $queryBuilder->expr()->lt($field,$value[0]),
-                    $queryBuilder->expr()->gt($field,$value[1])
+                $where = (string)$queryBuilder->expr()->andX(
+                    $queryBuilder->expr()->lt($field, $value[0]),
+                    $queryBuilder->expr()->gt($field, $value[1])
                 );
                 break;
         }
@@ -216,6 +199,7 @@ class QueryParser
      * Prepare incoming values. E.g. parse date string into timestamp.
      *
      * @param stdClass $rule
+     *
      * @return mixed
      */
     protected function getValue($rule)
@@ -243,11 +227,17 @@ class QueryParser
                 break;
         }
         foreach ($values as &$value) {
-            if ($format !== null) {
+            if ($format !==
+                null
+            ) {
                 $date = \DateTime::createFromFormat($format, $value);
                 $value = $date->getTimestamp();
             }
         }
-        return count($values) === 1 ? $values[0] : $values;
+
+        return count($values) ===
+        1 ?
+            $values[0] :
+            $values;
     }
 }
