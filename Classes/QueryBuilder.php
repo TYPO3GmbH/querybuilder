@@ -112,6 +112,13 @@ class QueryBuilder
             case 'select':
                 $input = 'select';
                 break;
+            case 'input':
+                if (isset($fieldConfig['config']['eval'])) {
+                    if (strpos($fieldConfig['config']['eval'], 'int') !== false) {
+                        $input = 'number';
+                    }
+                }
+                break;
         }
 
         return $input;
