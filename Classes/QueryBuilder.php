@@ -84,6 +84,9 @@ class QueryBuilder
                     if (strpos($fieldConfig['config']['eval'], 'datetime') !== false) {
                         $type = 'datetime';
                     }
+                    if (strpos($fieldConfig['config']['eval'], 'int') !== false) {
+                        $type = 'integer';
+                    }
                 }
                 break;
         }
