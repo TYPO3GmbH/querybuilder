@@ -88,6 +88,7 @@ class QueryParser
         $where = '';
         $field = $rule->field;
         $quotedValue = $queryBuilder->quote($rule->value);
+        $unQuotedValue = $rule->value;
 
         switch ($rule->operator) {
             case self::OPERATOR_EQUAL:
@@ -97,7 +98,7 @@ class QueryParser
                 $where = $queryBuilder->expr()->neq($field, $quotedValue);
                 break;
             case self::OPERATOR_IN:
-                $values = GeneralUtility::trimExplode(',', $rule->value);
+                $values = GeneralUtility::trimExplode(',', $unQuotedValue);
                 $escapedValues = [];
                 foreach ($values as $quotedValue) {
                     $escapedValues[] = $queryBuilder->quote($quotedValue);
@@ -105,7 +106,7 @@ class QueryParser
                 $where = $queryBuilder->expr()->in($field, implode(',', $escapedValues));
                 break;
             case self::OPERATOR_NOT_IN:
-                $values = GeneralUtility::trimExplode(',', $rule->value);
+                $values = GeneralUtility::trimExplode(',', $unQuotedValue);
                 $escapedValues = [];
                 foreach ($values as $quotedValue) {
                     $escapedValues[] = $queryBuilder->quote($quotedValue);
@@ -115,37 +116,37 @@ class QueryParser
             case self::OPERATOR_BEGINS_WITH:
                 $where = $queryBuilder->expr()->like(
                     $field,
-                    $queryBuilder->expr()->literal($rule->value . '%')
+                    $queryBuilder->expr()->literal($unQuotedValue . '%')
                 );
                 break;
             case self::OPERATOR_NOT_BEGINS_WITH:
                 $where = $queryBuilder->expr()->notLike(
                     $field,
-                    $queryBuilder->expr()->literal($rule->value . '%')
+                    $queryBuilder->expr()->literal($unQuotedValue . '%')
                 );
                 break;
             case self::OPERATOR_CONTAINS:
                 $where = $queryBuilder->expr()->like(
                     $field,
-                    $queryBuilder->expr()->literal('%' . $rule->value . '%')
+                    $queryBuilder->expr()->literal('%' . $unQuotedValue . '%')
                 );
                 break;
             case self::OPERATOR_NOT_CONTAINS:
                 $where = $queryBuilder->expr()->notLike(
                     $field,
-                    $queryBuilder->expr()->literal('%' . $rule->value . '%')
+                    $queryBuilder->expr()->literal('%' . $unQuotedValue . '%')
                 );
                 break;
             case self::OPERATOR_ENDS_WITH:
                 $where = $queryBuilder->expr()->like(
                     $field,
-                    $queryBuilder->expr()->literal('%' . $rule->value)
+                    $queryBuilder->expr()->literal('%' . $unQuotedValue)
                 );
                 break;
             case self::OPERATOR_NOT_ENDS_WITH:
                 $where = $queryBuilder->expr()->notLike(
                     $field,
-                    $queryBuilder->expr()->literal('%' . $rule->value)
+                    $queryBuilder->expr()->literal('%' . $unQuotedValue)
                 );
                 break;
             case self::OPERATOR_IS_EMPTY:
@@ -179,9 +180,10 @@ class QueryParser
                 $where = $queryBuilder->expr()->gte($field, $quotedValue);
                 break;
             case self::OPERATOR_BETWEEN:
+                $values = GeneralUtility::trimExplode(',', $unQuotedValue);
                 $where = (string)$queryBuilder->expr()->andX(
-                    $queryBuilder->expr()->gt($field, $quotedValue[0]),
-                    $queryBuilder->expr()->lt($field, $quotedValue[1])
+                    $queryBuilder->expr()->gt($field, $values[0]),
+                    $queryBuilder->expr()->lt($field, $values[1])
                 );
                 break;
             case self::OPERATOR_NOT_BETWEEN:
