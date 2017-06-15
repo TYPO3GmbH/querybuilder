@@ -128,6 +128,9 @@ class QueryBuilder
                     }
                 }
                 break;
+            case 'check':
+                $values[] = 1;
+                break;
         }
 
         return $values;
