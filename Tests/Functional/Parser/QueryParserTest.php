@@ -373,9 +373,27 @@ class QueryParserTest extends FunctionalTestCase
     }
 
     /**
-     * @test
+     * @return array
      */
-    public function parseReturnsValidWhereClauseForSimpleLessQuery()
+    public function parseReturnsValidWhereClauseForSimpleLessQueryDataProvider() : array
+    {
+        return [
+            'integer value' => [42, ' ( `title` < 42 ) '],
+            'float value' => [42.5, ' ( `title` < 42.5 ) '],
+            'comma value' => ['42,5', ' ( `title` < 42.5 ) '],
+            'string as number value' => ['42', ' ( `title` < 42 ) '],
+            'string as string value' => ['foo', ' ( `title` < \'foo\' ) '],
+        ];
+    }
+
+    /**
+     * @test
+     * @dataProvider parseReturnsValidWhereClauseForSimpleLessQueryDataProvider
+     *
+     * @param $number
+     * @param $expectedResult
+     */
+    public function parseReturnsValidWhereClauseForSimpleLessQuery($number, $expectedResult)
     {
         $query = '{
           "condition": "AND",
@@ -392,14 +410,33 @@ class QueryParserTest extends FunctionalTestCase
           "valid": true
         }';
         $query = json_decode($query);
-        $expectedResult = ' ( `title` < 42 ) ';
+        $query->rules[0]->value = $number;
         self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
     }
 
     /**
-     * @test
+     * @return array
      */
-    public function parseReturnsValidWhereClauseForSimpleLessOrEqualQuery()
+    public function parseReturnsValidWhereClauseForSimpleLessOrEqualQueryDataProvider() : array
+    {
+        return [
+            'integer value' => [42, ' ( `title` <= 42 ) '],
+            'float value' => [42.5, ' ( `title` <= 42.5 ) '],
+            'comma value' => ['42,5', ' ( `title` <= 42.5 ) '],
+            'string as number value' => ['42', ' ( `title` <= 42 ) '],
+            'string as string value' => ['foo', ' ( `title` <= \'foo\' ) '],
+        ];
+    }
+
+
+    /**
+     * @test
+     * @dataProvider parseReturnsValidWhereClauseForSimpleLessOrEqualQueryDataProvider
+     *
+     * @param $number
+     * @param $expectedResult
+     */
+    public function parseReturnsValidWhereClauseForSimpleLessOrEqualQuery($number, $expectedResult)
     {
         $query = '{
           "condition": "AND",
@@ -416,14 +453,32 @@ class QueryParserTest extends FunctionalTestCase
           "valid": true
         }';
         $query = json_decode($query);
-        $expectedResult = ' ( `title` <= 42 ) ';
+        $query->rules[0]->value = $number;
         self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
     }
 
     /**
-     * @test
+     * @return array
      */
-    public function parseReturnsValidWhereClauseForSimpleGreaterQuery()
+    public function parseReturnsValidWhereClauseForSimpleGreaterQueryDataProvider() : array
+    {
+        return [
+            'integer value' => [42, ' ( `title` > 42 ) '],
+            'float value' => [42.5, ' ( `title` > 42.5 ) '],
+            'comma value' => ['42,5', ' ( `title` > 42.5 ) '],
+            'string as number value' => ['42', ' ( `title` > 42 ) '],
+            'string as string value' => ['foo', ' ( `title` > \'foo\' ) '],
+        ];
+    }
+
+    /**
+     * @test
+     * @dataProvider parseReturnsValidWhereClauseForSimpleGreaterQueryDataProvider
+     *
+     * @param $number
+     * @param $expectedResult
+     */
+    public function parseReturnsValidWhereClauseForSimpleGreaterQuery($number, $expectedResult)
     {
         $query = '{
           "condition": "AND",
@@ -440,14 +495,32 @@ class QueryParserTest extends FunctionalTestCase
           "valid": true
         }';
         $query = json_decode($query);
-        $expectedResult = ' ( `title` > 42 ) ';
+        $query->rules[0]->value = $number;
         self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
     }
 
     /**
-     * @test
+     * @return array
      */
-    public function parseReturnsValidWhereClauseForSimpleGreaterOrEqualQuery()
+    public function parseReturnsValidWhereClauseForSimpleGreaterOrEqualQueryDataProvider() : array
+    {
+        return [
+            'integer value' => [42, ' ( `title` >= 42 ) '],
+            'float value' => [42.5, ' ( `title` >= 42.5 ) '],
+            'comma value' => ['42,5', ' ( `title` >= 42.5 ) '],
+            'string as number value' => ['42', ' ( `title` >= 42 ) '],
+            'string as string value' => ['foo', ' ( `title` >= \'foo\' ) '],
+        ];
+    }
+
+    /**
+     * @test
+     * @dataProvider parseReturnsValidWhereClauseForSimpleGreaterOrEqualQueryDataProvider
+     *
+     * @param $number
+     * @param $expectedResult
+     */
+    public function parseReturnsValidWhereClauseForSimpleGreaterOrEqualQuery($number, $expectedResult)
     {
         $query = '{
           "condition": "AND",
@@ -464,7 +537,7 @@ class QueryParserTest extends FunctionalTestCase
           "valid": true
         }';
         $query = json_decode($query);
-        $expectedResult = ' ( `title` >= 42 ) ';
+        $query->rules[0]->value = $number;
         self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
     }
 
