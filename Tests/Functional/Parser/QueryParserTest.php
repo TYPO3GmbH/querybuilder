@@ -378,11 +378,17 @@ class QueryParserTest extends FunctionalTestCase
     public function parseReturnsValidWhereClauseForSimpleLessQueryDataProvider() : array
     {
         return [
-            'integer value' => [42, 'integer', ' ( `title` < 42 ) '],
-            'float value' => [42.5, 'integer', ' ( `title` < 42 ) '],
-            'comma value' => ['42,5', 'integer', ' ( `title` < 42 ) '],
-            'string as number value' => ['42', 'integer', ' ( `title` < 42 ) '],
-            'string as string value' => ['foo', 'integer', ' ( `title` < 0 ) '],
+            'integer value as type integer' => [42, 'integer', ' ( `title` < 42 ) '],
+            'float value as type integer' => [42.5, 'integer', ' ( `title` < 42 ) '],
+            'comma value as type integer' => ['42,5', 'integer', ' ( `title` < 42 ) '],
+            'string as number value as type integer' => ['42', 'integer', ' ( `title` < 42 ) '],
+            'string as string value as type integer' => ['foo', 'integer', ' ( `title` < 0 ) '],
+
+            'integer value as type boolean' => [42, 'boolean', ' ( `title` < 0 ) '],
+            'float value as type boolean' => [42.5, 'boolean', ' ( `title` < 0 ) '],
+            'comma value as type boolean' => ['42,5', 'boolean', ' ( `title` < 0 ) '],
+            'string as number value as type boolean' => ['42', 'boolean', ' ( `title` < 0 ) '],
+            'string as string value as type boolean' => ['foo', 'boolean', ' ( `title` < 0 ) '],
 
             'integer value as type string' => [42, 'string', ' ( `title` < \'42\' ) '],
             'float value as type string' => [42.5, 'string', ' ( `title` < \'42.5\' ) '],
@@ -395,12 +401,6 @@ class QueryParserTest extends FunctionalTestCase
             'comma value as type double' => ['42,5', 'double', ' ( `title` < \'42.5\' ) '],
             'string as number value as type double' => ['42', 'double', ' ( `title` < \'42\' ) '],
             'string as string value as type double' => ['foo', 'double', ' ( `title` < \'foo\' ) '],
-
-            'integer value as type boolean' => [42, 'boolean', ' ( `title` < \'42\' ) '],
-            'float value as type boolean' => [42.5, 'boolean', ' ( `title` < \'42.5\' ) '],
-            'comma value as type boolean' => ['42,5', 'boolean', ' ( `title` < \'42.5\' ) '],
-            'string as number value as type boolean' => ['42', 'boolean', ' ( `title` < \'42\' ) '],
-            'string as string value as type boolean' => ['foo', 'boolean', ' ( `title` < \'foo\' ) '],
 
             'integer value as type date' => [42, 'date', ' ( `title` < \'42\' ) '],
             'float value as type date' => [42.5, 'date', ' ( `title` < \'42.5\' ) '],

@@ -115,7 +115,7 @@ class QueryParser
                 $databaseType = \PDO::PARAM_STR;
                 break;
         }
-        $quotedValue = $queryBuilder->createNamedParameter($unQuotedValue, $databaseType);
+        $quotedValue = $queryBuilder->quote($unQuotedValue, $databaseType);
 
         switch ($rule->operator) {
             case self::OPERATOR_EQUAL:
