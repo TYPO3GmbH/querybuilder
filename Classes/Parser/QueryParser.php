@@ -42,6 +42,8 @@ class QueryParser
     const FORMAT_TIMESEC = 'H:i:s';
     const FORMAT_YEAR = 'Y';
 
+    const TYPE_INTEGER = 'integer';
+
     /**
      * @param stdClass $queryObject
      * @param string $table
@@ -87,12 +89,22 @@ class QueryParser
             ->getQueryBuilderForTable($table);
         $where = '';
         $field = $rule->field;
+        // @TODO: remove $quotedValue after refactoring
         $quotedValue = $queryBuilder->quote($rule->value);
         $unQuotedValue = $rule->value;
 
+        switch ($rule->type) {
+            case self::TYPE_INTEGER:
+                $databaseType = \PDO::PARAM_INT;
+                break;
+            default:
+                $databaseType = \PDO::PARAM_STR;
+                break;
+        }
+
         switch ($rule->operator) {
             case self::OPERATOR_EQUAL:
-                $where = $queryBuilder->expr()->eq($field, $quotedValue);
+                $where = $queryBuilder->expr()->eq($field, $queryBuilder->createNamedParameter($unQuotedValue, $databaseType));
                 break;
             case self::OPERATOR_NOT_EQUAL:
                 $where = $queryBuilder->expr()->neq($field, $quotedValue);
