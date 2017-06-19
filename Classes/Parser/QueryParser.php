@@ -42,7 +42,13 @@ class QueryParser
     const FORMAT_TIMESEC = 'H:i:s';
     const FORMAT_YEAR = 'Y';
 
+    const TYPE_STRING = 'string';
     const TYPE_INTEGER = 'integer';
+    const TYPE_BOOlEAN = 'boolean';
+    const TYPE_DOUBLE = 'double';
+    const TYPE_DATE = 'date';
+    const TYPE_TIME= 'time';
+    const TYPE_DATETIME = 'datetime';
 
     /**
      * @param stdClass $queryObject
@@ -89,22 +95,31 @@ class QueryParser
             ->getQueryBuilderForTable($table);
         $where = '';
         $field = $rule->field;
-        // @TODO: remove $quotedValue after refactoring
-        $quotedValue = $queryBuilder->quote($rule->value);
         $unQuotedValue = $rule->value;
 
         switch ($rule->type) {
             case self::TYPE_INTEGER:
                 $databaseType = \PDO::PARAM_INT;
                 break;
+            case self::TYPE_BOOlEAN:
+                $databaseType = \PDO::PARAM_BOOL;
+                break;
+            case self::TYPE_DATE:
+            case self::TYPE_TIME:
+            case self::TYPE_DATETIME:
+            case self::TYPE_DOUBLE:
+            case self::TYPE_STRING:
+                $databaseType = \PDO::PARAM_STR;
+                break;
             default:
                 $databaseType = \PDO::PARAM_STR;
                 break;
         }
+        $quotedValue = $queryBuilder->createNamedParameter($unQuotedValue, $databaseType);
 
         switch ($rule->operator) {
             case self::OPERATOR_EQUAL:
-                $where = $queryBuilder->expr()->eq($field, $queryBuilder->createNamedParameter($unQuotedValue, $databaseType));
+                $where = $queryBuilder->expr()->eq($field, $quotedValue);
                 break;
             case self::OPERATOR_NOT_EQUAL:
                 $where = $queryBuilder->expr()->neq($field, $quotedValue);
