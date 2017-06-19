@@ -79,7 +79,7 @@ define(['jquery',
 				title: TYPO3.lang['button.save'] || 'Save query',
 				action: 'save'
 			}
-		]
+		],
 	};
 
 	/**
@@ -104,7 +104,7 @@ define(['jquery',
 		//QueryBuilder.initializeQueries();
 		var $queryContainer = $queryBuilderContainer.find('.t3js-querybuilder-queries');
 		// todo translate
-		var $queryHeader = $('<h3>Saved queries</h3>');
+		var $queryHeader = $( '<h3>' + TYPO3.lang['recent.header'] + '</h3>' || '<h3>Saved queries</h3>');
 		$queryHeader.prependTo($queryContainer);
 		QueryBuilder.initializeRecentQueries(QueryBuilder.querySelector);
 		QueryBuilder.initializeEvents();

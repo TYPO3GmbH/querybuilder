@@ -13,6 +13,10 @@
 				<source>Save</source>
 			</trans-unit>
 
+			<trans-unit id="recent.header">
+				<source>Saved queries</source>
+			</trans-unit>
+
 			<trans-unit id="modal.title">
 				<source>Querybuilder - Save query</source>
 			</trans-unit>
@@ -23,10 +27,10 @@
 				<source>Name: </source>
 			</trans-unit>
 			<trans-unit id="modal.override">
-				<source>Save your Query</source>
+				<source>Override saved query?</source>
 			</trans-unit>
 			<trans-unit id="modal.cancel">
-				<source>Override saved query?</source>
+				<source>cancel</source>
 			</trans-unit>
 			<trans-unit id="modal.save">
 				<source>save</source>
