@@ -29,7 +29,7 @@ class PageRenderer
             $pageRenderer->addInlineLanguageLabelFile('EXT:querybuilder/Resources/Private/Language/querybuilder-js.xlf');
             $pageRenderer->addCssFile('EXT:querybuilder/Resources/Public/Css/query-builder.default.css');
             $pageRenderer->addCssFile('EXT:querybuilder/Resources/Public/Css/custom-query-builder.css');
-            
+
             $pageRenderer->addRequireJsConfiguration([
                 'paths' => [
                     'query-builder' => PathUtility::getAbsoluteWebPath('../typo3conf/ext/querybuilder/Resources/Public/JavaScript/query-builder.standalone'),
