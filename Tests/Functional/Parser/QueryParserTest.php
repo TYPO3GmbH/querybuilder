@@ -699,11 +699,11 @@ class QueryParserTest extends FunctionalTestCase
     public function parseReturnsValidWhereClauseForSimpleBetweenQueryDataProvider() : array
     {
         return [
-            'integer value as integer' => [[42,62], 'integer', ' ( (`title` > \'42\' ) AND (`title` < \'62\' ) ) '],
-            'float value as integer' => [[42.5, 62.5], 'integer', ' ( `title` > \'42.5\' ) AND (`title` < \'62.5\' ) ) '],
-            'comma value as integer' => [['42,5','62,5'], 'integer', ' ( `title` > \'42,5\' ) AND (`title` < \'62,5\' ) ) '],
-            'string as number value as integer' => [['42', '62'], 'integer', ' ( `title` > \'42\' ) AND (`title` < \'62\' ) ) '],
-            'string as string value as integer' => [['foo','bar'], 'integer', ' ( `title` > \'42\' ) AND (`title` < \'62\' ) ) '],
+            'integer value as integer' => [[42,62], 'integer', ' ( (`title` > \'42\') AND (`title` < \'62\') ) '],
+            'float value as integer' => [[42.5, 62.5], 'integer', ' ( (`title` > \'42.5\') AND (`title` < \'62.5\') ) '],
+            'comma value as integer' => [['42,5','62,5'], 'integer', ' ( (`title` > \'42,5\') AND (`title` < \'62,5\') ) '],
+            'string as number value as integer' => [['42', '62'], 'integer', ' ( (`title` > \'42\') AND (`title` < \'62\') ) '],
+            'string as string value as integer' => [['foo','bar'], 'integer', ' ( (`title` > \'foo\') AND (`title` < \'bar\') ) '],
 
 //            'integer value as type boolean' => [42, 'boolean', ' ( `title` >= \'42\' ) '],
 //            'float value as type boolean' => [42.5, 'boolean', ' ( `title` >= \'42.5\' ) '],
