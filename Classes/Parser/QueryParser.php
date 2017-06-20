@@ -208,15 +208,20 @@ class QueryParser
                 break;
             case self::OPERATOR_BETWEEN:
                 $values = GeneralUtility::trimExplode(',', $unQuotedValue);
+                $quotedValue1 = $queryBuilder->quote($values[0], $databaseType);
+                $quotedValue2 = $queryBuilder->quote($values[1], $databaseType);
                 $where = (string)$queryBuilder->expr()->andX(
-                    $queryBuilder->expr()->gt($field, $values[0]),
-                    $queryBuilder->expr()->lt($field, $values[1])
+                    $queryBuilder->expr()->gt($field, $quotedValue1),
+                    $queryBuilder->expr()->lt($field, $quotedValue2)
                 );
                 break;
             case self::OPERATOR_NOT_BETWEEN:
+                $values = GeneralUtility::trimExplode(',', $unQuotedValue);
+                $quotedValue1 = $queryBuilder->quote($values[0], $databaseType);
+                $quotedValue2 = $queryBuilder->quote($values[1], $databaseType);
                 $where = (string)$queryBuilder->expr()->andX(
-                    $queryBuilder->expr()->lt($field, $quotedValue[0]),
-                    $queryBuilder->expr()->gt($field, $quotedValue[1])
+                    $queryBuilder->expr()->lt($field, $quotedValue1),
+                    $queryBuilder->expr()->gt($field, $quotedValue2)
                 );
                 break;
         }
