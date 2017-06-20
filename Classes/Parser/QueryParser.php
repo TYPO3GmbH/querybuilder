@@ -115,7 +115,9 @@ class QueryParser
                 $databaseType = \PDO::PARAM_STR;
                 break;
         }
-        $quotedValue = $queryBuilder->quote($unQuotedValue, $databaseType);
+        if ($rule->operator !== self::OPERATOR_BETWEEN &&  $rule->operator !== self::OPERATOR_NOT_BETWEEN) {
+            $quotedValue = $queryBuilder->quote($unQuotedValue, $databaseType);
+        }
 
         switch ($rule->operator) {
             case self::OPERATOR_EQUAL:
@@ -207,18 +209,18 @@ class QueryParser
                 $where = $queryBuilder->expr()->gte($field, $quotedValue);
                 break;
             case self::OPERATOR_BETWEEN:
-                $values = GeneralUtility::trimExplode(',', $unQuotedValue);
-                $quotedValue1 = $queryBuilder->quote($values[0], $databaseType);
-                $quotedValue2 = $queryBuilder->quote($values[1], $databaseType);
+//                $values = GeneralUtility::trimExplode(',', $unQuotedValue);
+                $quotedValue1 = $queryBuilder->quote($unQuotedValue[0], $databaseType);
+                $quotedValue2 = $queryBuilder->quote($unQuotedValue[1], $databaseType);
                 $where = (string)$queryBuilder->expr()->andX(
                     $queryBuilder->expr()->gt($field, $quotedValue1),
                     $queryBuilder->expr()->lt($field, $quotedValue2)
                 );
                 break;
             case self::OPERATOR_NOT_BETWEEN:
-                $values = GeneralUtility::trimExplode(',', $unQuotedValue);
-                $quotedValue1 = $queryBuilder->quote($values[0], $databaseType);
-                $quotedValue2 = $queryBuilder->quote($values[1], $databaseType);
+//                $values = GeneralUtility::trimExplode(',', (string)$unQuotedValue);
+                $quotedValue1 = $queryBuilder->quote($unQuotedValue[0], $databaseType);
+                $quotedValue2 = $queryBuilder->quote($unQuotedValue[1], $databaseType);
                 $where = (string)$queryBuilder->expr()->andX(
                     $queryBuilder->expr()->lt($field, $quotedValue1),
                     $queryBuilder->expr()->gt($field, $quotedValue2)
