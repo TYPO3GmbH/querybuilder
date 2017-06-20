@@ -115,7 +115,8 @@ class QueryParser
                 $databaseType = \PDO::PARAM_STR;
                 break;
         }
-        if ($rule->operator !== self::OPERATOR_BETWEEN &&  $rule->operator !== self::OPERATOR_NOT_BETWEEN) {
+        $quotedValue = null;
+        if (is_string($unQuotedValue)) {
             $quotedValue = $queryBuilder->quote($unQuotedValue, $databaseType);
         }
 
@@ -209,7 +210,6 @@ class QueryParser
                 $where = $queryBuilder->expr()->gte($field, $quotedValue);
                 break;
             case self::OPERATOR_BETWEEN:
-//                $values = GeneralUtility::trimExplode(',', $unQuotedValue);
                 $quotedValue1 = $queryBuilder->quote($unQuotedValue[0], $databaseType);
                 $quotedValue2 = $queryBuilder->quote($unQuotedValue[1], $databaseType);
                 $where = (string)$queryBuilder->expr()->andX(
@@ -218,7 +218,6 @@ class QueryParser
                 );
                 break;
             case self::OPERATOR_NOT_BETWEEN:
-//                $values = GeneralUtility::trimExplode(',', (string)$unQuotedValue);
                 $quotedValue1 = $queryBuilder->quote($unQuotedValue[0], $databaseType);
                 $quotedValue2 = $queryBuilder->quote($unQuotedValue[1], $databaseType);
                 $where = (string)$queryBuilder->expr()->andX(

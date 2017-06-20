@@ -87,6 +87,9 @@ class QueryBuilder
                     if (strpos($fieldConfig['config']['eval'], 'int') !== false) {
                         $type = 'integer';
                     }
+                    if (strpos($fieldConfig['config']['eval'], 'num') !== false) {
+                        $type = 'integer';
+                    }
                     if (strpos($fieldConfig['config']['eval'], 'time') !== false) {
                         $type = 'time';
                     }
