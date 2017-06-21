@@ -116,7 +116,7 @@ class QueryParser
                 break;
         }
         $quotedValue = null;
-        if (is_string($unQuotedValue)) {
+        if ($rule->operator !== self::OPERATOR_BETWEEN && $rule->operator !== self::OPERATOR_NOT_BETWEEN) {
             $quotedValue = $queryBuilder->quote($unQuotedValue, $databaseType);
         }
 
