@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="en" target-language="de" datatype="plaintext" original="messages" date="2017-15-06T11:21:20Z" product-name="querybuilder">
+		<header/>
+		<body>
+			<trans-unit id="button.apply">
+				<source>Apply</source>
+				<target>Ausführen</target>
+			</trans-unit>
+			<trans-unit id="button.reset">
+				<source>Reset</source>
+				<target>Löschen</target>
+			</trans-unit>
+			<trans-unit id="button.save">
+				<source>Save</source>
+				<target>Speichern</target>
+			</trans-unit>
+
+			<trans-unit id="recent.header">
+				<source>Saved queries</source>
+				<target>Gespeicherte Queries</target>
+			</trans-unit>
+
+			<trans-unit id="modal.title">
+				<source>Querybuilder - Save query</source>
+				<target>Querybuilder - Query speichern</target>
+			</trans-unit>
+			<trans-unit id="modal.headline">
+				<source>Save your Query</source>
+				<target>Speichere deinen Query</target>
+			</trans-unit>
+			<trans-unit id="modal.queryname">
+				<source>Name: </source>
+				<target>Name: </target>
+			</trans-unit>
+			<trans-unit id="modal.override">
+				<source>Override your Query</source>
+				<target>Query aktualisieren</target>
+			</trans-unit>
+			<trans-unit id="modal.cancel">
+				<source>cancel</source>
+				<target>Abbrechen</target>
+			</trans-unit>
+			<trans-unit id="modal.save">
+				<source>save</source>
+				<target>Speichern</target>
+			</trans-unit>
+			<trans-unit id="modal.success.headline">
+				<source>Query saved</source>
+				<target>Query gespeichert</target>
+			</trans-unit>
+			<trans-unit id="modal.success.text">
+				<source>Your query has been saved</source>
+				<target>Dein Query wurde gespeichert</target>
+			</trans-unit>
+			<trans-unit id="modal.error.headline">
+				<source>Query not saved</source>
+				<target>Query nicht gespeichert</target>
+			</trans-unit>
+			<trans-unit id="modal.error.text">
+				<source>Sorry, your query can't be saved</source>
+				<target>Sorry, dein Query konnte nicht gespeichert werden</target>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

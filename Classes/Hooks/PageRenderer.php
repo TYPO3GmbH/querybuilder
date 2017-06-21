@@ -23,12 +23,13 @@ class PageRenderer
     public function renderPreProcess(array $params)
     {
         $table = GeneralUtility::_GP('table');
-        if ($table !== null && GeneralUtility::_GP('M') === 'web_list') {
+        if (!empty($table) && GeneralUtility::_GP('M') === 'web_list') {
             $pageRenderer = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Page\PageRenderer::class);
 
-            $pageRenderer->addCssFile(
-                PathUtility::getAbsoluteWebPath('../typo3conf/ext/querybuilder/Resources/Public/Css/query-builder.default.css')
-            );
+            $pageRenderer->addInlineLanguageLabelFile('EXT:querybuilder/Resources/Private/Language/querybuilder-js.xlf');
+            $pageRenderer->addCssFile('EXT:querybuilder/Resources/Public/Css/query-builder.default.css');
+            $pageRenderer->addCssFile('EXT:querybuilder/Resources/Public/Css/custom-query-builder.css');
+
             $pageRenderer->addRequireJsConfiguration([
                 'paths' => [
                     'query-builder' => PathUtility::getAbsoluteWebPath('../typo3conf/ext/querybuilder/Resources/Public/JavaScript/query-builder.standalone'),

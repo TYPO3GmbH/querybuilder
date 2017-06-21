@@ -1,17 +1,15 @@
 /*!
- * jQuery QueryBuilder 2.3.3
- * Copyright 2014-2016 Damien "Mistic" Sorel (http://www.strangeplanet.fr)
+ * jQuery QueryBuilder 2.4.3
+ * Copyright 2014-2017 Damien "Mistic" Sorel (http://www.strangeplanet.fr)
  * Licensed under MIT (http://opensource.org/licenses/MIT)
  */
-
 .query-builder .rules-group-container, .query-builder .rule-container, .query-builder .rule-placeholder {
   position: relative;
   margin: 4px 0;
-  border-radius: 2px;
+  border-radius: 5px;
   padding: 5px;
   border: 1px solid #EEE;
   background: rgba(255, 255, 255, 0.9);
-  box-shadow: inset 0 0 2px #ccc;
 }
 
 .query-builder .rule-container .rule-filter-container,
@@ -25,18 +23,26 @@
 .query-builder .rules-group-container {
   padding: 10px;
   padding-bottom: 6px;
-  border: 1px solid #cccccc;
-  background: #f7f7f7;
+  border: 1px solid #DCC896;
+  background: rgba(250, 240, 210, 0.5);
 }
 .query-builder .rules-group-header {
   margin-bottom: 10px;
 }
 .query-builder .rules-group-header .group-conditions .btn.readonly:not(.active),
 .query-builder .rules-group-header .group-conditions input[name$=_cond] {
-  display: none;
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+  white-space: nowrap;
 }
 .query-builder .rules-group-header .group-conditions .btn.readonly {
-  border-radius: 2px;
+  border-radius: 3px;
 }
 .query-builder .rules-list {
   list-style: none;
@@ -91,10 +97,20 @@
   height: calc(50% + 14px);
 }
 .query-builder .rules-list > *:last-child::before {
-  border-radius: 0 0 0 2px;
+  border-radius: 0 0 0 4px;
 }
 .query-builder .rules-list > *:last-child::after {
   display: none;
+}
+
+.query-builder.bt-checkbox-glyphicons .checkbox input[type=checkbox]:checked + label::after {
+  font-family: 'Glyphicons Halflings';
+  content: '\e013';
+}
+.query-builder.bt-checkbox-glyphicons .checkbox label::after {
+  padding-left: 4px;
+  padding-top: 2px;
+  font-size: 9px;
 }
 
 .query-builder .error-container + .tooltip .tooltip-inner {
@@ -106,7 +122,7 @@
   background: #D9EDF7;
   border: 1px solid #BCE8F1;
   color: #31708F;
-  border-radius: 2px;
+  border-radius: 5px;
   padding: 2.5px 5px;
   font-size: .8em;
 }
@@ -120,8 +136,13 @@
   vertical-align: middle;
   margin-left: 5px;
 }
-.query-builder .dragged {
+.query-builder .dragging {
+  position: fixed;
   opacity: .5;
+  z-index: 100;
+}
+.query-builder .dragging::before, .query-builder .dragging::after {
+  display: none;
 }
 .query-builder .rule-placeholder {
   border: 1px dashed #BBB;

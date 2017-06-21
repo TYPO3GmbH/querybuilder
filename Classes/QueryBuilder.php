@@ -1,12 +1,11 @@
 <?php
-
+declare(strict_types=1);
 namespace T3G\Querybuilder;
 
 use InvalidArgumentException;
 use stdClass;
 use T3G\Querybuilder\Backend\Form\FormDataGroup\TcaOnly;
 use TYPO3\CMS\Backend\Form\FormDataCompiler;
-use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use UnexpectedValueException;
 
@@ -30,7 +29,7 @@ class QueryBuilder
      * @throws UnexpectedValueException
      * @throws InvalidArgumentException
      */
-    public function buildFilterFromTca($table)
+    public function buildFilterFromTca($table) : array
     {
         $dataProviderResult = $this->prepareTca($table);
         $TCA = $dataProviderResult['processedTca'];
@@ -66,7 +65,7 @@ class QueryBuilder
      *
      * @return string
      */
-    protected function determineFilterType(array $fieldConfig)
+    protected function determineFilterType(array $fieldConfig) : string
     {
         $type = 'string';
         switch ($fieldConfig['config']['type']) {
@@ -75,14 +74,25 @@ class QueryBuilder
                 break;
             case 'select':
             case 'input':
-                if (strpos($fieldConfig['config']['eval'], 'double2') !== false) {
-                    $type = 'double';
-                }
-                if (strpos($fieldConfig['config']['eval'], 'date') !== false) {
-                    $type = 'date';
-                }
-                if (strpos($fieldConfig['config']['eval'], 'datetime') !== false) {
-                    $type = 'datetime';
+                if (isset($fieldConfig['config']['eval'])) {
+                    if (strpos($fieldConfig['config']['eval'], 'double2') !== false) {
+                        $type = 'double';
+                    }
+                    if (strpos($fieldConfig['config']['eval'], 'date') !== false) {
+                        $type = 'date';
+                    }
+                    if (strpos($fieldConfig['config']['eval'], 'datetime') !== false) {
+                        $type = 'datetime';
+                    }
+                    if (strpos($fieldConfig['config']['eval'], 'int') !== false) {
+                        $type = 'integer';
+                    }
+                    if (strpos($fieldConfig['config']['eval'], 'num') !== false) {
+                        $type = 'integer';
+                    }
+                    if (strpos($fieldConfig['config']['eval'], 'time') !== false) {
+                        $type = 'time';
+                    }
                 }
                 break;
         }
@@ -105,6 +115,16 @@ class QueryBuilder
             case 'select':
                 $input = 'select';
                 break;
+            case 'input':
+                if (isset($fieldConfig['config']['eval'])) {
+                    if (strpos($fieldConfig['config']['eval'], 'double2') !== false) {
+                        $input = 'number';
+                    }
+                    if (strpos($fieldConfig['config']['eval'], 'int') !== false) {
+                        $input = 'number';
+                    }
+                }
+                break;
         }
 
         return $input;
@@ -114,7 +134,7 @@ class QueryBuilder
      * @param array $fieldConfig
      * @return array
      */
-    protected function determineFilterValues(array $fieldConfig)
+    protected function determineFilterValues(array $fieldConfig) : array
     {
         $values = [];
         switch ($fieldConfig['config']['type']) {
@@ -126,6 +146,9 @@ class QueryBuilder
                         $values[] = $tmp;
                     }
                 }
+                break;
+            case 'check':
+                $values[] = 1;
                 break;
         }
 
@@ -180,7 +203,7 @@ class QueryBuilder
      * @throws UnexpectedValueException
      * @throws InvalidArgumentException
      */
-    protected function prepareTca($tableName)
+    protected function prepareTca($tableName) : array
     {
         $formDataGroup = GeneralUtility::makeInstance(TcaOnly::class);
         $formDataCompiler = GeneralUtility::makeInstance(FormDataCompiler::class, $formDataGroup);
@@ -191,13 +214,5 @@ class QueryBuilder
         ];
 
         return $formDataCompiler->compile($formDataCompilerInput);
-    }
-
-    /**
-     * @return DatabaseConnection
-     */
-    protected function getDatabaseConnection()
-    {
-        return $GLOBALS['TYPO3_DB'];
     }
 }

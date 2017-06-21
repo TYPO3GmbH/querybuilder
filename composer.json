@@ -31,7 +31,7 @@
 	},
 	"autoload-dev": {
 		"psr-4": {
-			"T3G\\Querybuilder\\Tests\\": "Tests"
+			"T3G\\Querybuilder\\Tests\\": "Tests/"
 		}
 	}
 }

@@ -1,9 +1,10 @@
 <?php
+declare(strict_types=1);
 
 namespace T3G\Querybuilder\Parser;
 
 use stdClass;
-use TYPO3\CMS\Core\Database\DatabaseConnection;
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -41,15 +42,26 @@ class QueryParser
     const FORMAT_TIMESEC = 'H:i:s';
     const FORMAT_YEAR = 'Y';
 
+    const TYPE_STRING = 'string';
+    const TYPE_INTEGER = 'integer';
+    const TYPE_BOOlEAN = 'boolean';
+    const TYPE_DOUBLE = 'double';
+    const TYPE_DATE = 'date';
+    const TYPE_TIME= 'time';
+    const TYPE_DATETIME = 'datetime';
+
     /**
      * @param stdClass $queryObject
      * @param string $table
      *
      * @return string
      */
-    public function parse($queryObject, $table)
+    public function parse($queryObject, $table) : string
     {
-        $condition = $queryObject->condition === self::CONDITION_AND ? self::CONDITION_AND : self::CONDITION_OR;
+        $condition = $queryObject->condition ===
+        self::CONDITION_AND ?
+            self::CONDITION_AND :
+            self::CONDITION_OR;
         $whereParts = [];
         if (!empty($queryObject->rules)) {
             foreach ($queryObject->rules as $rule) {
@@ -61,7 +73,13 @@ class QueryParser
             }
         }
 
-        return ' ( ' . implode(' ' . $condition . ' ', $whereParts) . ' ) ';
+        return empty($whereParts) ?
+            '' :
+            ' ( ' .
+            implode(' ' .
+                $condition .
+                ' ', $whereParts) .
+            ' ) ';
     }
 
     /**
@@ -69,79 +87,143 @@ class QueryParser
      * @param string $table
      *
      * @return string
+     * @throws \InvalidArgumentException
      */
     protected function getWhereClause(stdClass $rule, string $table) : string
     {
-        $dbConnection = $this->getDatabaseConnection();
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
+            ->getQueryBuilderForTable($table);
         $where = '';
-        $field = $dbConnection->quoteStr($rule->field, $table) . ' ';
-        $value = $this->getValue($rule);
-        $value = !is_array($value)
-            ? $dbConnection->fullQuoteStr($value, $table)
-            : $value;
+        $field = $rule->field;
+        $unQuotedValue = $rule->value;
+
+        switch ($rule->type) {
+            case self::TYPE_INTEGER:
+                $databaseType = \PDO::PARAM_INT;
+                break;
+            case self::TYPE_BOOlEAN:
+                $databaseType = \PDO::PARAM_BOOL;
+                break;
+            case self::TYPE_DATE:
+            case self::TYPE_TIME:
+            case self::TYPE_DATETIME:
+            case self::TYPE_DOUBLE:
+            case self::TYPE_STRING:
+                $databaseType = \PDO::PARAM_STR;
+                break;
+            default:
+                $databaseType = \PDO::PARAM_STR;
+                break;
+        }
+        $quotedValue = null;
+        if ($rule->operator !== self::OPERATOR_BETWEEN && $rule->operator !== self::OPERATOR_NOT_BETWEEN) {
+            $quotedValue = $queryBuilder->quote($unQuotedValue, $databaseType);
+        }
+
         switch ($rule->operator) {
             case self::OPERATOR_EQUAL:
-                $where = $field . '= ' . $value;
+                $where = $queryBuilder->expr()->eq($field, $quotedValue);
                 break;
             case self::OPERATOR_NOT_EQUAL:
-                $where = $field . '!= ' . $value;
+                $where = $queryBuilder->expr()->neq($field, $quotedValue);
                 break;
             case self::OPERATOR_IN:
-            case self::OPERATOR_NOT_IN:
-                $values = GeneralUtility::trimExplode(',', $rule->value);
+                $values = GeneralUtility::trimExplode(',', $unQuotedValue);
                 $escapedValues = [];
-                foreach ($values as $value) {
-                    $escapedValues[] = $dbConnection->fullQuoteStr($value, $table);
+                foreach ($values as $quotedValue) {
+                    $escapedValues[] = $queryBuilder->quote($quotedValue);
                 }
-                $negation = $rule->operator === self::OPERATOR_NOT_IN ? 'NOT ' : '';
-                $where = $field . $negation . 'IN (' . implode(',', $escapedValues) . ')';
+                $where = $queryBuilder->expr()->in($field, implode(',', $escapedValues));
+                break;
+            case self::OPERATOR_NOT_IN:
+                $values = GeneralUtility::trimExplode(',', $unQuotedValue);
+                $escapedValues = [];
+                foreach ($values as $quotedValue) {
+                    $escapedValues[] = $queryBuilder->quote($quotedValue);
+                }
+                $where = $queryBuilder->expr()->notIn($field, implode(',', $escapedValues));
                 break;
             case self::OPERATOR_BEGINS_WITH:
+                $where = $queryBuilder->expr()->like(
+                    $field,
+                    $queryBuilder->expr()->literal($unQuotedValue . '%')
+                );
+                break;
             case self::OPERATOR_NOT_BEGINS_WITH:
-                $value = $dbConnection->escapeStrForLike($rule->value, $table);
-                $negation = $rule->operator === self::OPERATOR_NOT_BEGINS_WITH ? 'NOT ' : '';
-                $where = $field . $negation . 'LIKE ' . $dbConnection->fullQuoteStr($value . '%', $table);
+                $where = $queryBuilder->expr()->notLike(
+                    $field,
+                    $queryBuilder->expr()->literal($unQuotedValue . '%')
+                );
                 break;
             case self::OPERATOR_CONTAINS:
+                $where = $queryBuilder->expr()->like(
+                    $field,
+                    $queryBuilder->expr()->literal('%' . $unQuotedValue . '%')
+                );
+                break;
             case self::OPERATOR_NOT_CONTAINS:
-                $value = $dbConnection->escapeStrForLike($rule->value, $table);
-                $negation = $rule->operator === self::OPERATOR_NOT_CONTAINS ? 'NOT ' : '';
-                $where = $field . $negation . 'LIKE ' . $dbConnection->fullQuoteStr('%' . $value . '%', $table);
+                $where = $queryBuilder->expr()->notLike(
+                    $field,
+                    $queryBuilder->expr()->literal('%' . $unQuotedValue . '%')
+                );
                 break;
             case self::OPERATOR_ENDS_WITH:
+                $where = $queryBuilder->expr()->like(
+                    $field,
+                    $queryBuilder->expr()->literal('%' . $unQuotedValue)
+                );
+                break;
             case self::OPERATOR_NOT_ENDS_WITH:
-                $value = $dbConnection->escapeStrForLike($rule->value, $table);
-                $negation = $rule->operator === self::OPERATOR_NOT_ENDS_WITH ? 'NOT ' : '';
-                $where = $field . $negation . 'LIKE ' . $dbConnection->fullQuoteStr('%' . $value, $table);
+                $where = $queryBuilder->expr()->notLike(
+                    $field,
+                    $queryBuilder->expr()->literal('%' . $unQuotedValue)
+                );
                 break;
             case self::OPERATOR_IS_EMPTY:
+                $where = (string)$queryBuilder->expr()->orX(
+                    $queryBuilder->expr()->eq($field, $queryBuilder->expr()->literal('')),
+                    $queryBuilder->expr()->isNull($field)
+                );
+                break;
             case self::OPERATOR_IS_NOT_EMPTY:
-                $negation = $rule->operator === self::OPERATOR_IS_NOT_EMPTY ? '!' : '';
-                $where = $field . $negation . '= \'\'';
+                $where = (string)$queryBuilder->expr()->andX(
+                    $queryBuilder->expr()->neq($field, $queryBuilder->expr()->literal('')),
+                    $queryBuilder->expr()->isNotNull($field)
+                );
                 break;
             case self::OPERATOR_IS_NULL:
+                $where = $queryBuilder->expr()->isNull($field);
+                break;
             case self::OPERATOR_IS_NOT_NULL:
-                $negation = $rule->operator === self::OPERATOR_IS_NOT_NULL ? 'NOT' : '';
-                $where = $field . 'IS ' . $negation . ' NULL';
+                $where = $queryBuilder->expr()->isNotNull($field);
                 break;
             case self::OPERATOR_LESS:
-                $where = $field . '< ' . $value;
+                $where = $queryBuilder->expr()->lt($field, $quotedValue);
                 break;
             case self::OPERATOR_LESS_OR_EQUAL:
-                $where = $field . '<= ' . $value;
+                $where = $queryBuilder->expr()->lte($field, $quotedValue);
                 break;
             case self::OPERATOR_GREATER:
-                $where = $field . '> ' . $value;
+                $where = $queryBuilder->expr()->gt($field, $quotedValue);
                 break;
             case self::OPERATOR_GREATER_OR_EQUAL:
-                $where = $field . '>= ' . $value;
+                $where = $queryBuilder->expr()->gte($field, $quotedValue);
                 break;
             case self::OPERATOR_BETWEEN:
+                $quotedValue1 = $queryBuilder->quote($unQuotedValue[0], $databaseType);
+                $quotedValue2 = $queryBuilder->quote($unQuotedValue[1], $databaseType);
+                $where = (string)$queryBuilder->expr()->andX(
+                    $queryBuilder->expr()->gt($field, $quotedValue1),
+                    $queryBuilder->expr()->lt($field, $quotedValue2)
+                );
+                break;
             case self::OPERATOR_NOT_BETWEEN:
-                $negation = $rule->operator === self::OPERATOR_NOT_BETWEEN ? 'NOT ' : '';
-                $value1 = $dbConnection->fullQuoteStr($value[0], $table);
-                $value2 = $dbConnection->fullQuoteStr($value[1], $table);
-                $where = $field . $negation . 'BETWEEN ' . $value1 . ' AND ' . $value2;
+                $quotedValue1 = $queryBuilder->quote($unQuotedValue[0], $databaseType);
+                $quotedValue2 = $queryBuilder->quote($unQuotedValue[1], $databaseType);
+                $where = (string)$queryBuilder->expr()->andX(
+                    $queryBuilder->expr()->lt($field, $quotedValue1),
+                    $queryBuilder->expr()->gt($field, $quotedValue2)
+                );
                 break;
         }
 
@@ -152,6 +234,7 @@ class QueryParser
      * Prepare incoming values. E.g. parse date string into timestamp.
      *
      * @param stdClass $rule
+     *
      * @return mixed
      */
     protected function getValue($rule)
@@ -179,19 +262,17 @@ class QueryParser
                 break;
         }
         foreach ($values as &$value) {
-            if ($format !== null) {
+            if ($format !==
+                null
+            ) {
                 $date = \DateTime::createFromFormat($format, $value);
                 $value = $date->getTimestamp();
             }
         }
-        return count($values) === 1 ? $values[0] : $values;
-    }
 
-    /**
-     * @return DatabaseConnection
-     */
-    protected function getDatabaseConnection()
-    {
-        return $GLOBALS['TYPO3_DB'];
+        return count($values) ===
+        1 ?
+            $values[0] :
+            $values;
     }
 }
