@@ -735,7 +735,7 @@ class QueryParserTest extends FunctionalTestCase
             'string as number value as type time' => [['42','62'], 'time', ' ( (`title` > \'42\') AND (`title` < \'62\') ) '],
             'string as string value as type time' => [['foo','bar'], 'time', ' ( (`title` > \'foo\') AND (`title` < \'bar\') ) '],
 
-            'integer value as type datetime' => [42, 'datetime', ' ( (`title` > \'42\') AND (`title` < \'62\') ) '],
+            'integer value as type datetime' => [[42,62], 'datetime', ' ( (`title` > \'42\') AND (`title` < \'62\') ) '],
             'float value as type datetime' => [[42.5,62.5], 'datetime', ' ( (`title` > \'42.5\') AND (`title` < \'62.5\') ) '],
             'comma value as type datetime' => [['42,5','62,5'], 'datetime', ' ( (`title` > \'42,5\') AND (`title` < \'62,5\') ) '],
             'string as number value as type datetime' => [['42','62'], 'datetime', ' ( (`title` > \'42\') AND (`title` < \'62\') ) '],
@@ -809,8 +809,8 @@ class QueryParserTest extends FunctionalTestCase
             'string as number value as type date' => [['42','62'], 'date', ' ( (`title` < \'42\') AND (`title` > \'62\') ) '],
             'string as string value as type date' => [['foo','bar'], 'date', ' ( (`title` < \'foo\') AND (`title` > \'bar\') ) '],
 
-            'integer value as type time' => [[42,62], 'time', ' ( (`title` < \'[42,62]\') AND (`title` > \'62\') ) '],
-            'float value as type time' => [[42,62], 'time', ' ( (`title` < \'42.5\') AND (`title` > \'62.5\') ) '],
+            'integer value as type time' => [[42,62], 'time', ' ( (`title` < \'42\') AND (`title` > \'62\') ) '],
+            'float value as type time' => [[42.5,62.5], 'time', ' ( (`title` < \'42.5\') AND (`title` > \'62.5\') ) '],
             'comma value as type time' => [['42,5','62,5'], 'time', ' ( (`title` < \'42,5\') AND (`title` > \'62,5\') ) '],
             'string as number value as type time' => [['42','62'], 'time', ' ( (`title` < \'42\') AND (`title` > \'62\') ) '],
             'string as string value as type time' => [['foo','bar'], 'time', ' ( (`title` < \'foo\') AND (`title` > \'bar\') ) '],
