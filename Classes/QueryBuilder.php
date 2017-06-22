@@ -77,21 +77,27 @@ class QueryBuilder
                 if (isset($fieldConfig['config']['eval'])) {
                     if (strpos($fieldConfig['config']['eval'], 'double2') !== false) {
                         $type = 'double';
+                        break;
                     }
                     if (strpos($fieldConfig['config']['eval'], 'date') !== false) {
                         $type = 'date';
+                        break;
                     }
                     if (strpos($fieldConfig['config']['eval'], 'datetime') !== false) {
                         $type = 'datetime';
+                        break;
                     }
                     if (strpos($fieldConfig['config']['eval'], 'int') !== false) {
                         $type = 'integer';
+                        break;
                     }
                     if (strpos($fieldConfig['config']['eval'], 'num') !== false) {
                         $type = 'integer';
+                        break;
                     }
                     if (strpos($fieldConfig['config']['eval'], 'time') !== false) {
                         $type = 'time';
+                        break;
                     }
                 }
                 break;
@@ -161,7 +167,12 @@ class QueryBuilder
      */
     protected function determineAndAddExtras(&$filter, $fieldConfig)
     {
-        if ($filter->type === 'date' || $filter->type === 'datetime') {
+        if ($filter->type === 'date'
+            || $filter->type === 'datetime'
+            || $filter->type === 'time'
+            || $filter->type === 'timesec'
+            || $filter->type === 'year')
+        {
             $filter->validation = new stdClass();
             $filter->plugin = 'datetimepicker';
             $filter->plugin_config = new stdClass();
