@@ -116,8 +116,15 @@ class QueryParser
                 break;
         }
         $quotedValue = null;
-        if ($rule->operator !== self::OPERATOR_BETWEEN && $rule->operator !== self::OPERATOR_NOT_BETWEEN) {
+        if ($rule->operator !== self::OPERATOR_BETWEEN
+            && $rule->operator !== self::OPERATOR_NOT_BETWEEN
+            && $rule->type !== self::TYPE_BOOlEAN)
+        {
             $quotedValue = $queryBuilder->quote($unQuotedValue, $databaseType);
+        }
+
+        if ($rule->type === self::TYPE_BOOlEAN) {
+            $quotedValue = $queryBuilder->quote($unQuotedValue[0], $databaseType);
         }
 
         switch ($rule->operator) {
@@ -130,16 +137,16 @@ class QueryParser
             case self::OPERATOR_IN:
                 $values = GeneralUtility::trimExplode(',', $unQuotedValue);
                 $escapedValues = [];
-                foreach ($values as $quotedValue) {
-                    $escapedValues[] = $queryBuilder->quote($quotedValue);
+                foreach ($values as $singlevalue) {
+                    $escapedValues[] = $queryBuilder->quote($singlevalue);
                 }
                 $where = $queryBuilder->expr()->in($field, implode(',', $escapedValues));
                 break;
             case self::OPERATOR_NOT_IN:
                 $values = GeneralUtility::trimExplode(',', $unQuotedValue);
                 $escapedValues = [];
-                foreach ($values as $quotedValue) {
-                    $escapedValues[] = $queryBuilder->quote($quotedValue);
+                foreach ($values as $singlevalue) {
+                    $escapedValues[] = $queryBuilder->quote($singlevalue);
                 }
                 $where = $queryBuilder->expr()->notIn($field, implode(',', $escapedValues));
                 break;
