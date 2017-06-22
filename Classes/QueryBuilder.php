@@ -79,12 +79,16 @@ class QueryBuilder
                         $type = 'double';
                         break;
                     }
+                    if (strpos($fieldConfig['config']['eval'], 'datetime') !== false) {
+                        $type = 'datetime';
+                        break;
+                    }
                     if (strpos($fieldConfig['config']['eval'], 'date') !== false) {
                         $type = 'date';
                         break;
                     }
-                    if (strpos($fieldConfig['config']['eval'], 'datetime') !== false) {
-                        $type = 'datetime';
+                    if (strpos($fieldConfig['config']['eval'], 'time') !== false) {
+                        $type = 'time';
                         break;
                     }
                     if (strpos($fieldConfig['config']['eval'], 'int') !== false) {
@@ -93,10 +97,6 @@ class QueryBuilder
                     }
                     if (strpos($fieldConfig['config']['eval'], 'num') !== false) {
                         $type = 'integer';
-                        break;
-                    }
-                    if (strpos($fieldConfig['config']['eval'], 'time') !== false) {
-                        $type = 'time';
                         break;
                     }
                 }
