@@ -384,12 +384,6 @@ class QueryParserTest extends FunctionalTestCase
             'string as number value as type integer' => ['42', 'integer', ' ( `title` < \'42\' ) '],
             'string as string value as type integer' => ['foo', 'integer', ' ( `title` < \'foo\' ) '],
 
-            'integer value as type boolean' => [42, 'boolean', ' ( `title` < \'42\' ) '],
-            'float value as type boolean' => [42.5, 'boolean', ' ( `title` < \'42.5\' ) '],
-            'comma value as type boolean' => ['42,5', 'boolean', ' ( `title` < \'42,5\' ) '],
-            'string as number value as type boolean' => ['42', 'boolean', ' ( `title` < \'42\' ) '],
-            'string as string value as type boolean' => ['foo', 'boolean', ' ( `title` < \'foo\' ) '],
-
             'integer value as type string' => [42, 'string', ' ( `title` < \'42\' ) '],
             'float value as type string' => [42.5, 'string', ' ( `title` < \'42.5\' ) '],
             'comma value as type string' => ['42,5', 'string', ' ( `title` < \'42,5\' ) '],
@@ -463,12 +457,6 @@ class QueryParserTest extends FunctionalTestCase
             'comma value as integer' => ['42,5', 'integer', ' ( `title` <= \'42,5\' ) '],
             'string as number value as integer' => ['42', 'integer', ' ( `title` <= \'42\' ) '],
             'string as string value as integer' => ['foo', 'integer', ' ( `title` <= \'foo\' ) '],
-
-            'integer value as type boolean' => [42, 'boolean', ' ( `title` <= \'42\' ) '],
-            'float value as type boolean' => [42.5, 'boolean', ' ( `title` <= \'42.5\' ) '],
-            'comma value as type boolean' => ['42,5', 'boolean', ' ( `title` <= \'42,5\' ) '],
-            'string as number value as type boolean' => ['42', 'boolean', ' ( `title` <= \'42\' ) '],
-            'string as string value as type boolean' => ['foo', 'boolean', ' ( `title` <= \'foo\' ) '],
 
             'integer value as type string' => [42, 'string', ' ( `title` <= \'42\' ) '],
             'float value as type string' => [42.5, 'string', ' ( `title` <= \'42.5\' ) '],
@@ -545,12 +533,6 @@ class QueryParserTest extends FunctionalTestCase
             'string as number value as integer' => ['42', 'integer', ' ( `title` > \'42\' ) '],
             'string as string value as integer' => ['foo', 'integer', ' ( `title` > \'foo\' ) '],
 
-            'integer value as type boolean' => [42, 'boolean', ' ( `title` > \'42\' ) '],
-            'float value as type boolean' => [42.5, 'boolean', ' ( `title` > \'42.5\' ) '],
-            'comma value as type boolean' => ['42,5', 'boolean', ' ( `title` > \'42,5\' ) '],
-            'string as number value as type boolean' => ['42', 'boolean', ' ( `title` > \'42\' ) '],
-            'string as string value as type boolean' => ['foo', 'boolean', ' ( `title` > \'foo\' ) '],
-
             'integer value as type string' => [42, 'string', ' ( `title` > \'42\' ) '],
             'float value as type string' => [42.5, 'string', ' ( `title` > \'42.5\' ) '],
             'comma value as type string' => ['42,5', 'string', ' ( `title` > \'42,5\' ) '],
@@ -624,12 +606,6 @@ class QueryParserTest extends FunctionalTestCase
             'comma value as integer' => ['42,5', 'integer', ' ( `title` >= \'42,5\' ) '],
             'string as number value as integer' => ['42', 'integer', ' ( `title` >= \'42\' ) '],
             'string as string value as integer' => ['foo', 'integer', ' ( `title` >= \'foo\' ) '],
-
-            'integer value as type boolean' => [42, 'boolean', ' ( `title` >= \'42\' ) '],
-            'float value as type boolean' => [42.5, 'boolean', ' ( `title` >= \'42.5\' ) '],
-            'comma value as type boolean' => ['42,5', 'boolean', ' ( `title` >= \'42,5\' ) '],
-            'string as number value as type boolean' => ['42', 'boolean', ' ( `title` >= \'42\' ) '],
-            'string as string value as type boolean' => ['foo', 'boolean', ' ( `title` >= \'foo\' ) '],
 
             'integer value as type string' => [42, 'string', ' ( `title` >= \'42\' ) '],
             'float value as type string' => [42.5, 'string', ' ( `title` >= \'42.5\' ) '],
@@ -705,12 +681,6 @@ class QueryParserTest extends FunctionalTestCase
             'string as number value as integer' => [['42', '62'], 'integer', ' ( (`title` > \'42\') AND (`title` < \'62\') ) '],
             'string as string value as integer' => [['foo','bar'], 'integer', ' ( (`title` > \'foo\') AND (`title` < \'bar\') ) '],
 
-            'integer value as type boolean' => [[42,62], 'boolean', ' ( (`title` > \'42\') AND (`title` < \'62\') ) '],
-            'float value as type boolean' => [[42.5,62.5], 'boolean', ' ( (`title` > \'42.5\') AND (`title` < \'62.5\') ) '],
-            'comma value as type boolean' => [['42,5','62,5'], 'boolean', ' ( (`title` > \'42,5\') AND (`title` < \'62,5\') ) '],
-            'string as number value as type boolean' => [['42','62'], 'boolean', ' ( (`title` > \'42\') AND (`title` < \'62\') ) '],
-            'string as string value as type boolean' => [['foo','bar'], 'boolean', ' ( (`title` > \'foo\') AND (`title` < \'bar\') ) '],
-
             'integer value as type string' => [[42,62], 'string', ' ( (`title` > \'42\') AND (`title` < \'62\') ) '],
             'float value as type string' => [[42.5,62.5], 'string', ' ( (`title` > \'42.5\') AND (`title` < \'62.5\') ) '],
             'comma value as type string' => [['42,5','62,5'], 'string', ' ( (`title` > \'42,5\') AND (`title` < \'62,5\') ) '],
@@ -784,12 +754,6 @@ class QueryParserTest extends FunctionalTestCase
             'comma value as integer' => [['42,5','62,5'], 'integer', ' ( (`title` < \'42,5\') AND (`title` > \'62,5\') ) '],
             'string as number value as integer' => [['42', '62'], 'integer', ' ( (`title` < \'42\') AND (`title` > \'62\') ) '],
             'string as string value as integer' => [['foo','bar'], 'integer', ' ( (`title` < \'foo\') AND (`title` > \'bar\') ) '],
-
-            'integer value as type boolean' => [[42,62], 'boolean', ' ( (`title` < \'42\') AND (`title` > \'62\') ) '],
-            'float value as type boolean' => [[42.5,62.5], 'boolean', ' ( (`title` < \'42.5\') AND (`title` > \'62.5\') ) '],
-            'comma value as type boolean' => [['42,5','62,5'], 'boolean', ' ( (`title` < \'42,5\') AND (`title` > \'62,5\') ) '],
-            'string as number value as type boolean' => [['42','62'], 'boolean', ' ( (`title` < \'42\') AND (`title` > \'62\') ) '],
-            'string as string value as type boolean' => [['foo','bar'], 'boolean', ' ( (`title` < \'foo\') AND (`title` > \'bar\') ) '],
 
             'integer value as type string' => [[42,62], 'string', ' ( (`title` < \'42\') AND (`title` > \'62\') ) '],
             'float value as type string' => [[42.5,62.5], 'string', ' ( (`title` < \'42.5\') AND (`title` > \'62.5\') ) '],

@@ -44,7 +44,7 @@ class QueryParser
 
     const TYPE_STRING = 'string';
     const TYPE_INTEGER = 'integer';
-    const TYPE_BOOlEAN = 'boolean';
+    const TYPE_BOOLEAN = 'boolean';
     const TYPE_DOUBLE = 'double';
     const TYPE_DATE = 'date';
     const TYPE_TIME= 'time';
@@ -101,7 +101,7 @@ class QueryParser
             case self::TYPE_INTEGER:
                 $databaseType = \PDO::PARAM_INT;
                 break;
-            case self::TYPE_BOOlEAN:
+            case self::TYPE_BOOLEAN:
                 $databaseType = \PDO::PARAM_BOOL;
                 break;
             case self::TYPE_DATE:
@@ -116,8 +116,15 @@ class QueryParser
                 break;
         }
         $quotedValue = null;
-        if ($rule->operator !== self::OPERATOR_BETWEEN && $rule->operator !== self::OPERATOR_NOT_BETWEEN) {
+        if ($rule->operator !== self::OPERATOR_BETWEEN
+            && $rule->operator !== self::OPERATOR_NOT_BETWEEN
+            && $rule->type !== self::TYPE_BOOLEAN)
+        {
             $quotedValue = $queryBuilder->quote($unQuotedValue, $databaseType);
+        }
+
+        if ($rule->type === self::TYPE_BOOLEAN) {
+            $quotedValue = $queryBuilder->quote($unQuotedValue[0], $databaseType);
         }
 
         switch ($rule->operator) {
@@ -130,16 +137,16 @@ class QueryParser
             case self::OPERATOR_IN:
                 $values = GeneralUtility::trimExplode(',', $unQuotedValue);
                 $escapedValues = [];
-                foreach ($values as $quotedValue) {
-                    $escapedValues[] = $queryBuilder->quote($quotedValue);
+                foreach ($values as $singlevalue) {
+                    $escapedValues[] = $queryBuilder->quote($singlevalue);
                 }
                 $where = $queryBuilder->expr()->in($field, implode(',', $escapedValues));
                 break;
             case self::OPERATOR_NOT_IN:
                 $values = GeneralUtility::trimExplode(',', $unQuotedValue);
                 $escapedValues = [];
-                foreach ($values as $quotedValue) {
-                    $escapedValues[] = $queryBuilder->quote($quotedValue);
+                foreach ($values as $singlevalue) {
+                    $escapedValues[] = $queryBuilder->quote($singlevalue);
                 }
                 $where = $queryBuilder->expr()->notIn($field, implode(',', $escapedValues));
                 break;
