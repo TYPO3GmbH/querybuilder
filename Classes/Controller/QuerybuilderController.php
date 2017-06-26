@@ -42,7 +42,7 @@ class QuerybuilderController
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
             ->getQueryBuilderForTable('sys_querybuilder');
         $uid = (int)$requestParams['uid'];
-        if (!empty($requestParams['uid'])) {
+        if ($requestParams['override'] == 1) {
             if ($uid > 0) {
                 $result->uid = $uid;
                 $queryBuilder->update('sys_querybuilder')
