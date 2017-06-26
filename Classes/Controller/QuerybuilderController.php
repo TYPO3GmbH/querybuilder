@@ -42,18 +42,14 @@ class QuerybuilderController
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
             ->getQueryBuilderForTable('sys_querybuilder');
         $uid = (int)$requestParams['uid'];
-        if (!empty($requestParams['uid'])) {
-            if ($uid > 0) {
-                $result->uid = $uid;
-                $queryBuilder->update('sys_querybuilder')
-                    ->set('where_parts', $requestParams['query'])
-                    ->set('queryname', $requestParams['queryName'])
-                    ->where($queryBuilder->expr()->eq('uid', $uid))
-                    ->andWhere($queryBuilder->expr()->eq('user', (int)$GLOBALS['BE_USER']->user['uid']))
-                    ->execute();
-            } else {
-                $result->status = 'fail';
-            }
+        if ((int)$requestParams['override'] === 1 && $uid > 0) {
+            $result->uid = $uid;
+            $queryBuilder->update('sys_querybuilder')
+                ->set('where_parts', $requestParams['query'])
+                ->set('queryname', $requestParams['queryName'])
+                ->where($queryBuilder->expr()->eq('uid', $uid))
+                ->andWhere($queryBuilder->expr()->eq('user', (int)$GLOBALS['BE_USER']->user['uid']))
+                ->execute();
         } else {
             $data = [
                 'where_parts' => $requestParams['query'],

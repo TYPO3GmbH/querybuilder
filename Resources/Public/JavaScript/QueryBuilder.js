@@ -281,11 +281,8 @@ define(['jquery',
 								} else {
 									var $query = $('<option />', {value: data.uid, 'data-query': query}).text(queryName);
 									QueryBuilder.querySelector.append($query);
-									QueryBuilder.querySelector.val('' + uid);
+									QueryBuilder.querySelector.val('' + data.uid);
 								}
-							} else {
-								Modal.currentModal.trigger('modal-dismiss');
-								Notification.error(TYPO3.lang['modal.error.headline'] || 'Query not saved', TYPO3.lang['modal.error.text'] || 'Sorry, your query can\'t be saved');
 							}
 						}
 					});
