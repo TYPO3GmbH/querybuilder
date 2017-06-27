@@ -65,16 +65,17 @@ class QueryParserTest extends FunctionalTestCase
 
             'integer value as type double' => [42, 'double', ' ( `title` = \'42\' ) '],
             'string as number value as type double' => ['42', 'double', ' ( `title` = \'42\' ) '],
-            'integer(negative)value as type double' => [-5, 'double', ' ( `title` = \'42\' ) '],
-            'string(negative) as number value as type double' => ['-5', 'double', ' ( `title` = \'42\' ) '],
+            'integer(negative)value as type double' => [-5, 'double', ' ( `title` = \'-5\' ) '],
+            'string(negative) as number value as type double' => ['-5', 'double', ' ( `title` = \'-5\' ) '],
             'float value as type double' => [42.5, 'double', ' ( `title` = \'42.5\' ) '],
             'string float value as type double' => ['42.5', 'double', ' ( `title` = \'42.5\' ) '],
-            'float value (2 decimal) as type double' => [42.50, 'double', ' ( `title` = \'42.50\' ) '],
+            'float value (2 decimal w 00) as type double' => [42.00, 'double', ' ( `title` = \'42.00\' ) '],
+            'float value (2 decimal w 50) as type double' => [42.50, 'double', ' ( `title` = \'42.50\' ) '],
+            'float value (2 decimal w 55) as type double' => [42.55, 'double', ' ( `title` = \'42.55\' ) '],
             'string float value (2 decimal) as type double' => ['42.50', 'double', ' ( `title` = \'42.50\' ) '],
-            'comma value as type double' => ['42,50', 'double', ' ( `title` = \'42,50\' ) '],
-            'comma value (2 decimal) as type double' => ['42,50', 'double', ' ( `title` = \'42,50\' ) '],
+            'comma value as type double' => ['42,50', 'double', ' ( `title` = \'42.50\' ) '],
+            'comma value (2 decimal) as type double' => ['42,50', 'double', ' ( `title` = \'42.50\' ) '],
 
-            'integer value as type date' => [2017-06-26, 'date', ' ( `title` = \'1985\' ) '],
             'comma value as type date' => ['2017-06-26', 'date', ' ( `title` = \'2017-06-26\' ) '],
 
             'comma value as type time' => ['18:30', 'time', ' ( `title` = \'18:30\' ) '],
