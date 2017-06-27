@@ -115,9 +115,58 @@ class QueryParserTest extends FunctionalTestCase
     }
 
     /**
-     * @test
+     * @return array
      */
-    public function parseReturnsValidWhereClauseForSimpleNotEqualQuery()
+    public function parseReturnsValidWhereClauseForSimpleNotEqualQueryDataProvider() : array
+    {
+        return [
+            'integer value as type string' => [42, 'string', ' ( `title` <> \'42\' ) '],
+            'string as number value as type string' => ['42', 'string', ' ( `title` <> \'42\' ) '],
+            'float value as type string' => [42.5, 'string', ' ( `title` <> \'42.5\' ) '],
+            'string float value as type string' => ['42.5', 'string', ' ( `title` <> \'42.5\' ) '],
+            'comma value as type string' => ['42,5', 'string', ' ( `title` <> \'42,5\' ) '],
+            'string as string value as type string' => ['foo', 'string', ' ( `title` <> \'foo\' ) '],
+
+            'integer value as type integer' => [42, 'integer', ' ( `title` <> \'42\' ) '],
+            'string as number value as type integer' => ['42', 'integer', ' ( `title` <> \'42\' ) '],
+            'integer(negative) value as type integer' => [-5, 'integer', ' ( `title` <> \'-5\' ) '],
+            'string(negative) as number value as type integer' => ['-5', 'integer', ' ( `title` <> \'-5\' ) '],
+
+            'integer(1) value as type boolean' => [[1], 'boolean', ' ( `title` <> \'1\' ) '],
+            'string(1) as number value as type boolean' => [['1'], 'boolean', ' ( `title` <> \'1\' ) '],
+            'integer(0) value as type boolean' => [[0], 'boolean', ' ( `title` <> \'0\' ) '],
+            'string(0) as number value as type boolean' => [['0'], 'boolean', ' ( `title` <> \'0\' ) '],
+
+            'integer value as type double' => [42, 'double', ' ( `title` <> \'42\' ) '],
+            'string as number value as type double' => ['42', 'double', ' ( `title` <> \'42\' ) '],
+            'integer(negative)value as type double' => [-5, 'double', ' ( `title` <> \'-5\' ) '],
+            'string(negative) as number value as type double' => ['-5', 'double', ' ( `title` <> \'-5\' ) '],
+            'float value as type double' => [42.5, 'double', ' ( `title` <> \'42.5\' ) '],
+            'string float value as type double' => ['42.5', 'double', ' ( `title` <> \'42.5\' ) '],
+            'float value (2 decimal w 00) as type double' => [42.00, 'double', ' ( `title` <> \'42\' ) '],
+            'float value (2 decimal w 50) as type double' => [42.50, 'double', ' ( `title` <> \'42.5\' ) '],
+            'float value (2 decimal w 55) as type double' => [42.55, 'double', ' ( `title` <> \'42.55\' ) '],
+            'string float value (2 decimal) as type double' => ['42.50', 'double', ' ( `title` <> \'42.50\' ) '],
+            'comma value as type double' => ['42,50', 'double', ' ( `title` <> \'42.50\' ) '],
+            'comma value (2 decimal) as type double' => ['42,50', 'double', ' ( `title` <> \'42.50\' ) '],
+
+            'comma value as type date' => ['2017-06-26', 'date', ' ( `title` <> \'2017-06-26\' ) '],
+
+            'comma value as type time' => ['18:30', 'time', ' ( `title` <> \'18:30\' ) '],
+
+            'string as number value as type datetime' => ['2017-06-26 17:55', 'datetime', ' ( `title` <> \'2017-06-26 17:55\' ) '],
+        ];
+    }
+
+    /**
+     * @test
+     * @dataProvider parseReturnsValidWhereClauseForSimpleNotEqualQueryDataProvider
+     *
+     * @param $number
+     * @param $type
+     * @param $expectedResult
+     */
+    public function parseReturnsValidWhereClauseForSimpleNotEqualQuery($number, $type, $expectedResult)
     {
         $query = '{
           "condition": "AND",
@@ -134,7 +183,8 @@ class QueryParserTest extends FunctionalTestCase
           "valid": true
         }';
         $query = json_decode($query);
-        $expectedResult = ' ( `title` <> \'foo\' ) ';
+        $query->rules[0]->value = $number;
+        $query->rules[0]->type = $type;
         self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
     }
 
