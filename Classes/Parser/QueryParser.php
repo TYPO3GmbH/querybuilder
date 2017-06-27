@@ -39,8 +39,6 @@ class QueryParser
     const FORMAT_DATETIME = 'Y-m-d H:i';
     const FORMAT_DATE = 'Y-m-d';
     const FORMAT_TIME = 'H:i';
-    const FORMAT_TIMESEC = 'H:i:s';
-    const FORMAT_YEAR = 'Y';
 
     const TYPE_STRING = 'string';
     const TYPE_INTEGER = 'integer';
@@ -260,12 +258,6 @@ class QueryParser
                 break;
             case 'time':
                 $format = self::FORMAT_TIME;
-                break;
-            case 'timesec':
-                $format = self::FORMAT_TIMESEC;
-                break;
-            case 'year':
-                $format = self::FORMAT_YEAR;
                 break;
         }
         foreach ($values as &$value) {
