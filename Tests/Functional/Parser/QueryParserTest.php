@@ -207,6 +207,10 @@ class QueryParserTest extends FunctionalTestCase
             'integer value as type integer' => [42, 'integer', ' ( `title` IN (\'42\') ) '],
             'string as number value as type integer' => ['42', 'integer', ' ( `title` IN (\'42\') ) '],
 
+            'float value as type double' => [42.5, 'double', ' ( `title` IN (\'42.5\') ) '],
+            'string float value as type double' => ['42.5', 'double', ' ( `title` IN (\'42.5\') ) '],
+            'comma value as type double' => ['42,5', 'double', ' ( `title` IN (\'42.5\') ) '],
+
             'comma value as type date' => ['2017-06-26', 'date', ' ( `title` IN (\'2017-06-26\') ) '],
 
             'comma value as type time' => ['18:30', 'time', ' ( `title` IN (\'18:30\') ) '],
