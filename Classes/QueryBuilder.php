@@ -17,8 +17,6 @@ class QueryBuilder
     const FORMAT_DATETIME = 'YYYY-MM-DD HH:mm';
     const FORMAT_DATE = 'YYYY-MM-DD';
     const FORMAT_TIME = 'HH:mm';
-    const FORMAT_TIMESEC = 'HH:mm:ss';
-    const FORMAT_YEAR = 'YYYY';
 
     /**
      * Build the filter configuration from TCA
@@ -169,9 +167,7 @@ class QueryBuilder
     {
         if ($filter->type === 'date'
             || $filter->type === 'datetime'
-            || $filter->type === 'time'
-            || $filter->type === 'timesec'
-            || $filter->type === 'year')
+            || $filter->type === 'time')
         {
             $filter->validation = new stdClass();
             $filter->plugin = 'datetimepicker';
@@ -195,12 +191,6 @@ class QueryBuilder
                     break;
                 case 'time':
                     $filter->plugin_config->format = self::FORMAT_TIME;
-                    break;
-                case 'timesec':
-                    $filter->plugin_config->format = self::FORMAT_TIMESEC;
-                    break;
-                case 'year':
-                    $filter->plugin_config->format = self::FORMAT_YEAR;
                     break;
             }
             $filter->validation->format = $filter->plugin_config->format;
