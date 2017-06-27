@@ -105,8 +105,10 @@ class QueryParser
             case self::TYPE_DATE:
             case self::TYPE_TIME:
             case self::TYPE_DATETIME:
-            case self::TYPE_DOUBLE:
             case self::TYPE_STRING:
+                break;
+            case self::TYPE_DOUBLE:
+                $unQuotedValue = str_replace(',', '.', $unQuotedValue);
                 $databaseType = \PDO::PARAM_STR;
                 break;
             default:
