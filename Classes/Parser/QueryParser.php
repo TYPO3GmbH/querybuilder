@@ -102,15 +102,14 @@ class QueryParser
             case self::TYPE_BOOLEAN:
                 $databaseType = \PDO::PARAM_BOOL;
                 break;
-            case self::TYPE_DATE:
-            case self::TYPE_TIME:
-            case self::TYPE_DATETIME:
-            case self::TYPE_STRING:
-                break;
             case self::TYPE_DOUBLE:
                 $unQuotedValue = str_replace(',', '.', $unQuotedValue);
                 $databaseType = \PDO::PARAM_STR;
                 break;
+            case self::TYPE_DATE:
+            case self::TYPE_TIME:
+            case self::TYPE_DATETIME:
+            case self::TYPE_STRING:
             default:
                 $databaseType = \PDO::PARAM_STR;
                 break;
@@ -138,8 +137,6 @@ class QueryParser
                 $values = [$unQuotedValue];
                 if (is_string($unQuotedValue)) {
                     $values = $this->splitString($unQuotedValue);
-                } elseif (is_array($unQuotedValue)) {
-                    $values = $unQuotedValue;
                 }
                 $escapedValues = [];
                 foreach ($values as $singlevalue) {
@@ -151,8 +148,6 @@ class QueryParser
                 $values = [$unQuotedValue];
                 if (is_string($unQuotedValue)) {
                     $values = $this->splitString($unQuotedValue);
-                } elseif (is_array($unQuotedValue)) {
-                    $values = $unQuotedValue;
                 }
                 $escapedValues = [];
                 foreach ($values as $singlevalue) {
@@ -245,46 +240,6 @@ class QueryParser
         }
 
         return $where;
-    }
-
-    /**
-     * Prepare incoming values. E.g. parse date string into timestamp.
-     *
-     * @param stdClass $rule
-     *
-     * @return mixed
-     */
-    protected function getValue($rule)
-    {
-        $values = $rule->value;
-        if (!is_array($values)) {
-            $values = [$values];
-        }
-        $format = null;
-        switch ($rule->type) {
-            case 'datetime':
-                $format = self::FORMAT_DATETIME;
-                break;
-            case 'date':
-                $format = self::FORMAT_DATE;
-                break;
-            case 'time':
-                $format = self::FORMAT_TIME;
-                break;
-        }
-        foreach ($values as &$value) {
-            if ($format !==
-                null
-            ) {
-                $date = \DateTime::createFromFormat($format, $value);
-                $value = $date->getTimestamp();
-            }
-        }
-
-        return count($values) ===
-        1 ?
-            $values[0] :
-            $values;
     }
 
     /**
