@@ -117,6 +117,75 @@ class QueryParserTest extends FunctionalTestCase
     /**
      * @return array
      */
+    public function parseReturnsValidWhereClauseForMultipleEqualsQueryDataProvider() : array
+    {
+        return [
+
+            'foo, bar ,int and date' => [
+                '{
+                  "condition": "AND",
+                  "rules": [
+                    {
+                        "id": "input_1",
+                      "field": "input_1",
+                      "type": "string",
+                      "input": "text",
+                      "operator": "equal",
+                      "value": "foo"
+                    },
+                    {
+                      "id": "input_1",
+                      "field": "input_1",
+                      "type": "string",
+                      "input": "text",
+                      "operator": "equal",
+                      "value": "bar"
+                    },
+                    {
+                      "condition": "AND",
+                      "rules": [
+                        {
+                          "id": "input_9",
+                          "field": "input_9",
+                          "type": "integer",
+                          "input": "number",
+                          "operator": "equal",
+                          "value": "42"
+                        },
+                        {
+                          "id": "inputdatetime_2",
+                          "field": "inputdatetime_2",
+                          "type": "date",
+                          "input": "text",
+                          "operator": "equal",
+                          "value": "2017-06-26"
+                        }
+                      ]
+                    }
+                  ],
+                  "valid": true
+                }',
+                ' ( `input_1` = \'foo\' AND `input_1` = \'bar\' AND  ( `input_9` = \'42\' AND `inputdatetime_2` = \'2017-06-26\' )  ) '
+            ]
+        ];
+    }
+
+    /**
+     * @test
+     * @dataProvider parseReturnsValidWhereClauseForMultipleEqualsQueryDataProvider
+     *
+     * @param $multiplerules
+     * @param $expectedResult
+     */
+    public function parseReturnsValidWhereClauseForMultipleEqualsQuery($multiplerules, $expectedResult)
+    {
+        $query = json_decode($multiplerules);
+        self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
+    }
+
+    /**
+     * @return array
+     */
     public function parseReturnsValidWhereClauseForSimpleNotEqualQueryDataProvider() : array
     {
         return [
