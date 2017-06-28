@@ -484,8 +484,8 @@ class QueryParserTest extends FunctionalTestCase
             'comma value as type string' => ['42,5', 'string', ' ( `title` LIKE \'%42,5\' ) '],
             'string(1 words) as string value as type string' => ['foo', 'string', ' ( `title` LIKE \'%foo\' ) '],
             'string(2 words) as string value as type string' => ['foo bar', 'string', ' ( `title` LIKE \'%foo bar\' ) '],
-            'string(2 words) as string value as type string with %' => ['foo%bar', 'string', ' ( `title` LIKE \'%foo\\\\%bar%\' ) '],
-            'string(2 words) as string value as type string with _' => ['foo_bar', 'string', ' ( `title` LIKE \'%foo\\\\_bar%\' ) '],
+            'string(2 words) as string value as type string with %' => ['foo%bar', 'string', ' ( `title` LIKE \'%foo\\\\%bar\' ) '],
+            'string(2 words) as string value as type string with _' => ['foo_bar', 'string', ' ( `title` LIKE \'%foo\\\\_bar\' ) '],
         ];
     }
 
