@@ -314,9 +314,27 @@ class QueryParserTest extends FunctionalTestCase
     }
 
     /**
-     * @test
+     * @return array
      */
-    public function parseReturnsValidWhereClauseForSimpleBeginsQuery()
+    public function parseReturnsValidWhereClauseForSimpleBeginsQueryDataProvider() : array
+    {
+        return [
+            'string as number value as type string' => ['42', 'string', ' ( `title` LIKE \'42%\' ) '],
+            'comma value as type string' => ['42,5', 'string', ' ( `title` LIKE \'42,5%\' ) '],
+            'string(1 words) as string value as type string' => ['foo', 'string', ' ( `title` LIKE \'foo%\' ) '],
+            'string(2 words) as string value as type string' => ['foo bar', 'string', ' ( `title` LIKE \'foo bar%\' ) '],
+        ];
+    }
+
+    /**
+     * @test
+     * @dataProvider parseReturnsValidWhereClauseForSimpleBeginsQueryDataProvider
+     *
+     * @param $number
+     * @param $type
+     * @param $expectedResult
+     */
+    public function parseReturnsValidWhereClauseForSimpleBeginsQuery($number, $type, $expectedResult)
     {
         $query = '{
           "condition": "AND",
@@ -333,7 +351,8 @@ class QueryParserTest extends FunctionalTestCase
           "valid": true
         }';
         $query = json_decode($query);
-        $expectedResult = ' ( `title` LIKE \'foo%\' ) ';
+        $query->rules[0]->value = $number;
+        $query->rules[0]->type = $type;
         self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
     }
 
