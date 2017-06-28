@@ -632,9 +632,28 @@ class QueryParserTest extends FunctionalTestCase
     }
 
     /**
-     * @test
+     * @return array
      */
-    public function parseReturnsValidWhereClauseForSimpleNullQuery()
+    public function parseReturnsValidWhereClauseForSimpleNullQueryDataProvider() : array
+    {
+        return [
+            'type string' => ['string'],
+            'type integer' => ['integer'],
+            'type double' => ['double'],
+            'type date' => ['date'],
+            'type datetime' => ['datetime'],
+            'type time' => ['time'],
+            'type boolean' => ['boolean'],
+        ];
+    }
+
+    /**
+     * @test
+     * @dataProvider parseReturnsValidWhereClauseForSimpleNullQueryDataProvider
+     *
+     * @param $type
+     */
+    public function parseReturnsValidWhereClauseForSimpleNullQuery($type)
     {
         $query = '{
           "condition": "AND",
@@ -650,6 +669,7 @@ class QueryParserTest extends FunctionalTestCase
           "valid": true
         }';
         $query = json_decode($query);
+        $query->rules[0]->type = $type;
         $expectedResult = ' ( `title` IS NULL ) ';
         self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
     }
