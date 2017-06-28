@@ -135,7 +135,12 @@ class QueryParser
                 $where = $queryBuilder->expr()->neq($field, $quotedValue);
                 break;
             case self::OPERATOR_IN:
-                $values = GeneralUtility::trimExplode(';', $unQuotedValue);
+                $values = [$unQuotedValue];
+                if (is_string($unQuotedValue)) {
+                    $values = $this->splitString($unQuotedValue);
+                } elseif (is_array($unQuotedValue)) {
+                    $values = $unQuotedValue;
+                }
                 $escapedValues = [];
                 foreach ($values as $singlevalue) {
                     $escapedValues[] = $queryBuilder->quote($singlevalue);
@@ -143,7 +148,12 @@ class QueryParser
                 $where = $queryBuilder->expr()->in($field, implode(',', $escapedValues));
                 break;
             case self::OPERATOR_NOT_IN:
-                $values = GeneralUtility::trimExplode(';', $unQuotedValue);
+                $values = [$unQuotedValue];
+                if (is_string($unQuotedValue)) {
+                    $values = $this->splitString($unQuotedValue);
+                } elseif (is_array($unQuotedValue)) {
+                    $values = $unQuotedValue;
+                }
                 $escapedValues = [];
                 foreach ($values as $singlevalue) {
                     $escapedValues[] = $queryBuilder->quote($singlevalue);
@@ -275,5 +285,24 @@ class QueryParser
         1 ?
             $values[0] :
             $values;
+    }
+
+    /**
+     * This method split the given string into chunks and return
+     * it as array. As delimiter it use a set of special chars:
+     * - ; (semicolon)
+     * - + (plus)
+     * - # (hash)
+     * - | (pipe)
+     * - ! (exlamationmark)
+     *
+     * @param string $string
+     * @param string $pattern
+     *
+     * @return array
+     */
+    protected function splitString(string $string, string $pattern = '/[;+#|!]/') : array
+    {
+        return array_map('trim', preg_split($pattern, $string));
     }
 }
