@@ -135,7 +135,7 @@ class QueryParser
                 $where = $queryBuilder->expr()->neq($field, $quotedValue);
                 break;
             case self::OPERATOR_IN:
-                $values = GeneralUtility::trimExplode(';', $unQuotedValue);
+                $values = GeneralUtility::trimExplode(',', $unQuotedValue);
                 $escapedValues = [];
                 foreach ($values as $singlevalue) {
                     $escapedValues[] = $queryBuilder->quote($singlevalue);
