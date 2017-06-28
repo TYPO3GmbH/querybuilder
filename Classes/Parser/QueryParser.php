@@ -163,37 +163,37 @@ class QueryParser
             case self::OPERATOR_BEGINS_WITH:
                 $where = $queryBuilder->expr()->like(
                     $field,
-                    $queryBuilder->expr()->literal($unQuotedValue . '%')
+                    $queryBuilder->expr()->literal($this->quoteLikeValue($unQuotedValue) . '%')
                 );
                 break;
             case self::OPERATOR_NOT_BEGINS_WITH:
                 $where = $queryBuilder->expr()->notLike(
                     $field,
-                    $queryBuilder->expr()->literal($unQuotedValue . '%')
+                    $queryBuilder->expr()->literal($this->quoteLikeValue($unQuotedValue) . '%')
                 );
                 break;
             case self::OPERATOR_CONTAINS:
                 $where = $queryBuilder->expr()->like(
                     $field,
-                    $queryBuilder->expr()->literal('%' . $unQuotedValue . '%')
+                    $queryBuilder->expr()->literal('%' . $this->quoteLikeValue($unQuotedValue) . '%')
                 );
                 break;
             case self::OPERATOR_NOT_CONTAINS:
                 $where = $queryBuilder->expr()->notLike(
                     $field,
-                    $queryBuilder->expr()->literal('%' . $unQuotedValue . '%')
+                    $queryBuilder->expr()->literal('%' . $this->quoteLikeValue($unQuotedValue) . '%')
                 );
                 break;
             case self::OPERATOR_ENDS_WITH:
                 $where = $queryBuilder->expr()->like(
                     $field,
-                    $queryBuilder->expr()->literal('%' . $unQuotedValue)
+                    $queryBuilder->expr()->literal('%' . $this->quoteLikeValue($unQuotedValue))
                 );
                 break;
             case self::OPERATOR_NOT_ENDS_WITH:
                 $where = $queryBuilder->expr()->notLike(
                     $field,
-                    $queryBuilder->expr()->literal('%' . $unQuotedValue)
+                    $queryBuilder->expr()->literal('%' . $this->quoteLikeValue($unQuotedValue))
                 );
                 break;
             case self::OPERATOR_IS_EMPTY:
@@ -304,5 +304,15 @@ class QueryParser
     protected function splitString(string $string, string $pattern = '/[;+#|!]/') : array
     {
         return array_map('trim', preg_split($pattern, $string));
+    }
+
+    /**
+     * @param $unQuotedValue
+     *
+     * @return string
+     */
+    protected function quoteLikeValue($unQuotedValue) : string
+    {
+        return addcslashes($unQuotedValue, '%_');
     }
 }
