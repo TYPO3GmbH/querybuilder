@@ -188,10 +188,48 @@ class QueryParserTest extends FunctionalTestCase
         self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
     }
 
+
+    /**
+     * @return array
+     */
+    public function parseReturnsValidWhereClauseForSimpleInQueryDataProvider() : array
+    {
+        return [
+            'integer value as type string' => [42, 'string', ' ( `title` IN (\'42\') ) '],
+            'string as number value as type string' => ['42', 'string', ' ( `title` IN (\'42\') ) '],
+            'float value as type string' => [42.5, 'string', ' ( `title` IN (\'42.5\') ) '],
+            'two float values as type string' => ['42.5;50.5', 'string', ' ( `title` IN (\'42.5\',\'50.5\') ) '],
+            'comma value as type string' => ['42,5', 'string', ' ( `title` IN (\'42,5\') ) '],
+            'two comma values as type string' => ['42,5;5,5', 'string', ' ( `title` IN (\'42,5\',\'5,5\') ) '],
+            'string(1 words) as string value as type string' => ['foo', 'string', ' ( `title` IN (\'foo\') ) '],
+            'string(2 words) as string value as type string' => ['foo;bar', 'string', ' ( `title` IN (\'foo\',\'bar\') ) '],
+            'string(3 words) as string value as type string' => ['foo;bar;dong', 'string', ' ( `title` IN (\'foo\',\'bar\',\'dong\') ) '],
+            'mixed values as type string' => ['foo;42,5;dong', 'string', ' ( `title` IN (\'foo\',\'42,5\',\'dong\') ) '],
+
+            'integer value as type integer' => [42, 'integer', ' ( `title` IN (\'42\') ) '],
+            'string as number value as type integer' => ['42', 'integer', ' ( `title` IN (\'42\') ) '],
+
+            'float value as type double' => [42.5, 'double', ' ( `title` IN (\'42.5\') ) '],
+            'string float value as type double' => ['42.5', 'double', ' ( `title` IN (\'42.5\') ) '],
+            'comma value as type double' => ['42,5', 'double', ' ( `title` IN (\'42.5\') ) '],
+
+            'comma value as type date' => ['2017-06-26', 'date', ' ( `title` IN (\'2017-06-26\') ) '],
+
+            'comma value as type time' => ['18:30', 'time', ' ( `title` IN (\'18:30\') ) '],
+
+            'string as number value as type datetime' => ['2017-06-26 17:55', 'datetime', ' ( `title` IN (\'2017-06-26 17:55\') ) '],
+        ];
+    }
+
     /**
      * @test
+     * @dataProvider parseReturnsValidWhereClauseForSimpleInQueryDataProvider
+     *
+     * @param $number
+     * @param $type
+     * @param $expectedResult
      */
-    public function parseReturnsValidWhereClauseForSimpleInQuery()
+    public function parseReturnsValidWhereClauseForSimpleInQuery($number, $type, $expectedResult)
     {
         $query = '{
           "condition": "AND",
@@ -208,7 +246,8 @@ class QueryParserTest extends FunctionalTestCase
           "valid": true
         }';
         $query = json_decode($query);
-        $expectedResult = ' ( `title` IN (\'foo\',\'bar\') ) ';
+        $query->rules[0]->value = $number;
+        $query->rules[0]->type = $type;
         self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
     }
 
