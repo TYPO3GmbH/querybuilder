@@ -225,12 +225,12 @@ class QueryParserTest extends FunctionalTestCase
      * @test
      * @dataProvider parseReturnsValidWhereClauseForMultipleEqualsQueryDataProvider
      *
-     * @param $multiplerules
+     * @param $multipleRules
      * @param $expectedResult
      */
-    public function parseReturnsValidWhereClauseForMultipleEqualsQuery($multiplerules, $expectedResult)
+    public function parseReturnsValidWhereClauseForMultipleEqualsQuery($multipleRules, $expectedResult)
     {
-        $query = json_decode($multiplerules);
+        $query = json_decode($multipleRules);
         self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
     }
 
