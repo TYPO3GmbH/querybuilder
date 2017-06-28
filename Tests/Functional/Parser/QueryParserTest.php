@@ -212,10 +212,47 @@ class QueryParserTest extends FunctionalTestCase
         self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
     }
 
-    /*
-     %* @test
+    /**
+     * @return array
      */
-    public function parseReturnsValidWhereClauseForSimpleNotInQuery()
+    public function parseReturnsValidWhereClauseForSimpleNotInQueryDataProvider() : array
+    {
+        return [
+            'integer value as type string' => [42, 'string', ' ( `title` NOT IN (\'42\') ) '],
+            'string as number value as type string' => ['42', 'string', ' ( `title` NOT IN (\'42\') ) '],
+            'float value as type string' => [42.5, 'string', ' ( `title` NOT IN (\'42.5\') ) '],
+            'two float values as type string' => ['42.5;50.5', 'string', ' ( `title` NOT IN (\'42.5\',\'50.5\') ) '],
+            'comma value as type string' => ['42,5', 'string', ' ( `title` NOT IN (\'42,5\') ) '],
+            'two comma values as type string' => ['42,5;5,5', 'string', ' ( `title` NOT IN (\'42,5\',\'5,5\') ) '],
+            'string(1 words) as string value as type string' => ['foo', 'string', ' ( `title` NOT IN (\'foo\') ) '],
+            'string(2 words) as string value as type string' => ['foo;bar', 'string', ' ( `title` NOT IN (\'foo\',\'bar\') ) '],
+            'string(3 words) as string value as type string' => ['foo;bar;dong', 'string', ' ( `title` NOT IN (\'foo\',\'bar\',\'dong\') ) '],
+            'mixed values as type string' => ['foo;42,5;dong', 'string', ' ( `title` NOT IN (\'foo\',\'42,5\',\'dong\') ) '],
+
+            'integer value as type integer' => [42, 'integer', ' ( `title` NOT IN (\'42\') ) '],
+            'string as number value as type integer' => ['42', 'integer', ' ( `title` NOT IN (\'42\') ) '],
+
+            'float value as type double' => [42.5, 'double', ' ( `title` NOT IN (\'42.5\') ) '],
+            'string float value as type double' => ['42.5', 'double', ' ( `title` NOT IN (\'42.5\') ) '],
+            'comma value as type double' => ['42,5', 'double', ' ( `title` NOT IN (\'42.5\') ) '],
+
+            'comma value as type date' => ['2017-06-26', 'date', ' ( `title` NOT IN (\'2017-06-26\') ) '],
+
+            'comma value as type time' => ['18:30', 'time', ' ( `title` NOT IN (\'18:30\') ) '],
+
+            'string as number value as type datetime' => ['2017-06-26 17:55', 'datetime', ' ( `title` NOT IN (\'2017-06-26 17:55\') ) '],
+        ];
+    }
+
+    /**
+     * @test
+     * @dataProvider parseReturnsValidWhereClauseForSimpleNotInQueryDataProvider
+     *
+     * @param $number
+     * @param $type
+     * @param $expectedResult
+     */
+    public function parseReturnsValidWhereClauseForSimpleNotInQuery($number, $type, $expectedResult)
     {
         $query = '{
           "condition": "AND",
@@ -232,7 +269,8 @@ class QueryParserTest extends FunctionalTestCase
           "valid": true
         }';
         $query = json_decode($query);
-        $expectedResult = ' ( `title` != \'foo\' || `title` != \'bar\' ) ';
+        $query->rules[0]->value = $number;
+        $query->rules[0]->type = $type;
         self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
     }
 
