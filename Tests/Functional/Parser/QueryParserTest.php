@@ -520,9 +520,29 @@ class QueryParserTest extends FunctionalTestCase
     }
 
     /**
-     * @test
+     * @return array
      */
-    public function parseReturnsValidWhereClauseForSimpleNotEndsQuery()
+    public function parseReturnsValidWhereClauseForSimpleNotEndsQueryDataProvider() : array
+    {
+        return [
+            'string as number value as type string' => ['42', 'string', ' ( `title` NOT LIKE \'%42\' ) '],
+            'comma value as type string' => ['42,5', 'string', ' ( `title` NOT LIKE \'%42,5\' ) '],
+            'string(1 words) as string value as type string' => ['foo', 'string', ' ( `title` NOT LIKE \'%foo\' ) '],
+            'string(2 words) as string value as type string' => ['foo bar', 'string', ' ( `title` NOT LIKE \'%foo bar\' ) '],
+            'string(2 words) as string value as type string with %' => ['foo%bar', 'string', ' ( `title` NOT LIKE \'%foo\\\\%bar\' ) '],
+            'string(2 words) as string value as type string with _' => ['foo_bar', 'string', ' ( `title` NOT LIKE \'%foo\\\\_bar\' ) '],
+        ];
+    }
+
+    /**
+     * @test
+     * @dataProvider parseReturnsValidWhereClauseForSimpleNotEndsQueryDataProvider
+     *
+     * @param $number
+     * @param $type
+     * @param $expectedResult
+     */
+    public function parseReturnsValidWhereClauseForSimpleNotEndsQuery($number, $type, $expectedResult)
     {
         $query = '{
           "condition": "AND",
@@ -539,7 +559,8 @@ class QueryParserTest extends FunctionalTestCase
           "valid": true
         }';
         $query = json_decode($query);
-        $expectedResult = ' ( `title` NOT LIKE \'%foo\' ) ';
+        $query->rules[0]->value = $number;
+        $query->rules[0]->type = $type;
         self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
     }
 
