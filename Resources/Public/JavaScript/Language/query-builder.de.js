@@ -1,17 +1,33 @@
-{
+/*!
+ * jQuery QueryBuilder 2.4.3
+ * Locale: German (de)
+ * Author: "raimu"
+ * Licensed under MIT (http://opensource.org/licenses/MIT)
+ */
+
+(function(root, factory) {
+    if (typeof define == 'function' && define.amd) {
+        define(['jquery', 'query-builder'], factory);
+    }
+    else {
+        factory(root.jQuery);
+    }
+}(this, function($) {
+"use strict";
+
+var QueryBuilder = $.fn.queryBuilder;
+
+QueryBuilder.regional['de'] = {
   "__locale": "German (de)",
   "__author": "\"raimu\"",
-
   "add_rule": "neue Regel",
   "add_group": "neue Gruppe",
   "delete_rule": "löschen",
   "delete_group": "löschen",
-
   "conditions": {
     "AND": "UND",
     "OR": "ODER"
   },
-
   "operators": {
     "equal": "gleich",
     "not_equal": "ungleich",
@@ -34,7 +50,6 @@
     "is_null": "ist null",
     "is_not_null": "ist nicht null"
   },
-
   "errors": {
     "no_filter": "Kein Filter ausgewählt",
     "empty_group": "Die Gruppe ist leer",
@@ -55,4 +70,7 @@
     "datetime_exceed_min": "Muss nach dem {0} sein",
     "datetime_exceed_max": "Muss vor dem {0} sein"
   }
-}
+};
+
+QueryBuilder.defaults({ lang_code: 'de' });
+}));

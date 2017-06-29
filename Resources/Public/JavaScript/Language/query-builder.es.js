@@ -1,17 +1,33 @@
-{
+/*!
+ * jQuery QueryBuilder 2.4.3
+ * Locale: Spanish (es)
+ * Author: "pyarza", "kddlb"
+ * Licensed under MIT (http://opensource.org/licenses/MIT)
+ */
+
+(function(root, factory) {
+    if (typeof define == 'function' && define.amd) {
+        define(['jquery', 'query-builder'], factory);
+    }
+    else {
+        factory(root.jQuery);
+    }
+}(this, function($) {
+"use strict";
+
+var QueryBuilder = $.fn.queryBuilder;
+
+QueryBuilder.regional['es'] = {
   "__locale": "Spanish (es)",
   "__author": "\"pyarza\", \"kddlb\"",
-
   "add_rule": "Añadir regla",
   "add_group": "Añadir grupo",
   "delete_rule": "Borrar",
   "delete_group": "Borrar",
-
   "conditions": {
     "AND": "Y",
     "OR": "O"
   },
-
   "operators": {
     "equal": "igual",
     "not_equal": "distinto",
@@ -33,7 +49,6 @@
     "is_null": "es nulo",
     "is_not_null": "no es nulo"
   },
-
   "errors": {
     "no_filter": "No se ha seleccionado ningún filtro",
     "empty_group": "El grupo está vacío",
@@ -54,4 +69,7 @@
     "datetime_exceed_min": "Debe ser posterior a {0}",
     "datetime_exceed_max": "Debe ser anterior a {0}"
   }
-}
+};
+
+QueryBuilder.defaults({ lang_code: 'es' });
+}));

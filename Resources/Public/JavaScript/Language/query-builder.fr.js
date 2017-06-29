@@ -1,17 +1,33 @@
-{
+/*!
+ * jQuery QueryBuilder 2.4.3
+ * Locale: French (fr)
+ * Author: Damien "Mistic" Sorel, http://www.strangeplanet.fr
+ * Licensed under MIT (http://opensource.org/licenses/MIT)
+ */
+
+(function(root, factory) {
+    if (typeof define == 'function' && define.amd) {
+        define(['jquery', 'query-builder'], factory);
+    }
+    else {
+        factory(root.jQuery);
+    }
+}(this, function($) {
+"use strict";
+
+var QueryBuilder = $.fn.queryBuilder;
+
+QueryBuilder.regional['fr'] = {
   "__locale": "French (fr)",
   "__author": "Damien \"Mistic\" Sorel, http://www.strangeplanet.fr",
-
   "add_rule": "Ajouter une règle",
   "add_group": "Ajouter un groupe",
   "delete_rule": "Supprimer",
   "delete_group": "Supprimer",
-
   "conditions": {
     "AND": "ET",
     "OR": "OU"
   },
-
   "operators": {
     "equal": "égal",
     "not_equal": "non égal",
@@ -34,7 +50,6 @@
     "is_null": "est nul",
     "is_not_null": "n'est pas nul"
   },
-
   "errors": {
     "no_filter": "Aucun filtre sélectionné",
     "empty_group": "Le groupe est vide",
@@ -57,5 +72,10 @@
     "datetime_exceed_max": "Doit être avant {0}",
     "boolean_not_valid": "N'est pas un booléen",
     "operator_not_multiple": "L'opérateur \"{1}\" ne peut utiliser plusieurs valeurs"
-  }
-}
+  },
+  "invert": "Inverser",
+  "NOT": "NON"
+};
+
+QueryBuilder.defaults({ lang_code: 'fr' });
+}));
