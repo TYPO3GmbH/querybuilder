@@ -19,6 +19,8 @@ class DatabaseRecordList
      * @param array $additionalConstraints additional constraints
      * @param array $fieldList field list
      * @param AbstractDatabaseRecordList $parentObject
+     *
+     * @throws \InvalidArgumentException
      */
     public function buildQueryParametersPostProcess(array &$parameters,
                                    string $table,
@@ -27,13 +29,13 @@ class DatabaseRecordList
                                    array $fieldList,
                                    AbstractDatabaseRecordList $parentObject)
     {
-        if (GeneralUtility::_GP('M') === 'web_list' && $parentObject->table !== null) {
+        if ($parentObject->table !== null && GeneralUtility::_GP('M') === 'web_list') {
             $query = GeneralUtility::_GP('query');
             if ($query !== null) {
                 $query = json_decode($query);
                 if ($query) {
-                    $queryParser = GeneralUtility::makeInstance(QueryParser::class);
-                    $parameters['where'][] = $queryParser->parse($query, $table);
+                    $parameters['where'][] = GeneralUtility::makeInstance(QueryParser::class)
+                        ->parse($query, $table);
                 }
             }
         }

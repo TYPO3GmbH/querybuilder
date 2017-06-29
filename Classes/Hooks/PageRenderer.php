@@ -33,8 +33,14 @@ class PageRenderer
             $pageRenderer->addRequireJsConfiguration([
                 'paths' => [
                     'query-builder' => PathUtility::getAbsoluteWebPath('../typo3conf/ext/querybuilder/Resources/Public/JavaScript/query-builder.standalone'),
+                    'query-builder/lang' => PathUtility::getAbsoluteWebPath('../typo3conf/ext/querybuilder/Resources/Public/JavaScript/Language'),
                 ],
             ]);
+            $languageModule = 'query-builder/lang/query-builder.en';
+            $languageFile = 'EXT:querybuilder/Resources/Public/JavaScript/Language/query-builder.' . $GLOBALS['BE_USER']->uc['lang'] . '.js';
+            if (file_exists(GeneralUtility::getFileAbsFileName($languageFile))) {
+                $languageModule = 'query-builder/lang/query-builder.' . $GLOBALS['BE_USER']->uc['lang'];
+            }
 
             $query = GeneralUtility::_GP('query');
             $query = json_decode($query);
@@ -44,6 +50,7 @@ class PageRenderer
             $filter = $queryBuilder->buildFilterFromTca($table);
             $pageRenderer->addJsInlineCode('tx_querybuilder_filter', 'var tx_querybuilder_filter = ' . json_encode($filter) . ';');
 
+            $pageRenderer->loadRequireJsModule($languageModule);
             $pageRenderer->loadRequireJsModule('TYPO3/CMS/Querybuilder/QueryBuilder', 'function(QueryBuilder) {
                 QueryBuilder.initialize(tx_querybuilder_query, tx_querybuilder_filter);
             }');
