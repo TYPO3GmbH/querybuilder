@@ -53,13 +53,13 @@ class QueryParser
      * @param string $table
      *
      * @return string
+     * @throws \InvalidArgumentException
      */
-    public function parse($queryObject, $table) : string
+    public function parse(stdClass $queryObject, string $table) : string
     {
-        $condition = $queryObject->condition ===
-        self::CONDITION_AND ?
-            self::CONDITION_AND :
-            self::CONDITION_OR;
+        $condition = $queryObject->condition === static::CONDITION_AND
+            ? static::CONDITION_AND
+            : static::CONDITION_OR;
         $whereParts = [];
         if (!empty($queryObject->rules)) {
             foreach ($queryObject->rules as $rule) {
@@ -71,8 +71,7 @@ class QueryParser
             }
         }
 
-        return empty($whereParts) ?
-            '' :
+        return empty($whereParts) ? '' :
             ' ( ' .
             implode(' ' .
                 $condition .
@@ -96,50 +95,47 @@ class QueryParser
         $unQuotedValue = $rule->value;
 
         switch ($rule->type) {
-            case self::TYPE_INTEGER:
+            case static::TYPE_INTEGER:
                 $databaseType = \PDO::PARAM_INT;
                 break;
-            case self::TYPE_BOOLEAN:
+            case static::TYPE_BOOLEAN:
                 $databaseType = \PDO::PARAM_BOOL;
                 break;
-            case self::TYPE_DATE:
-            case self::TYPE_TIME:
-            case self::TYPE_DATETIME:
-            case self::TYPE_STRING:
-                break;
-            case self::TYPE_DOUBLE:
+            case static::TYPE_DOUBLE:
                 $unQuotedValue = str_replace(',', '.', $unQuotedValue);
                 $databaseType = \PDO::PARAM_STR;
                 break;
+            case static::TYPE_DATE:
+            case static::TYPE_TIME:
+            case static::TYPE_DATETIME:
+            case static::TYPE_STRING:
             default:
                 $databaseType = \PDO::PARAM_STR;
                 break;
         }
         $quotedValue = null;
-        if ($rule->operator !== self::OPERATOR_BETWEEN
-            && $rule->operator !== self::OPERATOR_NOT_BETWEEN
-            && $rule->type !== self::TYPE_BOOLEAN)
+        if ($rule->operator !== static::OPERATOR_BETWEEN
+            && $rule->operator !== static::OPERATOR_NOT_BETWEEN
+            && $rule->type !== static::TYPE_BOOLEAN)
         {
             $quotedValue = $queryBuilder->quote($unQuotedValue, $databaseType);
         }
 
-        if ($rule->type === self::TYPE_BOOLEAN) {
+        if ($rule->type === static::TYPE_BOOLEAN) {
             $quotedValue = $queryBuilder->quote($unQuotedValue[0], $databaseType);
         }
 
         switch ($rule->operator) {
-            case self::OPERATOR_EQUAL:
+            case static::OPERATOR_EQUAL:
                 $where = $queryBuilder->expr()->eq($field, $quotedValue);
                 break;
-            case self::OPERATOR_NOT_EQUAL:
+            case static::OPERATOR_NOT_EQUAL:
                 $where = $queryBuilder->expr()->neq($field, $quotedValue);
                 break;
-            case self::OPERATOR_IN:
+            case static::OPERATOR_IN:
                 $values = [$unQuotedValue];
                 if (is_string($unQuotedValue)) {
                     $values = $this->splitString($unQuotedValue);
-                } elseif (is_array($unQuotedValue)) {
-                    $values = $unQuotedValue;
                 }
                 $escapedValues = [];
                 foreach ($values as $singlevalue) {
@@ -147,12 +143,10 @@ class QueryParser
                 }
                 $where = $queryBuilder->expr()->in($field, implode(',', $escapedValues));
                 break;
-            case self::OPERATOR_NOT_IN:
+            case static::OPERATOR_NOT_IN:
                 $values = [$unQuotedValue];
                 if (is_string($unQuotedValue)) {
                     $values = $this->splitString($unQuotedValue);
-                } elseif (is_array($unQuotedValue)) {
-                    $values = $unQuotedValue;
                 }
                 $escapedValues = [];
                 foreach ($values as $singlevalue) {
@@ -160,73 +154,73 @@ class QueryParser
                 }
                 $where = $queryBuilder->expr()->notIn($field, implode(',', $escapedValues));
                 break;
-            case self::OPERATOR_BEGINS_WITH:
+            case static::OPERATOR_BEGINS_WITH:
                 $where = $queryBuilder->expr()->like(
                     $field,
                     $queryBuilder->expr()->literal($this->quoteLikeValue($unQuotedValue) . '%')
                 );
                 break;
-            case self::OPERATOR_NOT_BEGINS_WITH:
+            case static::OPERATOR_NOT_BEGINS_WITH:
                 $where = $queryBuilder->expr()->notLike(
                     $field,
                     $queryBuilder->expr()->literal($this->quoteLikeValue($unQuotedValue) . '%')
                 );
                 break;
-            case self::OPERATOR_CONTAINS:
+            case static::OPERATOR_CONTAINS:
                 $where = $queryBuilder->expr()->like(
                     $field,
                     $queryBuilder->expr()->literal('%' . $this->quoteLikeValue($unQuotedValue) . '%')
                 );
                 break;
-            case self::OPERATOR_NOT_CONTAINS:
+            case static::OPERATOR_NOT_CONTAINS:
                 $where = $queryBuilder->expr()->notLike(
                     $field,
                     $queryBuilder->expr()->literal('%' . $this->quoteLikeValue($unQuotedValue) . '%')
                 );
                 break;
-            case self::OPERATOR_ENDS_WITH:
+            case static::OPERATOR_ENDS_WITH:
                 $where = $queryBuilder->expr()->like(
                     $field,
                     $queryBuilder->expr()->literal('%' . $this->quoteLikeValue($unQuotedValue))
                 );
                 break;
-            case self::OPERATOR_NOT_ENDS_WITH:
+            case static::OPERATOR_NOT_ENDS_WITH:
                 $where = $queryBuilder->expr()->notLike(
                     $field,
                     $queryBuilder->expr()->literal('%' . $this->quoteLikeValue($unQuotedValue))
                 );
                 break;
-            case self::OPERATOR_IS_EMPTY:
+            case static::OPERATOR_IS_EMPTY:
                 $where = (string)$queryBuilder->expr()->orX(
                     $queryBuilder->expr()->eq($field, $queryBuilder->expr()->literal('')),
                     $queryBuilder->expr()->isNull($field)
                 );
                 break;
-            case self::OPERATOR_IS_NOT_EMPTY:
+            case static::OPERATOR_IS_NOT_EMPTY:
                 $where = (string)$queryBuilder->expr()->andX(
                     $queryBuilder->expr()->neq($field, $queryBuilder->expr()->literal('')),
                     $queryBuilder->expr()->isNotNull($field)
                 );
                 break;
-            case self::OPERATOR_IS_NULL:
+            case static::OPERATOR_IS_NULL:
                 $where = $queryBuilder->expr()->isNull($field);
                 break;
-            case self::OPERATOR_IS_NOT_NULL:
+            case static::OPERATOR_IS_NOT_NULL:
                 $where = $queryBuilder->expr()->isNotNull($field);
                 break;
-            case self::OPERATOR_LESS:
+            case static::OPERATOR_LESS:
                 $where = $queryBuilder->expr()->lt($field, $quotedValue);
                 break;
-            case self::OPERATOR_LESS_OR_EQUAL:
+            case static::OPERATOR_LESS_OR_EQUAL:
                 $where = $queryBuilder->expr()->lte($field, $quotedValue);
                 break;
-            case self::OPERATOR_GREATER:
+            case static::OPERATOR_GREATER:
                 $where = $queryBuilder->expr()->gt($field, $quotedValue);
                 break;
-            case self::OPERATOR_GREATER_OR_EQUAL:
+            case static::OPERATOR_GREATER_OR_EQUAL:
                 $where = $queryBuilder->expr()->gte($field, $quotedValue);
                 break;
-            case self::OPERATOR_BETWEEN:
+            case static::OPERATOR_BETWEEN:
                 $quotedValue1 = $queryBuilder->quote($unQuotedValue[0], $databaseType);
                 $quotedValue2 = $queryBuilder->quote($unQuotedValue[1], $databaseType);
                 $where = (string)$queryBuilder->expr()->andX(
@@ -234,7 +228,7 @@ class QueryParser
                     $queryBuilder->expr()->lt($field, $quotedValue2)
                 );
                 break;
-            case self::OPERATOR_NOT_BETWEEN:
+            case static::OPERATOR_NOT_BETWEEN:
                 $quotedValue1 = $queryBuilder->quote($unQuotedValue[0], $databaseType);
                 $quotedValue2 = $queryBuilder->quote($unQuotedValue[1], $databaseType);
                 $where = (string)$queryBuilder->expr()->andX(
@@ -248,48 +242,8 @@ class QueryParser
     }
 
     /**
-     * Prepare incoming values. E.g. parse date string into timestamp.
-     *
-     * @param stdClass $rule
-     *
-     * @return mixed
-     */
-    protected function getValue($rule)
-    {
-        $values = $rule->value;
-        if (!is_array($values)) {
-            $values = [$values];
-        }
-        $format = null;
-        switch ($rule->type) {
-            case 'datetime':
-                $format = self::FORMAT_DATETIME;
-                break;
-            case 'date':
-                $format = self::FORMAT_DATE;
-                break;
-            case 'time':
-                $format = self::FORMAT_TIME;
-                break;
-        }
-        foreach ($values as &$value) {
-            if ($format !==
-                null
-            ) {
-                $date = \DateTime::createFromFormat($format, $value);
-                $value = $date->getTimestamp();
-            }
-        }
-
-        return count($values) ===
-        1 ?
-            $values[0] :
-            $values;
-    }
-
-    /**
      * This method split the given string into chunks and return
-     * it as array. As delimiter it use a set of special chars:
+     * it as array. As delimiter a set of special character is used:
      * - ; (semicolon)
      * - + (plus)
      * - # (hash)

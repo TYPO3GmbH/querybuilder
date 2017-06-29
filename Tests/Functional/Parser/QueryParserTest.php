@@ -117,6 +117,126 @@ class QueryParserTest extends FunctionalTestCase
     /**
      * @return array
      */
+    public function parseReturnsValidWhereClauseForMultipleEqualsQueryDataProvider() : array
+    {
+        return [
+            'foo, bar, int and date' => [
+                '{
+                    "condition": "AND",
+                    "rules": [
+                        {
+                            "id": "input_1",
+                            "field": "input_1",
+                            "type": "string",
+                            "input": "text",
+                            "operator": "equal",
+                            "value": "foo"
+                        },
+                        {
+                            "id": "input_1",
+                            "field": "input_1",
+                            "type": "string",
+                            "input": "text",
+                            "operator": "equal",
+                            "value": "bar"
+                        },
+                        {
+                            "condition": "AND",
+                            "rules": [
+                                {
+                                    "id": "input_9",
+                                    "field": "input_9",
+                                    "type": "integer",
+                                    "input": "number",
+                                    "operator": "equal",
+                                    "value": "42"
+                                },
+                                {
+                                    "id": "inputdatetime_2",
+                                    "field": "inputdatetime_2",
+                                    "type": "date",
+                                    "input": "text",
+                                    "operator": "equal",
+                                    "value": "2017-06-26"
+                                }
+                            ]
+                        }
+                    ],
+                    "valid": true
+                }',
+                ' ( `input_1` = \'foo\' AND `input_1` = \'bar\' AND  ( `input_9` = \'42\' AND `inputdatetime_2` = \'2017-06-26\' )  ) '
+            ],
+
+            'double, time, boolean, datetime' => [
+                '{
+                    "condition": "AND",
+                    "rules": [
+                        {
+                            "id": "input_8",
+                            "field": "input_8",
+                            "type": "double",
+                            "input": "number",
+                            "operator": "equal",
+                            "value": "42.42"
+                        },
+                        {
+                            "condition": "AND",
+                            "rules": [
+                                {
+                                    "id": "inputdatetime_5",
+                                    "field": "inputdatetime_5",
+                                    "type": "time",
+                                    "input": "text",
+                                    "operator": "equal",
+                                    "value": "16:30"
+                                },
+                                {
+                                    "id": "checkbox_2",
+                                    "field": "checkbox_2",
+                                    "type": "boolean",
+                                    "input": "checkbox",
+                                    "operator": "equal",
+                                    "value": ["1"]
+                                }
+                            ]
+                        },
+                        {
+                            "condition": "AND",
+                            "rules": [
+                            {
+                                "id": "inputdatetime_4",
+                                "field": "inputdatetime_4",
+                                "type": "datetime",
+                                "input": "text",
+                                "operator": "equal",
+                                "value": "2017-06-28 16:30"
+                            }
+                          ]
+                        }
+                    ],
+                    "valid": true
+                }',
+                ' ( `input_8` = \'42.42\' AND  ( `inputdatetime_5` = \'16:30\' AND `checkbox_2` = \'1\' )  AND  ( `inputdatetime_4` = \'2017-06-28 16:30\' )  ) '
+            ]
+        ];
+    }
+
+    /**
+     * @test
+     * @dataProvider parseReturnsValidWhereClauseForMultipleEqualsQueryDataProvider
+     *
+     * @param $multipleRules
+     * @param $expectedResult
+     */
+    public function parseReturnsValidWhereClauseForMultipleEqualsQuery($multipleRules, $expectedResult)
+    {
+        $query = json_decode($multipleRules);
+        self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
+    }
+
+    /**
+     * @return array
+     */
     public function parseReturnsValidWhereClauseForSimpleNotEqualQueryDataProvider() : array
     {
         return [
