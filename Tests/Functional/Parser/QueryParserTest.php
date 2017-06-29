@@ -32,12 +32,28 @@ class QueryParserTest extends FunctionalTestCase
     protected $table = 'pages';
 
     /**
+     * @var string
+     */
+    protected $originalTimeZone;
+
+    /**
      *
      */
     protected function setUp()
     {
+        $this->originalTimeZone = date_default_timezone_get();
+        date_default_timezone_set('Europe/Berlin');
         $this->subject = new QueryParser();
         parent::setUp();
+    }
+
+    /**
+     *
+     */
+    protected function tearDown()
+    {
+        date_default_timezone_set($this->originalTimeZone);
+        parent::tearDown();
     }
 
     /**
@@ -53,10 +69,10 @@ class QueryParserTest extends FunctionalTestCase
             'comma value as type string' => ['42,5', 'string', ' ( `title` = \'42,5\' ) '],
             'string as string value as type string' => ['foo', 'string', ' ( `title` = \'foo\' ) '],
 
-            'integer value as type integer' => [42, 'integer', ' ( `title` = \'42\' ) '],
-            'string as number value as type integer' => ['42', 'integer', ' ( `title` = \'42\' ) '],
-            'integer(negative) value as type integer' => [-5, 'integer', ' ( `title` = \'-5\' ) '],
-            'string(negative) as number value as type integer' => ['-5', 'integer', ' ( `title` = \'-5\' ) '],
+            'integer value as type integer' => [42, 'integer', ' ( `title` = 42 ) '],
+            'string as number value as type integer' => ['42', 'integer', ' ( `title` = 42 ) '],
+            'integer(negative) value as type integer' => [-5, 'integer', ' ( `title` = -5 ) '],
+            'string(negative) as number value as type integer' => ['-5', 'integer', ' ( `title` = -5 ) '],
 
             'integer(1) value as type boolean' => [[1], 'boolean', ' ( `title` = \'1\' ) '],
             'string(1) as number value as type boolean' => [['1'], 'boolean', ' ( `title` = \'1\' ) '],
@@ -76,11 +92,11 @@ class QueryParserTest extends FunctionalTestCase
             'comma value as type double' => ['42,50', 'double', ' ( `title` = \'42.50\' ) '],
             'comma value (2 decimal) as type double' => ['42,50', 'double', ' ( `title` = \'42.50\' ) '],
 
-            'comma value as type date' => ['2017-06-26', 'date', ' ( `title` = \'2017-06-26\' ) '],
+            'comma value as type date' => ['2017-06-26', 'date', ' ( `title` = 1498420800 ) '],
 
-            'comma value as type time' => ['18:30', 'time', ' ( `title` = \'18:30\' ) '],
+            'comma value as type time' => ['18:30', 'time', ' ( `title` = 66600 ) '],
 
-            'string as number value as type datetime' => ['2017-06-26 17:55', 'datetime', ' ( `title` = \'2017-06-26 17:55\' ) '],
+            'string as number value as type datetime' => ['2017-01-01 00:00', 'datetime', ' ( `title` = 1483221600 ) '],
         ];
     }
 
@@ -164,7 +180,7 @@ class QueryParserTest extends FunctionalTestCase
                     ],
                     "valid": true
                 }',
-                ' ( `input_1` = \'foo\' AND `input_1` = \'bar\' AND  ( `input_9` = \'42\' AND `inputdatetime_2` = \'2017-06-26\' )  ) '
+                ' ( `input_1` = \'foo\' AND `input_1` = \'bar\' AND  ( `input_9` = 42 AND `inputdatetime_2` = 1498420800 )  ) '
             ],
 
             'double, time, boolean, datetime' => [
@@ -216,7 +232,7 @@ class QueryParserTest extends FunctionalTestCase
                     ],
                     "valid": true
                 }',
-                ' ( `input_8` = \'42.42\' AND  ( `inputdatetime_5` = \'16:30\' AND `checkbox_2` = \'1\' )  AND  ( `inputdatetime_4` = \'2017-06-28 16:30\' )  ) '
+                ' ( `input_8` = \'42.42\' AND  ( `inputdatetime_5` = 59400 AND `checkbox_2` = \'1\' )  AND  ( `inputdatetime_4` = 1498653000 )  ) '
             ]
         ];
     }
@@ -247,10 +263,10 @@ class QueryParserTest extends FunctionalTestCase
             'comma value as type string' => ['42,5', 'string', ' ( `title` <> \'42,5\' ) '],
             'string as string value as type string' => ['foo', 'string', ' ( `title` <> \'foo\' ) '],
 
-            'integer value as type integer' => [42, 'integer', ' ( `title` <> \'42\' ) '],
-            'string as number value as type integer' => ['42', 'integer', ' ( `title` <> \'42\' ) '],
-            'integer(negative) value as type integer' => [-5, 'integer', ' ( `title` <> \'-5\' ) '],
-            'string(negative) as number value as type integer' => ['-5', 'integer', ' ( `title` <> \'-5\' ) '],
+            'integer value as type integer' => [42, 'integer', ' ( `title` <> 42 ) '],
+            'string as number value as type integer' => ['42', 'integer', ' ( `title` <> 42 ) '],
+            'integer(negative) value as type integer' => [-5, 'integer', ' ( `title` <> -5 ) '],
+            'string(negative) as number value as type integer' => ['-5', 'integer', ' ( `title` <> -5 ) '],
 
             'integer(1) value as type boolean' => [[1], 'boolean', ' ( `title` <> \'1\' ) '],
             'string(1) as number value as type boolean' => [['1'], 'boolean', ' ( `title` <> \'1\' ) '],
@@ -270,11 +286,11 @@ class QueryParserTest extends FunctionalTestCase
             'comma value as type double' => ['42,50', 'double', ' ( `title` <> \'42.50\' ) '],
             'comma value (2 decimal) as type double' => ['42,50', 'double', ' ( `title` <> \'42.50\' ) '],
 
-            'comma value as type date' => ['2017-06-26', 'date', ' ( `title` <> \'2017-06-26\' ) '],
+            'comma value as type date' => ['2017-06-26', 'date', ' ( `title` <> 1498420800 ) '],
 
-            'comma value as type time' => ['18:30', 'time', ' ( `title` <> \'18:30\' ) '],
+            'comma value as type time' => ['18:30', 'time', ' ( `title` <> 66600 ) '],
 
-            'string as number value as type datetime' => ['2017-06-26 17:55', 'datetime', ' ( `title` <> \'2017-06-26 17:55\' ) '],
+            'string as number value as type datetime' => ['2017-01-21 00:00', 'datetime', ' ( `title` <> 1484949600 ) '],
         ];
     }
 
@@ -336,11 +352,11 @@ class QueryParserTest extends FunctionalTestCase
             'string float value as type double' => ['42.5', 'double', ' ( `title` IN (\'42.5\') ) '],
             'comma value as type double' => ['42,5', 'double', ' ( `title` IN (\'42.5\') ) '],
 
-            'comma value as type date' => ['2017-06-26', 'date', ' ( `title` IN (\'2017-06-26\') ) '],
+            'comma value as type date' => ['2017-06-26', 'date', ' ( `title` IN (\'1498420800\') ) '],
 
-            'comma value as type time' => ['18:30', 'time', ' ( `title` IN (\'18:30\') ) '],
+            'comma value as type time' => ['18:30', 'time', ' ( `title` IN (\'66600\') ) '],
 
-            'string as number value as type datetime' => ['2017-06-26 17:55', 'datetime', ' ( `title` IN (\'2017-06-26 17:55\') ) '],
+            'string as number value as type datetime' => ['2017-01-01 00:00', 'datetime', ' ( `title` IN (\'1483221600\') ) '],
         ];
     }
 
@@ -401,11 +417,11 @@ class QueryParserTest extends FunctionalTestCase
             'string float value as type double' => ['42.5', 'double', ' ( `title` NOT IN (\'42.5\') ) '],
             'comma value as type double' => ['42,5', 'double', ' ( `title` NOT IN (\'42.5\') ) '],
 
-            'comma value as type date' => ['2017-06-26', 'date', ' ( `title` NOT IN (\'2017-06-26\') ) '],
+            'comma value as type date' => ['2017-06-26', 'date', ' ( `title` NOT IN (\'1498420800\') ) '],
 
-            'comma value as type time' => ['18:30', 'time', ' ( `title` NOT IN (\'18:30\') ) '],
+            'comma value as type time' => ['18:30', 'time', ' ( `title` NOT IN (\'66600\') ) '],
 
-            'string as number value as type datetime' => ['2017-06-26 17:55', 'datetime', ' ( `title` NOT IN (\'2017-06-26 17:55\') ) '],
+            'string as number value as type datetime' => ['2017-01-01 00:00', 'datetime', ' ( `title` NOT IN (\'1483221600\') ) '],
         ];
     }
 
@@ -847,11 +863,11 @@ class QueryParserTest extends FunctionalTestCase
     public function parseReturnsValidWhereClauseForSimpleLessQueryDataProvider() : array
     {
         return [
-            'integer value as type integer' => [42, 'integer', ' ( `title` < \'42\' ) '],
-            'float value as type integer' => [42.5, 'integer', ' ( `title` < \'42.5\' ) '],
-            'comma value as type integer' => ['42,5', 'integer', ' ( `title` < \'42,5\' ) '],
-            'string as number value as type integer' => ['42', 'integer', ' ( `title` < \'42\' ) '],
-            'string as string value as type integer' => ['foo', 'integer', ' ( `title` < \'foo\' ) '],
+            'integer value as type integer' => [42, 'integer', ' ( `title` < 42 ) '],
+            'float value as type integer' => [42.5, 'integer', ' ( `title` < 42 ) '],
+            'comma value as type integer' => ['42,5', 'integer', ' ( `title` < 42 ) '],
+            'string as number value as type integer' => ['42', 'integer', ' ( `title` < 42 ) '],
+            'string as string value as type integer' => ['foo', 'integer', ' ( `title` < 0 ) '],
 
             'integer value as type string' => [42, 'string', ' ( `title` < \'42\' ) '],
             'float value as type string' => [42.5, 'string', ' ( `title` < \'42.5\' ) '],
@@ -865,23 +881,15 @@ class QueryParserTest extends FunctionalTestCase
             'string as number value as type double' => ['42', 'double', ' ( `title` < \'42\' ) '],
             'string as string value as type double' => ['foo', 'double', ' ( `title` < \'foo\' ) '],
 
-            'integer value as type date' => [42, 'date', ' ( `title` < \'42\' ) '],
-            'float value as type date' => [42.5, 'date', ' ( `title` < \'42.5\' ) '],
-            'comma value as type date' => ['42,5', 'date', ' ( `title` < \'42,5\' ) '],
-            'string as number value as type date' => ['42', 'date', ' ( `title` < \'42\' ) '],
-            'string as string value as type date' => ['foo', 'date', ' ( `title` < \'foo\' ) '],
+            'string as date value as type date' => ['2017-01-01', 'date', ' ( `title` < 1483221600 ) '],
 
-            'integer value as type time' => [42, 'time', ' ( `title` < \'42\' ) '],
-            'float value as type time' => [42.5, 'time', ' ( `title` < \'42.5\' ) '],
-            'comma value as type time' => ['42,5', 'time', ' ( `title` < \'42,5\' ) '],
-            'string as number value as type time' => ['42', 'time', ' ( `title` < \'42\' ) '],
-            'string as string value as type time' => ['foo', 'time', ' ( `title` < \'foo\' ) '],
+            'integer value as type time' => [42, 'time', ' ( `title` < 151200 ) '],
+            'float value as type time' => [42.5, 'time', ' ( `title` < 151200 ) '],
+            'comma value as type time' => ['42,5', 'time', ' ( `title` < 151200 ) '],
+            'string as number value as type time' => ['42', 'time', ' ( `title` < 151200 ) '],
+            'string as string value as type time' => ['foo', 'time', ' ( `title` < 0 ) '],
 
-            'integer value as type datetime' => [42, 'datetime', ' ( `title` < \'42\' ) '],
-            'float value as type datetime' => [42.5, 'datetime', ' ( `title` < \'42.5\' ) '],
-            'comma value as type datetime' => ['42,5', 'datetime', ' ( `title` < \'42,5\' ) '],
-            'string as number value as type datetime' => ['42', 'datetime', ' ( `title` < \'42\' ) '],
-            'string as string value as type datetime' => ['foo', 'datetime', ' ( `title` < \'foo\' ) '],
+            'string as datetime value as type datetime' => ['2017-01-01 00:00', 'datetime', ' ( `title` < 1483221600 ) '],
         ];
     }
 
@@ -921,11 +929,11 @@ class QueryParserTest extends FunctionalTestCase
     public function parseReturnsValidWhereClauseForSimpleLessOrEqualQueryDataProvider() : array
     {
         return [
-            'integer value as integer' => [42, 'integer', ' ( `title` <= \'42\' ) '],
-            'float value as integer' => [42.5, 'integer', ' ( `title` <= \'42.5\' ) '],
-            'comma value as integer' => ['42,5', 'integer', ' ( `title` <= \'42,5\' ) '],
-            'string as number value as integer' => ['42', 'integer', ' ( `title` <= \'42\' ) '],
-            'string as string value as integer' => ['foo', 'integer', ' ( `title` <= \'foo\' ) '],
+            'integer value as integer' => [42, 'integer', ' ( `title` <= 42 ) '],
+            'float value as integer' => [42.5, 'integer', ' ( `title` <= 42 ) '],
+            'comma value as integer' => ['42,5', 'integer', ' ( `title` <= 42 ) '],
+            'string as number value as integer' => ['42', 'integer', ' ( `title` <= 42 ) '],
+            'string as string value as integer' => ['foo', 'integer', ' ( `title` <= 0 ) '],
 
             'integer value as type string' => [42, 'string', ' ( `title` <= \'42\' ) '],
             'float value as type string' => [42.5, 'string', ' ( `title` <= \'42.5\' ) '],
@@ -939,23 +947,15 @@ class QueryParserTest extends FunctionalTestCase
             'string as number value as type double' => ['42', 'double', ' ( `title` <= \'42\' ) '],
             'string as string value as type double' => ['foo', 'double', ' ( `title` <= \'foo\' ) '],
 
-            'integer value as type date' => [42, 'date', ' ( `title` <= \'42\' ) '],
-            'float value as type date' => [42.5, 'date', ' ( `title` <= \'42.5\' ) '],
-            'comma value as type date' => ['42,5', 'date', ' ( `title` <= \'42,5\' ) '],
-            'string as number value as type date' => ['42', 'date', ' ( `title` <= \'42\' ) '],
-            'string as string value as type date' => ['foo', 'date', ' ( `title` <= \'foo\' ) '],
+            'string as date value as type date' => ['2017-01-01', 'date', ' ( `title` <= 1483221600 ) '],
 
-            'integer value as type time' => [42, 'time', ' ( `title` <= \'42\' ) '],
-            'float value as type time' => [42.5, 'time', ' ( `title` <= \'42.5\' ) '],
-            'comma value as type time' => ['42,5', 'time', ' ( `title` <= \'42,5\' ) '],
-            'string as number value as type time' => ['42', 'time', ' ( `title` <= \'42\' ) '],
-            'string as string value as type time' => ['foo', 'time', ' ( `title` <= \'foo\' ) '],
+            'integer value as type time' => [42, 'time', ' ( `title` <= 151200 ) '],
+            'float value as type time' => [42.5, 'time', ' ( `title` <= 151200 ) '],
+            'comma value as type time' => ['42,5', 'time', ' ( `title` <= 151200 ) '],
+            'string as number value as type time' => ['42', 'time', ' ( `title` <= 151200 ) '],
+            'string as string value as type time' => ['foo', 'time', ' ( `title` <= 0 ) '],
 
-            'integer value as type datetime' => [42, 'datetime', ' ( `title` <= \'42\' ) '],
-            'float value as type datetime' => [42.5, 'datetime', ' ( `title` <= \'42.5\' ) '],
-            'comma value as type datetime' => ['42,5', 'datetime', ' ( `title` <= \'42,5\' ) '],
-            'string as number value as type datetime' => ['42', 'datetime', ' ( `title` <= \'42\' ) '],
-            'string as string value as type datetime' => ['foo', 'datetime', ' ( `title` <= \'foo\' ) '],
+            'string as datetime value as type datetime' => ['2017-01-01 00:00', 'datetime', ' ( `title` <= 1483221600 ) '],
         ];
     }
 
@@ -996,11 +996,11 @@ class QueryParserTest extends FunctionalTestCase
     public function parseReturnsValidWhereClauseForSimpleGreaterQueryDataProvider() : array
     {
         return [
-            'integer value as integer' => [42, 'integer', ' ( `title` > \'42\' ) '],
-            'float value as integer' => [42.5, 'integer', ' ( `title` > \'42.5\' ) '],
-            'comma value as integer' => ['42,5', 'integer', ' ( `title` > \'42,5\' ) '],
-            'string as number value as integer' => ['42', 'integer', ' ( `title` > \'42\' ) '],
-            'string as string value as integer' => ['foo', 'integer', ' ( `title` > \'foo\' ) '],
+            'integer value as integer' => [42, 'integer', ' ( `title` > 42 ) '],
+            'float value as integer' => [42.5, 'integer', ' ( `title` > 42 ) '],
+            'comma value as integer' => ['42,5', 'integer', ' ( `title` > 42 ) '],
+            'string as number value as integer' => ['42', 'integer', ' ( `title` > 42 ) '],
+            'string as string value as integer' => ['foo', 'integer', ' ( `title` > 0 ) '],
 
             'integer value as type string' => [42, 'string', ' ( `title` > \'42\' ) '],
             'float value as type string' => [42.5, 'string', ' ( `title` > \'42.5\' ) '],
@@ -1014,23 +1014,15 @@ class QueryParserTest extends FunctionalTestCase
             'string as number value as type double' => ['42', 'double', ' ( `title` > \'42\' ) '],
             'string as string value as type double' => ['foo', 'double', ' ( `title` > \'foo\' ) '],
 
-            'integer value as type date' => [42, 'date', ' ( `title` > \'42\' ) '],
-            'float value as type date' => [42.5, 'date', ' ( `title` > \'42.5\' ) '],
-            'comma value as type date' => ['42,5', 'date', ' ( `title` > \'42,5\' ) '],
-            'string as number value as type date' => ['42', 'date', ' ( `title` > \'42\' ) '],
-            'string as string value as type date' => ['foo', 'date', ' ( `title` > \'foo\' ) '],
+            'string as date value as type date' => ['2017-01-01', 'date', ' ( `title` > 1483221600 ) '],
 
-            'integer value as type time' => [42, 'time', ' ( `title` > \'42\' ) '],
-            'float value as type time' => [42.5, 'time', ' ( `title` > \'42.5\' ) '],
-            'comma value as type time' => ['42,5', 'time', ' ( `title` > \'42,5\' ) '],
-            'string as number value as type time' => ['42', 'time', ' ( `title` > \'42\' ) '],
-            'string as string value as type time' => ['foo', 'time', ' ( `title` > \'foo\' ) '],
+            'integer value as type time' => [42, 'time', ' ( `title` > 151200 ) '],
+            'float value as type time' => [42.5, 'time', ' ( `title` > 151200 ) '],
+            'comma value as type time' => ['42,5', 'time', ' ( `title` > 151200 ) '],
+            'string as number value as type time' => ['42', 'time', ' ( `title` > 151200 ) '],
+            'string as string value as type time' => ['foo', 'time', ' ( `title` > 0 ) '],
 
-            'integer value as type datetime' => [42, 'datetime', ' ( `title` > \'42\' ) '],
-            'float value as type datetime' => [42.5, 'datetime', ' ( `title` > \'42.5\' ) '],
-            'comma value as type datetime' => ['42,5', 'datetime', ' ( `title` > \'42,5\' ) '],
-            'string as number value as type datetime' => ['42', 'datetime', ' ( `title` > \'42\' ) '],
-            'string as string value as type datetime' => ['foo', 'datetime', ' ( `title` > \'foo\' ) '],
+            'string as datetime value as type datetime' => ['2017-01-01 00:00', 'datetime', ' ( `title` > 1483221600 ) '],
         ];
     }
 
@@ -1070,11 +1062,11 @@ class QueryParserTest extends FunctionalTestCase
     public function parseReturnsValidWhereClauseForSimpleGreaterOrEqualQueryDataProvider() : array
     {
         return [
-            'integer value as integer' => [42, 'integer', ' ( `title` >= \'42\' ) '],
-            'float value as integer' => [42.5, 'integer', ' ( `title` >= \'42.5\' ) '],
-            'comma value as integer' => ['42,5', 'integer', ' ( `title` >= \'42,5\' ) '],
-            'string as number value as integer' => ['42', 'integer', ' ( `title` >= \'42\' ) '],
-            'string as string value as integer' => ['foo', 'integer', ' ( `title` >= \'foo\' ) '],
+            'integer value as integer' => [42, 'integer', ' ( `title` >= 42 ) '],
+            'float value as integer' => [42.5, 'integer', ' ( `title` >= 42 ) '],
+            'comma value as integer' => ['42,5', 'integer', ' ( `title` >= 42 ) '],
+            'string as number value as integer' => ['42', 'integer', ' ( `title` >= 42 ) '],
+            'string as string value as integer' => ['foo', 'integer', ' ( `title` >= 0 ) '],
 
             'integer value as type string' => [42, 'string', ' ( `title` >= \'42\' ) '],
             'float value as type string' => [42.5, 'string', ' ( `title` >= \'42.5\' ) '],
@@ -1088,23 +1080,15 @@ class QueryParserTest extends FunctionalTestCase
             'string as number value as type double' => ['42', 'double', ' ( `title` >= \'42\' ) '],
             'string as string value as type double' => ['foo', 'double', ' ( `title` >= \'foo\' ) '],
 
-            'integer value as type date' => [42, 'date', ' ( `title` >= \'42\' ) '],
-            'float value as type date' => [42.5, 'date', ' ( `title` >= \'42.5\' ) '],
-            'comma value as type date' => ['42,5', 'date', ' ( `title` >= \'42,5\' ) '],
-            'string as number value as type date' => ['42', 'date', ' ( `title` >= \'42\' ) '],
-            'string as string value as type date' => ['foo', 'date', ' ( `title` >= \'foo\' ) '],
+            'string as date value as type date' => ['2017-01-01', 'date', ' ( `title` >= 1483221600 ) '],
 
-            'integer value as type time' => [42, 'time', ' ( `title` >= \'42\' ) '],
-            'float value as type time' => [42.5, 'time', ' ( `title` >= \'42.5\' ) '],
-            'comma value as type time' => ['42,5', 'time', ' ( `title` >= \'42,5\' ) '],
-            'string as number value as type time' => ['42', 'time', ' ( `title` >= \'42\' ) '],
-            'string as string value as type time' => ['foo', 'time', ' ( `title` >= \'foo\' ) '],
+            'integer value as type time' => [42, 'time', ' ( `title` >= 151200 ) '],
+            'float value as type time' => [42.5, 'time', ' ( `title` >= 151200 ) '],
+            'comma value as type time' => ['42,5', 'time', ' ( `title` >= 151200 ) '],
+            'string as number value as type time' => ['42', 'time', ' ( `title` >= 151200 ) '],
+            'string as string value as type time' => ['foo', 'time', ' ( `title` >= 0 ) '],
 
-            'integer value as type datetime' => [42, 'datetime', ' ( `title` >= \'42\' ) '],
-            'float value as type datetime' => [42.5, 'datetime', ' ( `title` >= \'42.5\' ) '],
-            'comma value as type datetime' => ['42,5', 'datetime', ' ( `title` >= \'42,5\' ) '],
-            'string as number value as type datetime' => ['42', 'datetime', ' ( `title` >= \'42\' ) '],
-            'string as string value as type datetime' => ['foo', 'datetime', ' ( `title` >= \'foo\' ) '],
+            'string as datetime value as type datetime' => ['2017-01-01 00:00', 'datetime', ' ( `title` >= 1483221600 ) '],
         ];
     }
 
@@ -1144,11 +1128,11 @@ class QueryParserTest extends FunctionalTestCase
     public function parseReturnsValidWhereClauseForSimpleBetweenQueryDataProvider() : array
     {
         return [
-            'integer value as integer' => [[42,62], 'integer', ' ( (`title` > \'42\') AND (`title` < \'62\') ) '],
-            'float value as integer' => [[42.5, 62.5], 'integer', ' ( (`title` > \'42.5\') AND (`title` < \'62.5\') ) '],
-            'comma value as integer' => [['42,5','62,5'], 'integer', ' ( (`title` > \'42,5\') AND (`title` < \'62,5\') ) '],
-            'string as number value as integer' => [['42', '62'], 'integer', ' ( (`title` > \'42\') AND (`title` < \'62\') ) '],
-            'string as string value as integer' => [['foo','bar'], 'integer', ' ( (`title` > \'foo\') AND (`title` < \'bar\') ) '],
+            'integer value as integer' => [[42,62], 'integer', ' ( (`title` > 42) AND (`title` < 62) ) '],
+            'float value as integer' => [[42.5, 62.5], 'integer', ' ( (`title` > 42) AND (`title` < 62) ) '],
+            'comma value as integer' => [['42,5','62,5'], 'integer', ' ( (`title` > 42) AND (`title` < 62) ) '],
+            'string as number value as integer' => [['42', '62'], 'integer', ' ( (`title` > 42) AND (`title` < 62) ) '],
+            'string as string value as integer' => [['foo','bar'], 'integer', ' ( (`title` > 0) AND (`title` < 0) ) '],
 
             'integer value as type string' => [[42,62], 'string', ' ( (`title` > \'42\') AND (`title` < \'62\') ) '],
             'float value as type string' => [[42.5,62.5], 'string', ' ( (`title` > \'42.5\') AND (`title` < \'62.5\') ) '],
@@ -1162,23 +1146,15 @@ class QueryParserTest extends FunctionalTestCase
             'string as number value as type double' => [['42','62'], 'double', ' ( (`title` > \'42\') AND (`title` < \'62\') ) '],
             'string as string value as type double' => [['foo','bar'], 'double', ' ( (`title` > \'foo\') AND (`title` < \'bar\') ) '],
 
-            'integer value as type date' => [[42,62], 'date', ' ( (`title` > \'42\') AND (`title` < \'62\') ) '],
-            'float value as type date' => [[42.5,62.5], 'date', ' ( (`title` > \'42.5\') AND (`title` < \'62.5\') ) '],
-            'comma value as type date' => [['42,5','62,5'], 'date', ' ( (`title` > \'42,5\') AND (`title` < \'62,5\') ) '],
-            'string as number value as type date' => [['42','62'], 'date', ' ( (`title` > \'42\') AND (`title` < \'62\') ) '],
-            'string as string value as type date' => [['foo','bar'], 'date', ' ( (`title` > \'foo\') AND (`title` < \'bar\') ) '],
+            'string as date value as type date' => [['2017-01-01', '2017-06-30'], 'datetime', ' ( (`title` > 1483221600) AND (`title` < 1498766400) ) '],
 
-            'integer value as type time' => [[42,62], 'time', ' ( (`title` > \'42\') AND (`title` < \'62\') ) '],
-            'float value as type time' => [[42.5,62.5], 'time', ' ( (`title` > \'42.5\') AND (`title` < \'62.5\') ) '],
-            'comma value as type time' => [['42,5','62,5'], 'time', ' ( (`title` > \'42,5\') AND (`title` < \'62,5\') ) '],
-            'string as number value as type time' => [['42','62'], 'time', ' ( (`title` > \'42\') AND (`title` < \'62\') ) '],
-            'string as string value as type time' => [['foo','bar'], 'time', ' ( (`title` > \'foo\') AND (`title` < \'bar\') ) '],
+            'integer value as type time' => [[42,62], 'time', ' ( (`title` > 151200) AND (`title` < 223200) ) '],
+            'float value as type time' => [[42.5,62.5], 'time', ' ( (`title` > 151200) AND (`title` < 223200) ) '],
+            'comma value as type time' => [['42,5','62,5'], 'time', ' ( (`title` > 151200) AND (`title` < 223200) ) '],
+            'string as number value as type time' => [['42','62'], 'time', ' ( (`title` > 151200) AND (`title` < 223200) ) '],
+            'string as string value as type time' => [['foo','bar'], 'time', ' ( (`title` > 0) AND (`title` < 0) ) '],
 
-            'integer value as type datetime' => [[42,62], 'datetime', ' ( (`title` > \'42\') AND (`title` < \'62\') ) '],
-            'float value as type datetime' => [[42.5,62.5], 'datetime', ' ( (`title` > \'42.5\') AND (`title` < \'62.5\') ) '],
-            'comma value as type datetime' => [['42,5','62,5'], 'datetime', ' ( (`title` > \'42,5\') AND (`title` < \'62,5\') ) '],
-            'string as number value as type datetime' => [['42','62'], 'datetime', ' ( (`title` > \'42\') AND (`title` < \'62\') ) '],
-            'string as string value as type datetime' => [['foo','bar'], 'datetime', ' ( (`title` > \'foo\') AND (`title` < \'bar\') ) '],
+            'string as datetime value as type datetime' => [['2017-01-01 00:00', '2017-06-30 23:59'], 'datetime', ' ( (`title` > 1483221600) AND (`title` < 1498852740) ) '],
         ];
     }
 
@@ -1218,41 +1194,33 @@ class QueryParserTest extends FunctionalTestCase
     public function parseReturnsValidWhereClauseForSimpleNotBetweenQueryDataProvider() : array
     {
         return [
-            'integer value as integer' => [[42,62], 'integer', ' ( (`title` < \'42\') AND (`title` > \'62\') ) '],
-            'float value as integer' => [[42.5, 62.5], 'integer', ' ( (`title` < \'42.5\') AND (`title` > \'62.5\') ) '],
-            'comma value as integer' => [['42,5','62,5'], 'integer', ' ( (`title` < \'42,5\') AND (`title` > \'62,5\') ) '],
-            'string as number value as integer' => [['42', '62'], 'integer', ' ( (`title` < \'42\') AND (`title` > \'62\') ) '],
-            'string as string value as integer' => [['foo','bar'], 'integer', ' ( (`title` < \'foo\') AND (`title` > \'bar\') ) '],
+            'integer value as integer' => [[42,62], 'integer', ' ( (`title` < 42) OR (`title` > 62) ) '],
+            'float value as integer' => [[42.5, 62.5], 'integer', ' ( (`title` < 42) OR (`title` > 62) ) '],
+            'comma value as integer' => [['42,5','62,5'], 'integer', ' ( (`title` < 42) OR (`title` > 62) ) '],
+            'string as number value as integer' => [['42', '62'], 'integer', ' ( (`title` < 42) OR (`title` > 62) ) '],
+            'string as string value as integer' => [['foo','bar'], 'integer', ' ( (`title` < 0) OR (`title` > 0) ) '],
 
-            'integer value as type string' => [[42,62], 'string', ' ( (`title` < \'42\') AND (`title` > \'62\') ) '],
-            'float value as type string' => [[42.5,62.5], 'string', ' ( (`title` < \'42.5\') AND (`title` > \'62.5\') ) '],
-            'comma value as type string' => [['42,5','62,5'], 'string', ' ( (`title` < \'42,5\') AND (`title` > \'62,5\') ) '],
-            'string as number value as type string' => [['42','62'], 'string', ' ( (`title` < \'42\') AND (`title` > \'62\') ) '],
-            'string as string value as type string' => [['foo','bar'], 'string', ' ( (`title` < \'foo\') AND (`title` > \'bar\') ) '],
+            'integer value as type string' => [[42,62], 'string', ' ( (`title` < \'42\') OR (`title` > \'62\') ) '],
+            'float value as type string' => [[42.5,62.5], 'string', ' ( (`title` < \'42.5\') OR (`title` > \'62.5\') ) '],
+            'comma value as type string' => [['42,5','62,5'], 'string', ' ( (`title` < \'42,5\') OR (`title` > \'62,5\') ) '],
+            'string as number value as type string' => [['42','62'], 'string', ' ( (`title` < \'42\') OR (`title` > \'62\') ) '],
+            'string as string value as type string' => [['foo','bar'], 'string', ' ( (`title` < \'foo\') OR (`title` > \'bar\') ) '],
 
-            'integer value as type double' => [[42,62], 'double', ' ( (`title` < \'42\') AND (`title` > \'62\') ) '],
-            'float value as type double' => [[42.5,62.5], 'double', ' ( (`title` < \'42.5\') AND (`title` > \'62.5\') ) '],
-            'comma value as type double' => [['42,5','62,5'], 'double', ' ( (`title` < \'42.5\') AND (`title` > \'62.5\') ) '],
-            'string as number value as type double' => [['42','62'], 'double', ' ( (`title` < \'42\') AND (`title` > \'62\') ) '],
-            'string as string value as type double' => [['foo','bar'], 'double', ' ( (`title` < \'foo\') AND (`title` > \'bar\') ) '],
+            'integer value as type double' => [[42,62], 'double', ' ( (`title` < \'42\') OR (`title` > \'62\') ) '],
+            'float value as type double' => [[42.5,62.5], 'double', ' ( (`title` < \'42.5\') OR (`title` > \'62.5\') ) '],
+            'comma value as type double' => [['42,5','62,5'], 'double', ' ( (`title` < \'42.5\') OR (`title` > \'62.5\') ) '],
+            'string as number value as type double' => [['42','62'], 'double', ' ( (`title` < \'42\') OR (`title` > \'62\') ) '],
+            'string as string value as type double' => [['foo','bar'], 'double', ' ( (`title` < \'foo\') OR (`title` > \'bar\') ) '],
 
-            'integer value as type date' => [[42,62], 'date', ' ( (`title` < \'42\') AND (`title` > \'62\') ) '],
-            'float value as type date' => [[42.5,62.5], 'date', ' ( (`title` < \'42.5\') AND (`title` > \'62.5\') ) '],
-            'comma value as type date' => [['42,5','62,5'], 'date', ' ( (`title` < \'42,5\') AND (`title` > \'62,5\') ) '],
-            'string as number value as type date' => [['42','62'], 'date', ' ( (`title` < \'42\') AND (`title` > \'62\') ) '],
-            'string as string value as type date' => [['foo','bar'], 'date', ' ( (`title` < \'foo\') AND (`title` > \'bar\') ) '],
+            'string as date value as type date' => [['2017-01-01', '2017-06-30'], 'date', ' ( (`title` < 1483221600) OR (`title` > 1498766400) ) '],
 
-            'integer value as type time' => [[42,62], 'time', ' ( (`title` < \'42\') AND (`title` > \'62\') ) '],
-            'float value as type time' => [[42.5,62.5], 'time', ' ( (`title` < \'42.5\') AND (`title` > \'62.5\') ) '],
-            'comma value as type time' => [['42,5','62,5'], 'time', ' ( (`title` < \'42,5\') AND (`title` > \'62,5\') ) '],
-            'string as number value as type time' => [['42','62'], 'time', ' ( (`title` < \'42\') AND (`title` > \'62\') ) '],
-            'string as string value as type time' => [['foo','bar'], 'time', ' ( (`title` < \'foo\') AND (`title` > \'bar\') ) '],
+            'integer value as type time' => [[42,62], 'time', ' ( (`title` < 151200) OR (`title` > 223200) ) '],
+            'float value as type time' => [[42.5,62.5], 'time', ' ( (`title` < 151200) OR (`title` > 223200) ) '],
+            'comma value as type time' => [['42,5','62,5'], 'time', ' ( (`title` < 151200) OR (`title` > 223200) ) '],
+            'string as number value as type time' => [['42','62'], 'time', ' ( (`title` < 151200) OR (`title` > 223200) ) '],
+            'string as string value as type time' => [['foo','bar'], 'time', ' ( (`title` < 0) OR (`title` > 0) ) '],
 
-            'integer value as type datetime' => [[42,62], 'datetime', ' ( (`title` < \'42\') AND (`title` > \'62\') ) '],
-            'float value as type datetime' => [[42.5,62.5], 'datetime', ' ( (`title` < \'42.5\') AND (`title` > \'62.5\') ) '],
-            'comma value as type datetime' => [['42,5','62,5'], 'datetime', ' ( (`title` < \'42,5\') AND (`title` > \'62,5\') ) '],
-            'string as number value as type datetime' => [['42','62'], 'datetime', ' ( (`title` < \'42\') AND (`title` > \'62\') ) '],
-            'string as string value as type datetime' => [['foo','bar'], 'datetime', ' ( (`title` < \'foo\') AND (`title` > \'bar\') ) '],
+            'string as datetime value as type datetime' => [['2017-01-01 00:00', '2017-06-30 23:59'], 'datetime', ' ( (`title` < 1483221600) OR (`title` > 1498852740) ) '],
         ];
     }
 
