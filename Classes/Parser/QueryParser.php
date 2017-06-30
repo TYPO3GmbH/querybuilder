@@ -161,9 +161,9 @@ class QueryParser
             if ($databaseType === \PDO::PARAM_INT) {
                 $quotedValue[0] = (int)$unQuotedValue[0];
                 $quotedValue[1] = (int)$unQuotedValue[1];
-                if ($rule->type === static::TYPE_BOOLEAN) {
-                    $quotedValue = (int)$unQuotedValue[0];
-                }
+            } elseif ($rule->type === static::TYPE_DOUBLE) {
+                $quotedValue[0] = (double)$unQuotedValue[0];
+                $quotedValue[1] = (double)$unQuotedValue[1];
             } else {
                 $quotedValue[0] = $queryBuilder->quote($unQuotedValue[0], $databaseType);
                 $quotedValue[1] = $queryBuilder->quote($unQuotedValue[1], $databaseType);
@@ -174,6 +174,8 @@ class QueryParser
         } else {
             if ($databaseType === \PDO::PARAM_INT) {
                 $quotedValue = (int)$unQuotedValue;
+            } elseif ($rule->type === static::TYPE_DOUBLE) {
+                $quotedValue = (double)$unQuotedValue;
             } else {
                 $quotedValue = $queryBuilder->quote($unQuotedValue, $databaseType);
             }
