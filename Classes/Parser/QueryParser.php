@@ -50,34 +50,29 @@ class QueryParser
     const TYPE_DATETIME = 'datetime';
 
     /**
-     * @param stdClass $queryObject
-     * @param string $table
+     * @param stdClass $filterObject
+     * @param QueryBuilder $queryBuilderObject
      *
      * @return string
      * @throws \InvalidArgumentException
      */
-    public function parse(stdClass $queryObject, string $table) : string
+    public function parse(stdClass $filterObject, QueryBuilder $queryBuilderObject) : string
     {
-        $condition = $queryObject->condition === static::CONDITION_AND
+        $condition = $filterObject->condition === static::CONDITION_AND
             ? static::CONDITION_AND
             : static::CONDITION_OR;
         $whereParts = [];
-        if (!empty($queryObject->rules)) {
-            foreach ($queryObject->rules as $rule) {
+        if (!empty($filterObject->rules)) {
+            foreach ($filterObject->rules as $rule) {
                 if ($rule->condition && $rule->rules) {
-                    $whereParts[] = $this->parse($rule, $table);
+                    $whereParts[] = $this->parse($rule, $queryBuilderObject);
                 } else {
-                    $whereParts[] = $this->getWhereClause($rule, $table);
+                    $whereParts[] = $this->getWhereClause($rule, $queryBuilderObject);
                 }
             }
         }
 
-        return empty($whereParts) ? '' :
-            ' ( ' .
-            implode(' ' .
-                $condition .
-                ' ', $whereParts) .
-            ' ) ';
+        return $queryBuilderObject;
     }
 
     /**

@@ -32,14 +32,15 @@ class DatabaseRecordList
                                    QueryBuilder $queryBuilder)
     {
         if ($parentObject->table !== null && GeneralUtility::_GP('M') === 'web_list') {
-            $query = GeneralUtility::_GP('query');
-            if ($query !== null) {
-                $query = json_decode($query);
-                if ($query) {
-                    $parameters['where'][] = GeneralUtility::makeInstance(QueryParser::class)
-                        ->parse($query, $table);
+            $filter = GeneralUtility::_GP('query');
+            if ($filter !== null) {
+                $filter = json_decode($filter);
+                if ($filter) {
+                    $queryBuilder = GeneralUtility::makeInstance(QueryParser::class)
+                        ->parse($filter, $queryBuilder);
                 }
             }
         }
+        return $queryBuilder;
     }
 }
