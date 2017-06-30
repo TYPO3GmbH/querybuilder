@@ -94,6 +94,7 @@ class QueryParser
         $field = $rule->field;
         $unQuotedValue = $rule->value;
 
+        // determine the correct database type for quoting
         switch ($rule->type) {
             case static::TYPE_INTEGER:
                 $databaseType = \PDO::PARAM_INT;
@@ -108,21 +109,74 @@ class QueryParser
             case static::TYPE_DATE:
             case static::TYPE_TIME:
             case static::TYPE_DATETIME:
+                $databaseType = \PDO::PARAM_INT;
+                break;
             case static::TYPE_STRING:
             default:
                 $databaseType = \PDO::PARAM_STR;
                 break;
         }
-        $quotedValue = null;
-        if ($rule->operator !== static::OPERATOR_BETWEEN
-            && $rule->operator !== static::OPERATOR_NOT_BETWEEN
-            && $rule->type !== static::TYPE_BOOLEAN)
-        {
-            $quotedValue = $queryBuilder->quote($unQuotedValue, $databaseType);
+
+        // Field is a date string and must be converted
+        if ($rule->type === static::TYPE_DATETIME || $rule->type === static::TYPE_DATE) {
+            // @TODO: TCA supports dbType = date and dbType = datetime, this must be handled different.
+            if (is_array($unQuotedValue)) {
+                if ($unQuotedValue[0] !== null) {
+                    $unQuotedValue[0] = (new \DateTime($unQuotedValue[0]))->getTimestamp();
+                    $unQuotedValue[0] -= date('Z', $unQuotedValue[0]);
+                }
+                if ($unQuotedValue[1] !== null) {
+                    $unQuotedValue[1] = (new \DateTime($unQuotedValue[1]))->getTimestamp();
+                    $unQuotedValue[1] -= date('Z', $unQuotedValue[1]);
+                }
+            } else {
+                if ($unQuotedValue !== null) {
+                    $unQuotedValue = (new \DateTime($unQuotedValue))->getTimestamp();
+                    $unQuotedValue -= date('Z', $unQuotedValue);
+                }
+            }
         }
 
-        if ($rule->type === static::TYPE_BOOLEAN) {
-            $quotedValue = $queryBuilder->quote($unQuotedValue[0], $databaseType);
+        // Field is a date string and must be converted
+        if ($rule->type === static::TYPE_TIME) {
+            if (is_array($unQuotedValue)) {
+                if ($unQuotedValue[0] !== null) {
+                    list($hours, $minutes) = GeneralUtility::intExplode(':', $unQuotedValue[0]);
+                    $unQuotedValue[0] = ($hours * 60 * 60) + ($minutes * 60);
+                }
+                if ($unQuotedValue[1] !== null) {
+                    list($hours, $minutes) = GeneralUtility::intExplode(':', $unQuotedValue[1]);
+                    $unQuotedValue[1] = ($hours * 60 * 60) + ($minutes * 60);
+                }
+            } else {
+                if ($unQuotedValue !== null) {
+                    list($hours, $minutes) = GeneralUtility::intExplode(':', $unQuotedValue);
+                    $unQuotedValue = ($hours * 60 * 60) + ($minutes * 60);
+                }
+            }
+        }
+
+        // Quote all values
+        if (is_array($unQuotedValue)) {
+            if ($databaseType === \PDO::PARAM_INT) {
+                $quotedValue[0] = (int)$unQuotedValue[0];
+                $quotedValue[1] = (int)$unQuotedValue[1];
+                if ($rule->type === static::TYPE_BOOLEAN) {
+                    $quotedValue = (int)$unQuotedValue[0];
+                }
+            } else {
+                $quotedValue[0] = $queryBuilder->quote($unQuotedValue[0], $databaseType);
+                $quotedValue[1] = $queryBuilder->quote($unQuotedValue[1], $databaseType);
+                if ($rule->type === static::TYPE_BOOLEAN) {
+                    $quotedValue = $queryBuilder->quote($unQuotedValue[0], $databaseType);
+                }
+            }
+        } else {
+            if ($databaseType === \PDO::PARAM_INT) {
+                $quotedValue = (int)$unQuotedValue;
+            } else {
+                $quotedValue = $queryBuilder->quote($unQuotedValue, $databaseType);
+            }
         }
 
         switch ($rule->operator) {
@@ -138,8 +192,8 @@ class QueryParser
                     $values = $this->splitString($unQuotedValue);
                 }
                 $escapedValues = [];
-                foreach ($values as $singlevalue) {
-                    $escapedValues[] = $queryBuilder->quote($singlevalue);
+                foreach ($values as $singleValue) {
+                    $escapedValues[] = $queryBuilder->quote($singleValue);
                 }
                 $where = $queryBuilder->expr()->in($field, implode(',', $escapedValues));
                 break;
@@ -149,8 +203,8 @@ class QueryParser
                     $values = $this->splitString($unQuotedValue);
                 }
                 $escapedValues = [];
-                foreach ($values as $singlevalue) {
-                    $escapedValues[] = $queryBuilder->quote($singlevalue);
+                foreach ($values as $singleValue) {
+                    $escapedValues[] = $queryBuilder->quote($singleValue);
                 }
                 $where = $queryBuilder->expr()->notIn($field, implode(',', $escapedValues));
                 break;
@@ -221,19 +275,15 @@ class QueryParser
                 $where = $queryBuilder->expr()->gte($field, $quotedValue);
                 break;
             case static::OPERATOR_BETWEEN:
-                $quotedValue1 = $queryBuilder->quote($unQuotedValue[0], $databaseType);
-                $quotedValue2 = $queryBuilder->quote($unQuotedValue[1], $databaseType);
                 $where = (string)$queryBuilder->expr()->andX(
-                    $queryBuilder->expr()->gt($field, $quotedValue1),
-                    $queryBuilder->expr()->lt($field, $quotedValue2)
+                    $queryBuilder->expr()->gt($field, $quotedValue[0]),
+                    $queryBuilder->expr()->lt($field, $quotedValue[1])
                 );
                 break;
             case static::OPERATOR_NOT_BETWEEN:
-                $quotedValue1 = $queryBuilder->quote($unQuotedValue[0], $databaseType);
-                $quotedValue2 = $queryBuilder->quote($unQuotedValue[1], $databaseType);
-                $where = (string)$queryBuilder->expr()->andX(
-                    $queryBuilder->expr()->lt($field, $quotedValue1),
-                    $queryBuilder->expr()->gt($field, $quotedValue2)
+                $where = (string)$queryBuilder->expr()->orX(
+                    $queryBuilder->expr()->lt($field, $quotedValue[0]),
+                    $queryBuilder->expr()->gt($field, $quotedValue[1])
                 );
                 break;
         }
