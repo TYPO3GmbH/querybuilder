@@ -5,6 +5,7 @@ namespace T3G\Querybuilder\Hooks;
 use T3G\Querybuilder\Parser\QueryParser;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Recordlist\RecordList\AbstractDatabaseRecordList;
+use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 
 /**
  * Class DatabaseRecordList.
@@ -27,7 +28,8 @@ class DatabaseRecordList
                                    int $pageId,
                                    array $additionalConstraints,
                                    array $fieldList,
-                                   AbstractDatabaseRecordList $parentObject)
+                                   AbstractDatabaseRecordList $parentObject,
+                                   QueryBuilder $queryBuilder)
     {
         if ($parentObject->table !== null && GeneralUtility::_GP('M') === 'web_list') {
             $query = GeneralUtility::_GP('query');

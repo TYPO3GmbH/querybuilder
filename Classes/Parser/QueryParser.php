@@ -6,6 +6,7 @@ namespace T3G\Querybuilder\Parser;
 use stdClass;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 
 /**
  * Class QueryParser.
