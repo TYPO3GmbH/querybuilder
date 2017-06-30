@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="en" datatype="plaintext" original="messages" date="2017-15-06T11:21:20Z" product-name="querybuilder">
+		<header/>
+		<body>
+			<trans-unit id="button.apply">
+				<source>Apply</source>
+			</trans-unit>
+			<trans-unit id="button.reset">
+				<source>Reset</source>
+			</trans-unit>
+			<trans-unit id="button.save">
+				<source>Save</source>
+			</trans-unit>
+
+			<trans-unit id="recent.header">
+				<source>Saved queries</source>
+			</trans-unit>
+
+			<trans-unit id="modal.title">
+				<source>Querybuilder - Save query</source>
+			</trans-unit>
+			<trans-unit id="modal.headline">
+				<source>Save your Query</source>
+			</trans-unit>
+			<trans-unit id="modal.queryname">
+				<source>Name: </source>
+			</trans-unit>
+			<trans-unit id="modal.override">
+				<source>Override saved query?</source>
+			</trans-unit>
+			<trans-unit id="modal.cancel">
+				<source>cancel</source>
+			</trans-unit>
+			<trans-unit id="modal.save">
+				<source>save</source>
+			</trans-unit>
+			<trans-unit id="modal.success.headline">
+				<source>Query saved</source>
+			</trans-unit>
+			<trans-unit id="modal.success.text">
+				<source>Your query has been saved</source>
+			</trans-unit>
+			<trans-unit id="modal.error.headline">
+				<source>Query not saved</source>
+			</trans-unit>
+			<trans-unit id="modal.error.text">
+				<source>Sorry, your query can't be saved</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

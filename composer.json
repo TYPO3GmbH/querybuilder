@@ -1,0 +1,38 @@
+{
+	"name": "t3g/querybuilder",
+	"type": "typo3-cms-extension",
+	"description": "Backend extension for query builder in list module.",
+	"keywords": [
+		"TYPO3",
+		"extension",
+		"list",
+		"filter",
+		"query"
+	],
+	"homepage": "https://typo3.com",
+	"license": ["GPL-2.0+"],
+	"authors": [
+		{
+			"name": "Frank Naegler",
+			"role": "Developer"
+		}
+	],
+	"require": {
+		"typo3/cms": "^8.6"
+	},
+	"replace": {
+      "querybuilder": "self.version",
+      "typo3-ter/querybuilder": "self.version"
+	},
+	"autoload": {
+		"psr-4": {
+			"T3G\\Querybuilder\\": "Classes/",
+			"T3G\\Querybuilder\\Tests\\": "Tests/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"T3G\\Querybuilder\\Tests\\": "Tests/"
+		}
+	}
+}
