@@ -869,12 +869,6 @@ class QueryParserTest extends FunctionalTestCase
             'string as number value as type integer' => ['42', 'integer', ' ( `title` < 42 ) '],
             'string as string value as type integer' => ['foo', 'integer', ' ( `title` < 0 ) '],
 
-            'integer value as type string' => [42, 'string', ' ( `title` < \'42\' ) '],
-            'float value as type string' => [42.5, 'string', ' ( `title` < \'42.5\' ) '],
-            'comma value as type string' => ['42,5', 'string', ' ( `title` < \'42,5\' ) '],
-            'string as number value as type string' => ['42', 'string', ' ( `title` < \'42\' ) '],
-            'string as string value as type string' => ['foo', 'string', ' ( `title` < \'foo\' ) '],
-
             'integer value as type double' => [42, 'double', ' ( `title` < \'42\' ) '],
             'float value as type double' => [42.5, 'double', ' ( `title` < \'42.5\' ) '],
             'comma value as type double' => ['42,5', 'double', ' ( `title` < \'42.5\' ) '],
@@ -930,12 +924,6 @@ class QueryParserTest extends FunctionalTestCase
             'comma value as integer' => ['42,5', 'integer', ' ( `title` <= 42 ) '],
             'string as number value as integer' => ['42', 'integer', ' ( `title` <= 42 ) '],
             'string as string value as integer' => ['foo', 'integer', ' ( `title` <= 0 ) '],
-
-            'integer value as type string' => [42, 'string', ' ( `title` <= \'42\' ) '],
-            'float value as type string' => [42.5, 'string', ' ( `title` <= \'42.5\' ) '],
-            'comma value as type string' => ['42,5', 'string', ' ( `title` <= \'42,5\' ) '],
-            'string as number value as type string' => ['42', 'string', ' ( `title` <= \'42\' ) '],
-            'string as string value as type string' => ['foo', 'string', ' ( `title` <= \'foo\' ) '],
 
             'integer value as type double' => [42, 'double', ' ( `title` <= \'42\' ) '],
             'float value as type double' => [42.5, 'double', ' ( `title` <= \'42.5\' ) '],
@@ -994,12 +982,6 @@ class QueryParserTest extends FunctionalTestCase
             'string as number value as integer' => ['42', 'integer', ' ( `title` > 42 ) '],
             'string as string value as integer' => ['foo', 'integer', ' ( `title` > 0 ) '],
 
-            'integer value as type string' => [42, 'string', ' ( `title` > \'42\' ) '],
-            'float value as type string' => [42.5, 'string', ' ( `title` > \'42.5\' ) '],
-            'comma value as type string' => ['42,5', 'string', ' ( `title` > \'42,5\' ) '],
-            'string as number value as type string' => ['42', 'string', ' ( `title` > \'42\' ) '],
-            'string as string value as type string' => ['foo', 'string', ' ( `title` > \'foo\' ) '],
-
             'integer value as type double' => [42, 'double', ' ( `title` > \'42\' ) '],
             'float value as type double' => [42.5, 'double', ' ( `title` > \'42.5\' ) '],
             'comma value as type double' => ['42,5', 'double', ' ( `title` > \'42.5\' ) '],
@@ -1055,12 +1037,6 @@ class QueryParserTest extends FunctionalTestCase
             'comma value as integer' => ['42,5', 'integer', ' ( `title` >= 42 ) '],
             'string as number value as integer' => ['42', 'integer', ' ( `title` >= 42 ) '],
             'string as string value as integer' => ['foo', 'integer', ' ( `title` >= 0 ) '],
-
-            'integer value as type string' => [42, 'string', ' ( `title` >= \'42\' ) '],
-            'float value as type string' => [42.5, 'string', ' ( `title` >= \'42.5\' ) '],
-            'comma value as type string' => ['42,5', 'string', ' ( `title` >= \'42,5\' ) '],
-            'string as number value as type string' => ['42', 'string', ' ( `title` >= \'42\' ) '],
-            'string as string value as type string' => ['foo', 'string', ' ( `title` >= \'foo\' ) '],
 
             'integer value as type double' => [42, 'double', ' ( `title` >= \'42\' ) '],
             'float value as type double' => [42.5, 'double', ' ( `title` >= \'42.5\' ) '],
@@ -1118,12 +1094,6 @@ class QueryParserTest extends FunctionalTestCase
             'string as number value as integer' => [['42', '62'], 'integer', ' ( (`title` > 42) AND (`title` < 62) ) '],
             'string as string value as integer' => [['foo','bar'], 'integer', ' ( (`title` > 0) AND (`title` < 0) ) '],
 
-            'integer value as type string' => [[42,62], 'string', ' ( (`title` > \'42\') AND (`title` < \'62\') ) '],
-            'float value as type string' => [[42.5,62.5], 'string', ' ( (`title` > \'42.5\') AND (`title` < \'62.5\') ) '],
-            'comma value as type string' => [['42,5','62,5'], 'string', ' ( (`title` > \'42,5\') AND (`title` < \'62,5\') ) '],
-            'string as number value as type string' => [['42','62'], 'string', ' ( (`title` > \'42\') AND (`title` < \'62\') ) '],
-            'string as string value as type string' => [['foo','bar'], 'string', ' ( (`title` > \'foo\') AND (`title` < \'bar\') ) '],
-
             'integer value as type double' => [[42,62], 'double', ' ( (`title` > \'42\') AND (`title` < \'62\') ) '],
             'float value as type double' => [[42.5,62.5], 'double', ' ( (`title` > \'42.5\') AND (`title` < \'62.5\') ) '],
             'comma value as type double' => [['42,5','62,5'], 'double', ' ( (`title` > \'42.5\') AND (`title` < \'62.5\') ) '],
@@ -1179,12 +1149,6 @@ class QueryParserTest extends FunctionalTestCase
             'comma value as integer' => [['42,5','62,5'], 'integer', ' ( (`title` < 42) OR (`title` > 62) ) '],
             'string as number value as integer' => [['42', '62'], 'integer', ' ( (`title` < 42) OR (`title` > 62) ) '],
             'string as string value as integer' => [['foo','bar'], 'integer', ' ( (`title` < 0) OR (`title` > 0) ) '],
-
-            'integer value as type string' => [[42,62], 'string', ' ( (`title` < \'42\') OR (`title` > \'62\') ) '],
-            'float value as type string' => [[42.5,62.5], 'string', ' ( (`title` < \'42.5\') OR (`title` > \'62.5\') ) '],
-            'comma value as type string' => [['42,5','62,5'], 'string', ' ( (`title` < \'42,5\') OR (`title` > \'62,5\') ) '],
-            'string as number value as type string' => [['42','62'], 'string', ' ( (`title` < \'42\') OR (`title` > \'62\') ) '],
-            'string as string value as type string' => [['foo','bar'], 'string', ' ( (`title` < \'foo\') OR (`title` > \'bar\') ) '],
 
             'integer value as type double' => [[42,62], 'double', ' ( (`title` < \'42\') OR (`title` > \'62\') ) '],
             'float value as type double' => [[42.5,62.5], 'double', ' ( (`title` < \'42.5\') OR (`title` > \'62.5\') ) '],
