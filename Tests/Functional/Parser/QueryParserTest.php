@@ -81,10 +81,10 @@ class QueryParserTest extends FunctionalTestCase
             'integer(negative) value as type integer' => [-5, 'integer', 'SELECT  WHERE `title` = -5', []],
             'string(negative) as number value as type integer' => ['-5', 'integer', 'SELECT  WHERE `title` = -5', []],
 
-            'integer(1) value as type boolean' => [[1], 'boolean', 'SELECT  WHERE `title` = :dcValue3', ['dcValue3' => 1]],
-            'string(1) as number value as type boolean' => [['1'], 'boolean', 'SELECT  WHERE `title` = :dcValue3', ['dcValue3' => 1]],
-            'integer(0) value as type boolean' => [[0], 'boolean', 'SELECT  WHERE `title` = :dcValue3', ['dcValue3' => 0]],
-            'string(0) as number value as type boolean' => [['0'], 'boolean', 'SELECT  WHERE `title` = :dcValue3', ['dcValue3' => 0]],
+            'integer(1) value as type boolean' => [[1], 'boolean', 'SELECT  WHERE `title` = :dcValue3', ['dcValue1' => 1, 'dcValue2' => null, 'dcValue3' => 1]],
+            'string(1) as number value as type boolean' => [['1'], 'boolean', 'SELECT  WHERE `title` = :dcValue3', ['dcValue1' => '1', 'dcValue2' => null, 'dcValue3' => '1']],
+            'integer(0) value as type boolean' => [[0], 'boolean', 'SELECT  WHERE `title` = :dcValue3', ['dcValue1' => 0, 'dcValue2' => null, 'dcValue3' => 0]],
+            'string(0) as number value as type boolean' => [['0'], 'boolean', 'SELECT  WHERE `title` = :dcValue3', ['dcValue1' => '0', 'dcValue2' => null, 'dcValue3' => '0']],
 
             'integer value as type double' => [42, 'double', 'SELECT  WHERE `title` = 42', []],
             'string as number value as type double' => ['42', 'double', 'SELECT  WHERE `title` = 42', []],
@@ -136,7 +136,7 @@ class QueryParserTest extends FunctionalTestCase
         $query = json_decode($query);
         $query->rules[0]->value = $number;
         $query->rules[0]->type = $type;
-        $queryBuilder = $this->subject->parse($query, $this->queryBuilder);
+        $queryBuilder = $this->subject->parse($query, $this->getConnectionPool()->getQueryBuilderForTable($this->table));
         self::assertEquals($expectedSQL, $queryBuilder->getSQL());
         self::assertEquals($expectedParameters, $queryBuilder->getParameters());
     }
