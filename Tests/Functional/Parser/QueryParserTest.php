@@ -191,7 +191,7 @@ class QueryParserTest extends FunctionalTestCase
                     ],
                     "valid": true
                 }',
-                ' ( `input_1` = \'foo\' AND `input_1` = \'bar\' AND  ( `input_9` = 42 AND `inputdatetime_2` = 1498420800 )  ) '
+                'SELECT  WHERE `input_1` = \'foo\' AND `input_1` = \'bar\' AND `input_9` = 42 AND `inputdatetime_2` = 1498420800'
             ],
 
             'double, time, boolean, datetime' => [
@@ -243,7 +243,7 @@ class QueryParserTest extends FunctionalTestCase
                     ],
                     "valid": true
                 }',
-                ' ( `input_8` = 42.42 AND  ( `inputdatetime_5` = 59400 AND `checkbox_2` = \'1\' )  AND  ( `inputdatetime_4` = 1498653000 )  ) '
+                'SELECT  WHERE `input_8` = 42.42 AND  `inputdatetime_5` = 59400 AND `checkbox_2` = \'1\' AND `inputdatetime_4` = 1498653000'
             ]
         ];
     }
@@ -252,13 +252,15 @@ class QueryParserTest extends FunctionalTestCase
      * @test
      * @dataProvider parseReturnsValidWhereClauseForMultipleEqualsQueryDataProvider
      *
-     * @param $multipleRules
-     * @param $expectedResult
+     * @param $expectedSQL
+     * @param $expectedParameters
      */
-    public function parseReturnsValidWhereClauseForMultipleEqualsQuery($multipleRules, $expectedResult)
+    public function parseReturnsValidWhereClauseForMultipleEqualsQuery($multipleRules, $expectedSQL, $expectedParameters)
     {
         $query = json_decode($multipleRules);
-        self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
+        $queryBuilder = $this->subject->parse($query, $this->getConnectionPool()->getQueryBuilderForTable($this->table));
+        self::assertEquals($expectedSQL, $queryBuilder->getSQL());
+        self::assertEquals($expectedParameters, $queryBuilder->getParameters());
     }
 
     /**
@@ -267,41 +269,41 @@ class QueryParserTest extends FunctionalTestCase
     public function parseReturnsValidWhereClauseForSimpleNotEqualQueryDataProvider() : array
     {
         return [
-            'integer value as type string' => [42, 'string', ' ( `title` <> \'42\' ) '],
-            'string as number value as type string' => ['42', 'string', ' ( `title` <> \'42\' ) '],
-            'float value as type string' => [42.5, 'string', ' ( `title` <> \'42.5\' ) '],
-            'string float value as type string' => ['42.5', 'string', ' ( `title` <> \'42.5\' ) '],
-            'comma value as type string' => ['42,5', 'string', ' ( `title` <> \'42,5\' ) '],
-            'string as string value as type string' => ['foo', 'string', ' ( `title` <> \'foo\' ) '],
+            'integer value as type string' => [42, 'string', 'SELECT  WHERE `title` <> :dcValue1', ['dcValue1' => 42]],
+            'string as number value as type string' => ['42', 'string', 'SELECT  WHERE `title` <> :dcValue1', ['dcValue1' => 42]],
+            'float value as type string' => [42.5, 'string', 'SELECT  WHERE `title` <> :dcValue1', ['dcValue1' => 42.5]],
+            'string float value as type string' => ['42.5', 'string', 'SELECT  WHERE `title` <> :dcValue1', ['dcValue1' => 42.5]],
+            'comma value as type string' => ['42,5', 'string', 'SELECT  WHERE `title` <> :dcValue1', ['dcValue1' => '42,5']],
+            'string as string value as type string' => ['foo', 'string', 'SELECT  WHERE `title` <> :dcValue1', ['dcValue1' => 'foo']],
 
-            'integer value as type integer' => [42, 'integer', ' ( `title` <> 42 ) '],
-            'string as number value as type integer' => ['42', 'integer', ' ( `title` <> 42 ) '],
-            'integer(negative) value as type integer' => [-5, 'integer', ' ( `title` <> -5 ) '],
-            'string(negative) as number value as type integer' => ['-5', 'integer', ' ( `title` <> -5 ) '],
+            'integer value as type integer' => [42, 'integer', 'SELECT  WHERE `title` <> 42', []],
+            'string as number value as type integer' => ['42', 'integer', 'SELECT  WHERE `title` <> 42', []],
+            'integer(negative) value as type integer' => [-5, 'integer', 'SELECT  WHERE `title` <> -5', []],
+            'string(negative) as number value as type integer' => ['-5', 'integer', 'SELECT  WHERE `title` <> -5', []],
 
-            'integer(1) value as type boolean' => [[1], 'boolean', ' ( `title` <> \'1\' ) '],
-            'string(1) as number value as type boolean' => [['1'], 'boolean', ' ( `title` <> \'1\' ) '],
-            'integer(0) value as type boolean' => [[0], 'boolean', ' ( `title` <> \'0\' ) '],
-            'string(0) as number value as type boolean' => [['0'], 'boolean', ' ( `title` <> \'0\' ) '],
+            'integer(1) value as type boolean' => [[1], 'boolean', 'SELECT  WHERE `title` <> :dcValue3',[]],
+            'string(1) as number value as type boolean' => [['1'], 'boolean', 'SELECT  WHERE `title` <> :dcValue3',[]],
+            'integer(0) value as type boolean' => [[0], 'boolean', 'SELECT  WHERE `title` <> :dcValue3',[]],
+            'string(0) as number value as type boolean' => [['0'], 'boolean', 'SELECT  WHERE `title` <> :dcValue3',[]],
 
-            'integer value as type double' => [42, 'double', ' ( `title` <> 42 ) '],
-            'string as number value as type double' => ['42', 'double', ' ( `title` <> 42 ) '],
-            'integer(negative)value as type double' => [-5, 'double', ' ( `title` <> -5 ) '],
-            'string(negative) as number value as type double' => ['-5', 'double', ' ( `title` <> -5 ) '],
-            'float value as type double' => [42.5, 'double', ' ( `title` <> 42.5 ) '],
-            'string float value as type double' => ['42.5', 'double', ' ( `title` <> 42.5 ) '],
-            'float value (2 decimal w 00) as type double' => [42.00, 'double', ' ( `title` <> 42 ) '],
-            'float value (2 decimal w 50) as type double' => [42.50, 'double', ' ( `title` <> 42.5 ) '],
-            'float value (2 decimal w 55) as type double' => [42.55, 'double', ' ( `title` <> 42.55 ) '],
-            'string float value (2 decimal) as type double' => ['42.50', 'double', ' ( `title` <> 42.5 ) '],
-            'comma value as type double' => ['42,50', 'double', ' ( `title` <> 42.5 ) '],
-            'comma value (2 decimal) as type double' => ['42,50', 'double', ' ( `title` <> 42.5 ) '],
+            'integer value as type double' => [42, 'double', 'SELECT  WHERE `title` <> 42', []],
+            'string as number value as type double' => ['42', 'double', 'SELECT  WHERE `title` <> 42', []],
+            'integer(negative)value as type double' => [-5, 'double', 'SELECT  WHERE `title` <> -5', []],
+            'string(negative) as number value as type double' => ['-5', 'double', 'SELECT  WHERE `title` <> -5', []],
+            'float value as type double' => [42.5, 'double', 'SELECT  WHERE `title` <> 42.5', []],
+            'string float value as type double' => ['42.5', 'double', 'SELECT  WHERE `title` <> 42.5', []],
+            'float value (2 decimal w 00) as type double' => [42.00, 'double', 'SELECT  WHERE `title` <> 42', []],
+            'float value (2 decimal w 50) as type double' => [42.50, 'double', 'SELECT  WHERE `title` <> 42.5', []],
+            'float value (2 decimal w 55) as type double' => [42.55, 'double', 'SELECT  WHERE `title` <> 42.55', []],
+            'string float value (2 decimal) as type double' => ['42.50', 'double', 'SELECT  WHERE `title` <> 42.5', []],
+            'comma value as type double' => ['42,50', 'double', 'SELECT  WHERE `title` <> 42.5', []],
+            'comma value (2 decimal) as type double' => ['42,50', 'double', 'SELECT  WHERE `title` <> 42.5', []],
 
-            'comma value as type date' => ['2017-06-26', 'date', ' ( `title` <> 1498420800 ) '],
+            'comma value as type date' => ['2017-06-26', 'date', 'SELECT  WHERE `title` <> 1498420800', []],
 
-            'comma value as type time' => ['18:30', 'time', ' ( `title` <> 66600 ) '],
+            'comma value as type time' => ['18:30', 'time', 'SELECT  WHERE `title` <> 66600', []],
 
-            'string as number value as type datetime' => ['2017-01-21 00:00', 'datetime', ' ( `title` <> 1484949600 ) '],
+            'string as number value as type datetime' => ['2017-01-21 00:00', 'datetime', 'SELECT  WHERE `title` <> 1484949600', []],
         ];
     }
 
@@ -311,9 +313,10 @@ class QueryParserTest extends FunctionalTestCase
      *
      * @param $number
      * @param $type
-     * @param $expectedResult
+     * @param $expectedSQL
+     * @param $expectedParameters
      */
-    public function parseReturnsValidWhereClauseForSimpleNotEqualQuery($number, $type, $expectedResult)
+    public function parseReturnsValidWhereClauseForSimpleNotEqualQuery($number, $type, $expectedSQL, $expectedParameters)
     {
         $query = '{
           "condition": "AND",
@@ -332,7 +335,9 @@ class QueryParserTest extends FunctionalTestCase
         $query = json_decode($query);
         $query->rules[0]->value = $number;
         $query->rules[0]->type = $type;
-        self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
+        $queryBuilder = $this->subject->parse($query, $this->getConnectionPool()->getQueryBuilderForTable($this->table));
+        self::assertEquals($expectedSQL, $queryBuilder->getSQL());
+        self::assertEquals($expectedParameters, $queryBuilder->getParameters());
     }
 
 
@@ -342,32 +347,32 @@ class QueryParserTest extends FunctionalTestCase
     public function parseReturnsValidWhereClauseForSimpleInQueryDataProvider() : array
     {
         return [
-            'integer value as type string' => [42, 'string', ' ( `title` IN (\'42\') ) '],
-            'string as number value as type string' => ['42', 'string', ' ( `title` IN (\'42\') ) '],
-            'float value as type string' => [42.5, 'string', ' ( `title` IN (\'42.5\') ) '],
-            'two float values as type string' => ['42.5;50.5', 'string', ' ( `title` IN (\'42.5\',\'50.5\') ) '],
-            'comma value as type string' => ['42,5', 'string', ' ( `title` IN (\'42,5\') ) '],
-            'two comma values as type string with ; as delimiter' => ['42,5;5,5', 'string', ' ( `title` IN (\'42,5\',\'5,5\') ) '],
-            'two comma values as type string with # as delimiter' => ['42,5#5,5', 'string', ' ( `title` IN (\'42,5\',\'5,5\') ) '],
-            'two comma values as type string with | as delimiter' => ['42,5|5,5', 'string', ' ( `title` IN (\'42,5\',\'5,5\') ) '],
-            'multiple comma values as type string with mixed delimiters' => ['42,5;5,5#6,6|7,7', 'string', ' ( `title` IN (\'42,5\',\'5,5\',\'6,6\',\'7,7\') ) '],
-            'string(1 words) as string value as type string' => ['foo', 'string', ' ( `title` IN (\'foo\') ) '],
-            'string(2 words) as string value as type string' => ['foo;bar', 'string', ' ( `title` IN (\'foo\',\'bar\') ) '],
-            'string(3 words) as string value as type string' => ['foo;bar;dong', 'string', ' ( `title` IN (\'foo\',\'bar\',\'dong\') ) '],
-            'mixed values as type string' => ['foo;42,5;dong', 'string', ' ( `title` IN (\'foo\',\'42,5\',\'dong\') ) '],
+            'integer value as type string' => [42, 'string', 'SELECT  WHERE `title` IN (:dcValue2)', ['dcValue2' => 42]],
+            'string as number value as type string' => ['42', 'string', 'SELECT  WHERE `title` IN (:dcValue2)', ['dcValue2' => 42]],
+            'float value as type string' => [42.5, 'string', 'SELECT  WHERE `title` IN (:dcValue2)', ['dcValue2' => 42]],
+            'two float values as type string' => ['42.5;50.5', 'string', 'SELECT  WHERE `title` IN (:dcValue2, :dcValue3)', ['dcValue2' => '42,5', 'dcValue3' => '50,5']],
+            'comma value as type string' => ['42,5', 'string', 'SELECT  WHERE `title` IN (:dcValue2)', ['dcValue2' => 42]],
+            'two comma values as type string with ; as delimiter' => ['42,5;5,5', 'string', 'SELECT  WHERE `title` IN (:dcValue2, :dcValue3)', ['dcValue2' => '42,5', 'dcValue3' => '50,5']],
+            'two comma values as type string with # as delimiter' => ['42,5#5,5', 'string', 'SELECT  WHERE `title` IN (:dcValue2, :dcValue3)', ['dcValue2' => '42,5', 'dcValue3' => '50,5']],
+            'two comma values as type string with | as delimiter' => ['42,5|5,5', 'string', 'SELECT  WHERE `title` IN (:dcValue2, :dcValue3)', ['dcValue2' => '42,5', 'dcValue3' => '50,5']],
+            'multiple comma values as type string with mixed delimiters' => ['42,5;5,5#6,6|7,7', 'string', 'SELECT  WHERE `title` IN (:dcValue2, :dcValue3, :dcValue4, :dcValue5)', ['dcValue2' => '42,5', 'dcValue3' => '5,5', 'dcvalue4' => '6,6', 'dcValue5' => '7,7']],
+            'string(1 words) as string value as type string' => ['foo', 'string', 'SELECT  WHERE `title` IN (:dcValue2)', ['dcValue2' => 42]],
+            'string(2 words) as string value as type string' => ['foo;bar', 'string', 'SELECT  WHERE `title` IN (:dcValue2, :dcValue3)', ['dcValue2' => 'foo', 'dcValue3' => 'bar']],
+            'string(3 words) as string value as type string' => ['foo;bar;dong', 'string', 'SELECT  WHERE `title` IN (:dcValue2, :dcValue3, :dcValue4)', ['dcValue2' => 'foo', 'dcValue3' => 'bar', 'dcvalue4' => 'dong']],
+            'mixed values as type string' => ['foo;42,5;dong', 'string', 'SELECT  WHERE `title` IN (:dcValue2, :dcValue3, :dcValue4)', ['dcValue2' => 'foo', 'dcValue3' => '42,5', 'dcvalue4' => 'dong']],
 
-            'integer value as type integer' => [42, 'integer', ' ( `title` IN (\'42\') ) '],
-            'string as number value as type integer' => ['42', 'integer', ' ( `title` IN (\'42\') ) '],
+            'integer value as type integer' => [42, 'integer', 'SELECT  WHERE `title` IN (\'42\')', []],
+            'string as number value as type integer' => ['42', 'integer', 'SELECT  WHERE `title` IN (\'42\')', []],
 
-            'float value as type double' => [42.5, 'double', ' ( `title` IN (\'42.5\') ) '],
-            'string float value as type double' => ['42.5', 'double', ' ( `title` IN (\'42.5\') ) '],
-            'comma value as type double' => ['42,5', 'double', ' ( `title` IN (\'42.5\') ) '],
+            'float value as type double' => [42.5, 'double', 'SELECT  WHERE `title` IN (\'42.5\')', []],
+            'string float value as type double' => ['42.5', 'double', 'SELECT  WHERE `title` IN (\'42.5\')', []],
+            'comma value as type double' => ['42,5', 'double', 'SELECT  WHERE `title` IN (\'42.5\')', []],
 
-            'comma value as type date' => ['2017-06-26', 'date', ' ( `title` IN (\'1498420800\') ) '],
+            'comma value as type date' => ['2017-06-26', 'date', 'SELECT  WHERE `title` IN (\'1498420800\')', []],
 
-            'comma value as type time' => ['18:30', 'time', ' ( `title` IN (\'66600\') ) '],
+            'comma value as type time' => ['18:30', 'time', 'SELECT  WHERE `title` IN (\'66600\')', []],
 
-            'string as number value as type datetime' => ['2017-01-01 00:00', 'datetime', ' ( `title` IN (\'1483221600\') ) '],
+            'string as number value as type datetime' => ['2017-01-01 00:00', 'datetime', 'SELECT  WHERE `title` IN (\'1483221600\')', []],
         ];
     }
 
@@ -377,9 +382,10 @@ class QueryParserTest extends FunctionalTestCase
      *
      * @param $number
      * @param $type
-     * @param $expectedResult
+     * @param $expectedSQL
+     * @param $expectedParameters
      */
-    public function parseReturnsValidWhereClauseForSimpleInQuery($number, $type, $expectedResult)
+    public function parseReturnsValidWhereClauseForSimpleInQuery($number, $type, $expectedSQL, $expectedParameters)
     {
         $query = '{
           "condition": "AND",
@@ -398,7 +404,9 @@ class QueryParserTest extends FunctionalTestCase
         $query = json_decode($query);
         $query->rules[0]->value = $number;
         $query->rules[0]->type = $type;
-        self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
+        $queryBuilder = $this->subject->parse($query, $this->getConnectionPool()->getQueryBuilderForTable($this->table));
+        self::assertEquals($expectedSQL, $queryBuilder->getSQL());
+        self::assertEquals($expectedParameters, $queryBuilder->getParameters());
     }
 
     /**
@@ -407,32 +415,32 @@ class QueryParserTest extends FunctionalTestCase
     public function parseReturnsValidWhereClauseForSimpleNotInQueryDataProvider() : array
     {
         return [
-            'integer value as type string' => [42, 'string', ' ( `title` NOT IN (\'42\') ) '],
-            'string as number value as type string' => ['42', 'string', ' ( `title` NOT IN (\'42\') ) '],
-            'float value as type string' => [42.5, 'string', ' ( `title` NOT IN (\'42.5\') ) '],
-            'two float values as type string' => ['42.5;50.5', 'string', ' ( `title` NOT IN (\'42.5\',\'50.5\') ) '],
-            'comma value as type string' => ['42,5', 'string', ' ( `title` NOT IN (\'42,5\') ) '],
-            'two comma values as type string with ; as delimiter' => ['42,5;5,5', 'string', ' ( `title` NOT IN (\'42,5\',\'5,5\') ) '],
-            'two comma values as type string with # as delimiter' => ['42,5#5,5', 'string', ' ( `title` NOT IN (\'42,5\',\'5,5\') ) '],
-            'two comma values as type string with | as delimiter' => ['42,5|5,5', 'string', ' ( `title` NOT IN (\'42,5\',\'5,5\') ) '],
-            'multiple comma values as type string with mixed delimiters' => ['42,5;5,5#6,6|7,7', 'string', ' ( `title` NOT IN (\'42,5\',\'5,5\',\'6,6\',\'7,7\') ) '],
-            'string(1 words) as string value as type string' => ['foo', 'string', ' ( `title` NOT IN (\'foo\') ) '],
-            'string(2 words) as string value as type string' => ['foo;bar', 'string', ' ( `title` NOT IN (\'foo\',\'bar\') ) '],
-            'string(3 words) as string value as type string' => ['foo;bar;dong', 'string', ' ( `title` NOT IN (\'foo\',\'bar\',\'dong\') ) '],
-            'mixed values as type string' => ['foo;42,5;dong', 'string', ' ( `title` NOT IN (\'foo\',\'42,5\',\'dong\') ) '],
+            'integer value as type string' => [42, 'string', 'SELECT  WHERE `title` NOT IN (:dcValue2)', ['dcValue2' => 42]],
+            'string as number value as type string' => ['42', 'string', 'SELECT  WHERE `title` NOT IN (:dcValue2)', ['dcValue2' => 42]],
+            'float value as type string' => [42.5, 'string', 'SELECT  WHERE `title` NOT IN (:dcValue2)', ['dcValue2' => 42]],
+            'two float values as type string' => ['42.5;50.5', 'string', 'SELECT  WHERE `title` NOT IN (:dcValue2, :dcValue3)', ['dcValue2' => '42,5', 'dcValue3' => '50,5']],
+            'comma value as type string' => ['42,5', 'string', 'SELECT  WHERE `title` NOT IN (:dcValue2)', ['dcValue2' => 42]],
+            'two comma values as type string with ; as delimiter' => ['42,5;5,5', 'string', 'SELECT  WHERE `title` NOT IN (:dcValue2, :dcValue3)', ['dcValue2' => '42,5', 'dcValue3' => '50,5']],
+            'two comma values as type string with # as delimiter' => ['42,5#5,5', 'string', 'SELECT  WHERE `title` NOT IN (:dcValue2, :dcValue3)', ['dcValue2' => '42,5', 'dcValue3' => '50,5']],
+            'two comma values as type string with | as delimiter' => ['42,5|5,5', 'string', 'SELECT  WHERE `title` NOT IN (:dcValue2, :dcValue3)', ['dcValue2' => '42,5', 'dcValue3' => '50,5']],
+            'multiple comma values as type string with mixed delimiters' => ['42,5;5,5#6,6|7,7', 'string', 'SELECT  WHERE `title` NOT IN (:dcValue2, :dcValue3, :dcValue4, :dcValue5)', ['dcValue2' => '42,5', 'dcValue3' => '5,5', 'dcvalue4' => '6,6', 'dcValue5' => '7,7']],
+            'string(1 words) as string value as type string' => ['foo', 'string', 'SELECT  WHERE `title` NOT IN (:dcValue2)', ['dcValue2' => 42]],
+            'string(2 words) as string value as type string' => ['foo;bar', 'string', 'SELECT  WHERE `title` NOT IN (:dcValue2, :dcValue3)', ['dcValue2' => 'foo', 'dcValue3' => 'bar']],
+            'string(3 words) as string value as type string' => ['foo;bar;dong', 'string', 'SELECT  WHERE `title` NOT IN (:dcValue2, :dcValue3, :dcValue4)', ['dcValue2' => 'foo', 'dcValue3' => 'bar', 'dcvalue4' => 'dong']],
+            'mixed values as type string' => ['foo;42,5;dong', 'string', 'SELECT  WHERE `title` NOT IN (:dcValue2, :dcValue3, :dcValue4)', ['dcValue2' => 'foo', 'dcValue3' => '42,5', 'dcvalue4' => 'dong']],
 
-            'integer value as type integer' => [42, 'integer', ' ( `title` NOT IN (\'42\') ) '],
-            'string as number value as type integer' => ['42', 'integer', ' ( `title` NOT IN (\'42\') ) '],
+            'integer value as type integer' => [42, 'integer', 'SELECT  WHERE `title` NOT IN (\'42\')', []],
+            'string as number value as type integer' => ['42', 'integer', 'SELECT  WHERE `title` NOT IN (\'42\')', []],
 
-            'float value as type double' => [42.5, 'double', ' ( `title` NOT IN (\'42.5\') ) '],
-            'string float value as type double' => ['42.5', 'double', ' ( `title` NOT IN (\'42.5\') ) '],
-            'comma value as type double' => ['42,5', 'double', ' ( `title` NOT IN (\'42.5\') ) '],
+            'float value as type double' => [42.5, 'double', 'SELECT  WHERE `title` NOT IN (\'42.5\')', []],
+            'string float value as type double' => ['42.5', 'double', 'SELECT  WHERE `title` NOT IN (\'42.5\')', []],
+            'comma value as type double' => ['42,5', 'double', 'SELECT  WHERE `title` NOT IN (\'42.5\')', []],
 
-            'comma value as type date' => ['2017-06-26', 'date', ' ( `title` NOT IN (\'1498420800\') ) '],
+            'comma value as type date' => ['2017-06-26', 'date', 'SELECT  WHERE `title` NOT IN (\'1498420800\')', []],
 
-            'comma value as type time' => ['18:30', 'time', ' ( `title` NOT IN (\'66600\') ) '],
+            'comma value as type time' => ['18:30', 'time', 'SELECT  WHERE `title` NOT IN (\'66600\')', []],
 
-            'string as number value as type datetime' => ['2017-01-01 00:00', 'datetime', ' ( `title` NOT IN (\'1483221600\') ) '],
+            'string as number value as type datetime' => ['2017-01-01 00:00', 'datetime', 'SELECT  WHERE `title` NOT IN (\'1483221600\')', []],
         ];
     }
 
@@ -442,9 +450,10 @@ class QueryParserTest extends FunctionalTestCase
      *
      * @param $number
      * @param $type
-     * @param $expectedResult
+     * @param $expectedSQL
+     * @param $expectedParameters
      */
-    public function parseReturnsValidWhereClauseForSimpleNotInQuery($number, $type, $expectedResult)
+    public function parseReturnsValidWhereClauseForSimpleNotInQuery($number, $type, $expectedSQL, $expectedParameters)
     {
         $query = '{
           "condition": "AND",
@@ -463,7 +472,9 @@ class QueryParserTest extends FunctionalTestCase
         $query = json_decode($query);
         $query->rules[0]->value = $number;
         $query->rules[0]->type = $type;
-        self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
+        $queryBuilder = $this->subject->parse($query, $this->getConnectionPool()->getQueryBuilderForTable($this->table));
+        self::assertEquals($expectedSQL, $queryBuilder->getSQL());
+        self::assertEquals($expectedParameters, $queryBuilder->getParameters());
     }
 
     /**
@@ -472,12 +483,12 @@ class QueryParserTest extends FunctionalTestCase
     public function parseReturnsValidWhereClauseForSimpleBeginsQueryDataProvider() : array
     {
         return [
-            'string as number value as type string' => ['42', 'string', ' ( `title` LIKE \'42%\' ) '],
-            'comma value as type string' => ['42,5', 'string', ' ( `title` LIKE \'42,5%\' ) '],
-            'string(1 words) as string value as type string' => ['foo', 'string', ' ( `title` LIKE \'foo%\' ) '],
-            'string(2 words) as string value as type string' => ['foo bar', 'string', ' ( `title` LIKE \'foo bar%\' ) '],
-            'string(2 words) as string value as type string with %' => ['foo%bar', 'string', ' ( `title` LIKE \'foo\\\\%bar%\' ) '],
-            'string(2 words) as string value as type string with _' => ['foo_bar', 'string', ' ( `title` LIKE \'foo\\\\_bar%\' ) '],
+            'string as number value as type string' => ['42', 'string', 'SELECT  WHERE `title` LIKE \'42%\'', ['dcValue1' => 42]],
+            'comma value as type string' => ['42,5', 'string', 'SELECT  WHERE `title` LIKE \'42,5%\'', ['dcValue1' => '42,5']],
+            'string(1 words) as string value as type string' => ['foo', 'string', 'SELECT  WHERE `title` LIKE \'foo%\'', ['dcValue1' => 'foo']],
+            'string(2 words) as string value as type string' => ['foo bar', 'string', 'SELECT  WHERE `title` LIKE \'foo bar%\''],
+            'string(2 words) as string value as type string with %' => ['foo%bar', 'string', 'SELECT  WHERE `title` LIKE \'foo\\\\%bar%\'', ['dcValue1' => 'foo%bar']],
+            'string(2 words) as string value as type string with _' => ['foo_bar', 'string', 'SELECT  WHERE `title` LIKE \'foo\\\\_bar%\'', ['dcValue1' => 'foo_bar']],
         ];
     }
 
@@ -487,9 +498,10 @@ class QueryParserTest extends FunctionalTestCase
      *
      * @param $number
      * @param $type
-     * @param $expectedResult
+     * @param $expectedSQL
+     * @param $expectedParameters
      */
-    public function parseReturnsValidWhereClauseForSimpleBeginsQuery($number, $type, $expectedResult)
+    public function parseReturnsValidWhereClauseForSimpleBeginsQuery($number, $type, $expectedSQL, $expectedParameters)
     {
         $query = '{
           "condition": "AND",
@@ -508,7 +520,9 @@ class QueryParserTest extends FunctionalTestCase
         $query = json_decode($query);
         $query->rules[0]->value = $number;
         $query->rules[0]->type = $type;
-        self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
+        $queryBuilder = $this->subject->parse($query, $this->getConnectionPool()->getQueryBuilderForTable($this->table));
+        self::assertEquals($expectedSQL, $queryBuilder->getSQL());
+        self::assertEquals($expectedParameters, $queryBuilder->getParameters());
     }
 
     /**
@@ -517,12 +531,12 @@ class QueryParserTest extends FunctionalTestCase
     public function parseReturnsValidWhereClauseForSimpleNotBeginsQueryDataProvider() : array
     {
         return [
-            'string as number value as type string' => ['42', 'string', ' ( `title` NOT LIKE \'42%\' ) '],
-            'comma value as type string' => ['42,5', 'string', ' ( `title` NOT LIKE \'42,5%\' ) '],
-            'string(1 words) as string value as type string' => ['foo', 'string', ' ( `title` NOT LIKE \'foo%\' ) '],
-            'string(2 words) as string value as type string' => ['foo bar', 'string', ' ( `title` NOT LIKE \'foo bar%\' ) '],
-            'string(2 words) as string value as type string with %' => ['foo%bar', 'string', ' ( `title` NOT LIKE \'foo\\\\%bar%\' ) '],
-            'string(2 words) as string value as type string with _' => ['foo_bar', 'string', ' ( `title` NOT LIKE \'foo\\\\_bar%\' ) '],
+            'string as number value as type string' => ['42', 'string', 'SELECT  WHERE `title` NOT LIKE \'42%\''],
+            'comma value as type string' => ['42,5', 'string', 'SELECT  WHERE `title` NOT LIKE \'42,5%\''],
+            'string(1 words) as string value as type string' => ['foo', 'string', 'SELECT  WHERE `title` NOT LIKE \'foo%\''],
+            'string(2 words) as string value as type string' => ['foo bar', 'string', 'SELECT  WHERE `title` NOT LIKE \'foo bar%\''],
+            'string(2 words) as string value as type string with %' => ['foo%bar', 'string', 'SELECT  WHERE `title` NOT LIKE \'foo\\\\%bar%\''],
+            'string(2 words) as string value as type string with _' => ['foo_bar', 'string', 'SELECT  WHERE `title` NOT LIKE \'foo\\\\_bar%\''],
         ];
     }
 
@@ -532,9 +546,10 @@ class QueryParserTest extends FunctionalTestCase
      *
      * @param $number
      * @param $type
-     * @param $expectedResult
+     * @param $expectedSQL
+     * @param $expectedParameters
      */
-    public function parseReturnsValidWhereClauseForSimpleNotBeginsQuery($number, $type, $expectedResult)
+    public function parseReturnsValidWhereClauseForSimpleNotBeginsQuery($number, $type, $expectedSQL, $expectedParameters)
     {
         $query = '{
           "condition": "AND",
@@ -553,7 +568,9 @@ class QueryParserTest extends FunctionalTestCase
         $query = json_decode($query);
         $query->rules[0]->value = $number;
         $query->rules[0]->type = $type;
-        self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
+        $queryBuilder = $this->subject->parse($query, $this->getConnectionPool()->getQueryBuilderForTable($this->table));
+        self::assertEquals($expectedSQL, $queryBuilder->getSQL());
+        self::assertEquals($expectedParameters, $queryBuilder->getParameters());
     }
 
     /**
@@ -562,12 +579,12 @@ class QueryParserTest extends FunctionalTestCase
     public function parseReturnsValidWhereClauseForSimpleContainsQueryDataProvider() : array
     {
         return [
-            'string as number value as type string' => ['42', 'string', ' ( `title` LIKE \'%42%\' ) '],
-            'comma value as type string' => ['42,5', 'string', ' ( `title` LIKE \'%42,5%\' ) '],
-            'string(1 words) as string value as type string' => ['foo', 'string', ' ( `title` LIKE \'%foo%\' ) '],
-            'string(2 words) as string value as type string' => ['foo bar', 'string', ' ( `title` LIKE \'%foo bar%\' ) '],
-            'string(2 words) as string value as type string with %' => ['foo%bar', 'string', ' ( `title` LIKE \'%foo\\\\%bar%\' ) '],
-            'string(2 words) as string value as type string with _' => ['foo_bar', 'string', ' ( `title` LIKE \'%foo\\\\_bar%\' ) '],
+            'string as number value as type string' => ['42', 'string', 'SELECT  WHERE `title` LIKE \'%42%'],
+            'comma value as type string' => ['42,5', 'string', 'SELECT  WHERE `title` LIKE \'%42,5%'],
+            'string(1 words) as string value as type string' => ['foo', 'string', 'SELECT  WHERE `title` LIKE \'%foo%\''],
+            'string(2 words) as string value as type string' => ['foo bar', 'string', 'SELECT  WHERE `title` LIKE \'%foo bar%\''],
+            'string(2 words) as string value as type string with %' => ['foo%bar', 'string', 'SELECT  WHERE `title` LIKE \'%foo\\\\%bar%\''],
+            'string(2 words) as string value as type string with _' => ['foo_bar', 'string', 'SELECT  WHERE `title` LIKE \'%foo\\\\_bar%\''],
         ];
     }
 
@@ -577,9 +594,10 @@ class QueryParserTest extends FunctionalTestCase
      *
      * @param $number
      * @param $type
-     * @param $expectedResult
+     * @param $expectedSQL
+     * @param $expectedParameters
      */
-    public function parseReturnsValidWhereClauseForSimpleContainsQuery($number, $type, $expectedResult)
+    public function parseReturnsValidWhereClauseForSimpleContainsQuery($number, $type, $expectedSQL, $expectedParameters)
     {
         $query = '{
           "condition": "AND",
@@ -598,7 +616,9 @@ class QueryParserTest extends FunctionalTestCase
         $query = json_decode($query);
         $query->rules[0]->value = $number;
         $query->rules[0]->type = $type;
-        self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
+        $queryBuilder = $this->subject->parse($query, $this->getConnectionPool()->getQueryBuilderForTable($this->table));
+        self::assertEquals($expectedSQL, $queryBuilder->getSQL());
+        self::assertEquals($expectedParameters, $queryBuilder->getParameters());
     }
 
     /**
@@ -607,12 +627,12 @@ class QueryParserTest extends FunctionalTestCase
     public function parseReturnsValidWhereClauseForSimpleNotContainsQueryDataProvider() : array
     {
         return [
-            'string as number value as type string' => ['42', 'string', ' ( `title` NOT LIKE \'%42%\' ) '],
-            'comma value as type string' => ['42,5', 'string', ' ( `title` NOT LIKE \'%42,5%\' ) '],
-            'string(1 words) as string value as type string' => ['foo', 'string', ' ( `title` NOT LIKE \'%foo%\' ) '],
-            'string(2 words) as string value as type string' => ['foo bar', 'string', ' ( `title` NOT LIKE \'%foo bar%\' ) '],
-            'string(2 words) as string value as type string with %' => ['foo%bar', 'string', ' ( `title` NOT LIKE \'%foo\\\\%bar%\' ) '],
-            'string(2 words) as string value as type string with _' => ['foo_bar', 'string', ' ( `title` NOT LIKE \'%foo\\\\_bar%\' ) '],
+            'string as number value as type string' => ['42', 'string', 'SELECT  WHERE `title` NOT LIKE \'%42%'],
+            'comma value as type string' => ['42,5', 'string', 'SELECT  WHERE `title` NOT LIKE \'%42,5%'],
+            'string(1 words) as string value as type string' => ['foo', 'string', 'SELECT  WHERE `title` NOT LIKE \'%foo%\''],
+            'string(2 words) as string value as type string' => ['foo bar', 'string', 'SELECT  WHERE `title` NOT LIKE \'%foo bar%\''],
+            'string(2 words) as string value as type string with %' => ['foo%bar', 'string', 'SELECT  WHERE `title` NOT LIKE \'%foo\\\\%bar%\''],
+            'string(2 words) as string value as type string with _' => ['foo_bar', 'string', 'SELECT  WHERE `title` NOT LIKE \'%foo\\\\_bar%\''],
         ];
     }
 
@@ -622,9 +642,10 @@ class QueryParserTest extends FunctionalTestCase
      *
      * @param $number
      * @param $type
-     * @param $expectedResult
+     * @param $expectedSQL
+     * @param $expectedParameters
      */
-    public function parseReturnsValidWhereClauseForSimpleNotContainsQuery($number, $type, $expectedResult)
+    public function parseReturnsValidWhereClauseForSimpleNotContainsQuery($number, $type, $expectedSQL, $expectedParameters)
     {
         $query = '{
           "condition": "AND",
@@ -643,7 +664,9 @@ class QueryParserTest extends FunctionalTestCase
         $query = json_decode($query);
         $query->rules[0]->value = $number;
         $query->rules[0]->type = $type;
-        self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
+        $queryBuilder = $this->subject->parse($query, $this->getConnectionPool()->getQueryBuilderForTable($this->table));
+        self::assertEquals($expectedSQL, $queryBuilder->getSQL());
+        self::assertEquals($expectedParameters, $queryBuilder->getParameters());
     }
 
     /**
@@ -652,12 +675,12 @@ class QueryParserTest extends FunctionalTestCase
     public function parseReturnsValidWhereClauseForSimpleEndsQueryDataProvider() : array
     {
         return [
-            'string as number value as type string' => ['42', 'string', ' ( `title` LIKE \'%42\' ) '],
-            'comma value as type string' => ['42,5', 'string', ' ( `title` LIKE \'%42,5\' ) '],
-            'string(1 words) as string value as type string' => ['foo', 'string', ' ( `title` LIKE \'%foo\' ) '],
-            'string(2 words) as string value as type string' => ['foo bar', 'string', ' ( `title` LIKE \'%foo bar\' ) '],
-            'string(2 words) as string value as type string with %' => ['foo%bar', 'string', ' ( `title` LIKE \'%foo\\\\%bar\' ) '],
-            'string(2 words) as string value as type string with _' => ['foo_bar', 'string', ' ( `title` LIKE \'%foo\\\\_bar\' ) '],
+            'string as number value as type string' => ['42', 'string', 'SELECT  WHERE `title` LIKE \'%42'],
+            'comma value as type string' => ['42,5', 'string', 'SELECT  WHERE `title` LIKE \'%42,5'],
+            'string(1 words) as string value as type string' => ['foo', 'string', 'SELECT  WHERE `title` LIKE \'%foo\''],
+            'string(2 words) as string value as type string' => ['foo bar', 'string', 'SELECT  WHERE `title` LIKE \'%foo bar\''],
+            'string(2 words) as string value as type string with %' => ['foo%bar', 'string', 'SELECT  WHERE `title` LIKE \'%foo\\\\%bar\''],
+            'string(2 words) as string value as type string with _' => ['foo_bar', 'string', 'SELECT  WHERE `title` LIKE \'%foo\\\\_bar\''],
         ];
     }
 
@@ -667,9 +690,10 @@ class QueryParserTest extends FunctionalTestCase
      *
      * @param $number
      * @param $type
-     * @param $expectedResult
+     * @param $expectedSQL
+     * @param $expectedParameters
      */
-    public function parseReturnsValidWhereClauseForSimpleEndsQuery($number, $type, $expectedResult)
+    public function parseReturnsValidWhereClauseForSimpleEndsQuery($number, $type, $expectedSQL, $expectedParameters)
     {
         $query = '{
           "condition": "AND",
@@ -688,7 +712,9 @@ class QueryParserTest extends FunctionalTestCase
         $query = json_decode($query);
         $query->rules[0]->value = $number;
         $query->rules[0]->type = $type;
-        self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
+        $queryBuilder = $this->subject->parse($query, $this->getConnectionPool()->getQueryBuilderForTable($this->table));
+        self::assertEquals($expectedSQL, $queryBuilder->getSQL());
+        self::assertEquals($expectedParameters, $queryBuilder->getParameters());
     }
 
     /**
@@ -697,12 +723,12 @@ class QueryParserTest extends FunctionalTestCase
     public function parseReturnsValidWhereClauseForSimpleNotEndsQueryDataProvider() : array
     {
         return [
-            'string as number value as type string' => ['42', 'string', ' ( `title` NOT LIKE \'%42\' ) '],
-            'comma value as type string' => ['42,5', 'string', ' ( `title` NOT LIKE \'%42,5\' ) '],
-            'string(1 words) as string value as type string' => ['foo', 'string', ' ( `title` NOT LIKE \'%foo\' ) '],
-            'string(2 words) as string value as type string' => ['foo bar', 'string', ' ( `title` NOT LIKE \'%foo bar\' ) '],
-            'string(2 words) as string value as type string with %' => ['foo%bar', 'string', ' ( `title` NOT LIKE \'%foo\\\\%bar\' ) '],
-            'string(2 words) as string value as type string with _' => ['foo_bar', 'string', ' ( `title` NOT LIKE \'%foo\\\\_bar\' ) '],
+            'string as number value as type string' => ['42', 'string', 'SELECT  WHERE `title` NOT LIKE \'%42'],
+            'comma value as type string' => ['42,5', 'string', 'SELECT  WHERE `title` NOT LIKE \'%42,5'],
+            'string(1 words) as string value as type string' => ['foo', 'string', 'SELECT  WHERE `title` NOT LIKE \'%foo\''],
+            'string(2 words) as string value as type string' => ['foo bar', 'string', 'SELECT  WHERE `title` NOT LIKE \'%foo bar\''],
+            'string(2 words) as string value as type string with %' => ['foo%bar', 'string', 'SELECT  WHERE `title` NOT LIKE \'%foo\\\\%bar\''],
+            'string(2 words) as string value as type string with _' => ['foo_bar', 'string', 'SELECT  WHERE `title` NOT LIKE \'%foo\\\\_bar\''],
         ];
     }
 
@@ -712,9 +738,10 @@ class QueryParserTest extends FunctionalTestCase
      *
      * @param $number
      * @param $type
-     * @param $expectedResult
+     * @param $expectedSQL
+     * @param $expectedParameters
      */
-    public function parseReturnsValidWhereClauseForSimpleNotEndsQuery($number, $type, $expectedResult)
+    public function parseReturnsValidWhereClauseForSimpleNotEndsQuery($number, $type, $expectedSQL, $expectedParameters)
     {
         $query = '{
           "condition": "AND",
@@ -733,7 +760,9 @@ class QueryParserTest extends FunctionalTestCase
         $query = json_decode($query);
         $query->rules[0]->value = $number;
         $query->rules[0]->type = $type;
-        self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
+        $queryBuilder = $this->subject->parse($query, $this->getConnectionPool()->getQueryBuilderForTable($this->table));
+        self::assertEquals($expectedSQL, $queryBuilder->getSQL());
+        self::assertEquals($expectedParameters, $queryBuilder->getParameters());
     }
 
     /**
@@ -755,8 +784,9 @@ class QueryParserTest extends FunctionalTestCase
           "valid": true
         }';
         $query = json_decode($query);
-        $expectedResult = ' ( (`title` = \'\') OR (`title` IS NULL) ) ';
-        self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
+        $expectedResult = 'SELECT  WHERE (`title` = \'\') OR (`title` IS NULL)';
+        $queryBuilder = $this->subject->parse($query, $this->getConnectionPool()->getQueryBuilderForTable($this->table));
+        self::assertEquals($expectedResult, $queryBuilder->getSQL());
     }
 
     /**
@@ -778,8 +808,9 @@ class QueryParserTest extends FunctionalTestCase
           "valid": true
         }';
         $query = json_decode($query);
-        $expectedResult = ' ( (`title` <> \'\') AND (`title` IS NOT NULL) ) ';
-        self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
+        $expectedResult = 'SELECT  WHERE (`title` <> \'\') AND (`title` IS NOT NULL)';
+        $queryBuilder = $this->subject->parse($query, $this->getConnectionPool()->getQueryBuilderForTable($this->table));
+        self::assertEquals($expectedResult, $queryBuilder->getSQL());
     }
 
     /**
@@ -821,8 +852,9 @@ class QueryParserTest extends FunctionalTestCase
         }';
         $query = json_decode($query);
         $query->rules[0]->type = $type;
-        $expectedResult = ' ( `title` IS NULL ) ';
-        self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
+        $expectedResult = 'SELECT  WHERE `title` IS NULL';
+        $queryBuilder = $this->subject->parse($query, $this->getConnectionPool()->getQueryBuilderForTable($this->table));
+        self::assertEquals($expectedResult, $queryBuilder->getSQL());
     }
 
     /**
@@ -864,8 +896,9 @@ class QueryParserTest extends FunctionalTestCase
         }';
         $query = json_decode($query);
         $query->rules[0]->type = $type;
-        $expectedResult = ' ( `title` IS NOT NULL ) ';
-        self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
+        $expectedResult = 'SELECT  WHERE `title` IS NOT NULL';
+        $queryBuilder = $this->subject->parse($query, $this->getConnectionPool()->getQueryBuilderForTable($this->table));
+        self::assertEquals($expectedResult, $queryBuilder->getSQL());
     }
 
     /**
@@ -874,22 +907,22 @@ class QueryParserTest extends FunctionalTestCase
     public function parseReturnsValidWhereClauseForSimpleLessQueryDataProvider() : array
     {
         return [
-            'integer value as type integer' => [42, 'integer', ' ( `title` < 42 ) '],
-            'float value as type integer' => [42.5, 'integer', ' ( `title` < 42 ) '],
-            'comma value as type integer' => ['42,5', 'integer', ' ( `title` < 42 ) '],
-            'string as number value as type integer' => ['42', 'integer', ' ( `title` < 42 ) '],
-            'string as string value as type integer' => ['foo', 'integer', ' ( `title` < 0 ) '],
+            'integer value as type integer' => [42, 'integer', 'SELECT  WHERE `title` < 42', []],
+            'float value as type integer' => [42.5, 'integer', 'SELECT  WHERE `title` < 42', []],
+            'comma value as type integer' => ['42,5', 'integer', 'SELECT  WHERE `title` < 42', []],
+            'string as number value as type integer' => ['42', 'integer', 'SELECT  WHERE `title` < 42', []],
+            'string as string value as type integer' => ['foo', 'integer', 'SELECT  WHERE `title` < 0', []],
 
-            'integer value as type double' => [42, 'double', ' ( `title` < 42 ) '],
-            'float value as type double' => [42.5, 'double', ' ( `title` < 42.5 ) '],
-            'comma value as type double' => ['42,5', 'double', ' ( `title` < 42.5 ) '],
-            'string as number value as type double' => ['42', 'double', ' ( `title` < 42 ) '],
+            'integer value as type double' => [42, 'double', 'SELECT  WHERE `title` < 42', []],
+            'float value as type double' => [42.5, 'double', 'SELECT  WHERE `title` < 42.5', []],
+            'comma value as type double' => ['42,5', 'double', 'SELECT  WHERE `title` < 42.5', []],
+            'string as number value as type double' => ['42', 'double', 'SELECT  WHERE `title` < 42', []],
 
-            'string as date value as type date' => ['2017-01-01', 'date', ' ( `title` < 1483221600 ) '],
+            'string as date value as type date' => ['2017-01-01', 'date', 'SELECT  WHERE `title` < 1483221600', []],
 
-            'string as type time' => ['16:30', 'time', ' ( `title` < 59400 ) '],
+            'string as type time' => ['16:30', 'time', 'SELECT  WHERE `title` < 59400', []],
 
-            'string as datetime value as type datetime' => ['2017-01-01 00:00', 'datetime', ' ( `title` < 1483221600 ) '],
+            'string as datetime value as type datetime' => ['2017-01-01 00:00', 'datetime', 'SELECT  WHERE `title` < 1483221600', []],
         ];
     }
 
@@ -899,9 +932,10 @@ class QueryParserTest extends FunctionalTestCase
      *
      * @param $number
      * @param $type
-     * @param $expectedResult
+     * @param $expectedSQL
+     * @param $expectedParameters
      */
-    public function parseReturnsValidWhereClauseForSimpleLessQuery($number, $type, $expectedResult)
+    public function parseReturnsValidWhereClauseForSimpleLessQuery($number, $type, $expectedSQL, $expectedParameters)
     {
         $query = '{
           "condition": "AND",
@@ -920,7 +954,9 @@ class QueryParserTest extends FunctionalTestCase
         $query = json_decode($query);
         $query->rules[0]->value = $number;
         $query->rules[0]->type = $type;
-        self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
+        $queryBuilder = $this->subject->parse($query, $this->getConnectionPool()->getQueryBuilderForTable($this->table));
+        self::assertEquals($expectedSQL, $queryBuilder->getSQL());
+        self::assertEquals($expectedParameters, $queryBuilder->getParameters());
     }
 
     /**
@@ -929,22 +965,22 @@ class QueryParserTest extends FunctionalTestCase
     public function parseReturnsValidWhereClauseForSimpleLessOrEqualQueryDataProvider() : array
     {
         return [
-            'integer value as integer' => [42, 'integer', ' ( `title` <= 42 ) '],
-            'float value as integer' => [42.5, 'integer', ' ( `title` <= 42 ) '],
-            'comma value as integer' => ['42,5', 'integer', ' ( `title` <= 42 ) '],
-            'string as number value as integer' => ['42', 'integer', ' ( `title` <= 42 ) '],
-            'string as string value as integer' => ['foo', 'integer', ' ( `title` <= 0 ) '],
+            'integer value as integer' => [42, 'integer', 'SELECT  WHERE `title` <= 42', []],
+            'float value as integer' => [42.5, 'integer', 'SELECT  WHERE `title` <= 42', []],
+            'comma value as integer' => ['42,5', 'integer', 'SELECT  WHERE `title` <= 42', []],
+            'string as number value as integer' => ['42', 'integer', 'SELECT  WHERE `title` <= 42', []],
+            'string as string value as integer' => ['foo', 'integer', 'SELECT  WHERE `title` <= 0', []],
 
-            'integer value as type double' => [42, 'double', ' ( `title` <= 42 ) '],
-            'float value as type double' => [42.5, 'double', ' ( `title` <= 42.5 ) '],
-            'comma value as type double' => ['42,5', 'double', ' ( `title` <= 42.5 ) '],
-            'string as number value as type double' => ['42', 'double', ' ( `title` <= 42 ) '],
+            'integer value as type double' => [42, 'double', 'SELECT  WHERE `title` <= 42', []],
+            'float value as type double' => [42.5, 'double', 'SELECT  WHERE `title` <= 42.5', []],
+            'comma value as type double' => ['42,5', 'double', 'SELECT  WHERE `title` <= 42.5', []],
+            'string as number value as type double' => ['42', 'double', 'SELECT  WHERE `title` <= 42', []],
 
-            'string as date value as type date' => ['2017-01-01', 'date', ' ( `title` <= 1483221600 ) '],
+            'string as date value as type date' => ['2017-01-01', 'date', 'SELECT  WHERE `title` <= 1483221600', []],
 
-            'string as type time' => ['16:30', 'time', ' ( `title` <= 59400 ) '],
+            'string as type time' => ['16:30', 'time', 'SELECT  WHERE `title` <= 59400', []],
 
-            'string as datetime value as type datetime' => ['2017-01-01 00:00', 'datetime', ' ( `title` <= 1483221600 ) '],
+            'string as datetime value as type datetime' => ['2017-01-01 00:00', 'datetime', 'SELECT  WHERE `title` <= 1483221600', []],
         ];
     }
 
@@ -955,9 +991,10 @@ class QueryParserTest extends FunctionalTestCase
      *
      * @param $number
      * @param $type
-     * @param $expectedResult
+     * @param $expectedSQL
+     * @param $expectedParameters
      */
-    public function parseReturnsValidWhereClauseForSimpleLessOrEqualQuery($number, $type, $expectedResult)
+    public function parseReturnsValidWhereClauseForSimpleLessOrEqualQuery($number, $type, $expectedSQL, $expectedParameters)
     {
         $query = '{
           "condition": "AND",
@@ -976,7 +1013,9 @@ class QueryParserTest extends FunctionalTestCase
         $query = json_decode($query);
         $query->rules[0]->value = $number;
         $query->rules[0]->type = $type;
-        self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
+        $queryBuilder = $this->subject->parse($query, $this->getConnectionPool()->getQueryBuilderForTable($this->table));
+        self::assertEquals($expectedSQL, $queryBuilder->getSQL());
+        self::assertEquals($expectedParameters, $queryBuilder->getParameters());
     }
 
     /**
@@ -985,22 +1024,22 @@ class QueryParserTest extends FunctionalTestCase
     public function parseReturnsValidWhereClauseForSimpleGreaterQueryDataProvider() : array
     {
         return [
-            'integer value as integer' => [42, 'integer', ' ( `title` > 42 ) '],
-            'float value as integer' => [42.5, 'integer', ' ( `title` > 42 ) '],
-            'comma value as integer' => ['42,5', 'integer', ' ( `title` > 42 ) '],
-            'string as number value as integer' => ['42', 'integer', ' ( `title` > 42 ) '],
-            'string as string value as integer' => ['foo', 'integer', ' ( `title` > 0 ) '],
+            'integer value as integer' => [42, 'integer', 'SELECT  WHERE `title` > 42', []],
+            'float value as integer' => [42.5, 'integer', 'SELECT  WHERE `title` > 42', []],
+            'comma value as integer' => ['42,5', 'integer', 'SELECT  WHERE `title` > 42', []],
+            'string as number value as integer' => ['42', 'integer', 'SELECT  WHERE `title` > 42', []],
+            'string as string value as integer' => ['foo', 'integer', 'SELECT  WHERE `title` > 0', []],
 
-            'integer value as type double' => [42, 'double', ' ( `title` > 42 ) '],
-            'float value as type double' => [42.5, 'double', ' ( `title` > 42.5 ) '],
-            'comma value as type double' => ['42,5', 'double', ' ( `title` > 42.5 ) '],
-            'string as number value as type double' => ['42', 'double', ' ( `title` > 42 ) '],
+            'integer value as type double' => [42, 'double', 'SELECT  WHERE `title` > 42', []],
+            'float value as type double' => [42.5, 'double', 'SELECT  WHERE `title` > 42.5', []],
+            'comma value as type double' => ['42,5', 'double', 'SELECT  WHERE `title` > 42.5', []],
+            'string as number value as type double' => ['42', 'double', 'SELECT  WHERE `title` > 42', []],
 
-            'string as date value as type date' => ['2017-01-01', 'date', ' ( `title` > 1483221600 ) '],
+            'string as date value as type date' => ['2017-01-01', 'date', 'SELECT  WHERE `title` > 1483221600', []],
 
-            'string as type time' => ['16:30', 'time', ' ( `title` > 59400 ) '],
+            'string as type time' => ['16:30', 'time', 'SELECT  WHERE `title` > 59400', []],
 
-            'string as datetime value as type datetime' => ['2017-01-01 00:00', 'datetime', ' ( `title` > 1483221600 ) '],
+            'string as datetime value as type datetime' => ['2017-01-01 00:00', 'datetime', 'SELECT  WHERE `title` > 1483221600', []],
         ];
     }
 
@@ -1010,9 +1049,10 @@ class QueryParserTest extends FunctionalTestCase
      *
      * @param $number
      * @param $type
-     * @param $expectedResult
+     * @param $expectedSQL
+     * @param $expectedParameters
      */
-    public function parseReturnsValidWhereClauseForSimpleGreaterQuery($number, $type, $expectedResult)
+    public function parseReturnsValidWhereClauseForSimpleGreaterQuery($number, $type, $expectedSQL, $expectedParameters)
     {
         $query = '{
           "condition": "AND",
@@ -1031,7 +1071,9 @@ class QueryParserTest extends FunctionalTestCase
         $query = json_decode($query);
         $query->rules[0]->value = $number;
         $query->rules[0]->type = $type;
-        self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
+        $queryBuilder = $this->subject->parse($query, $this->getConnectionPool()->getQueryBuilderForTable($this->table));
+        self::assertEquals($expectedSQL, $queryBuilder->getSQL());
+        self::assertEquals($expectedParameters, $queryBuilder->getParameters());
     }
 
     /**
@@ -1040,22 +1082,22 @@ class QueryParserTest extends FunctionalTestCase
     public function parseReturnsValidWhereClauseForSimpleGreaterOrEqualQueryDataProvider() : array
     {
         return [
-            'integer value as integer' => [42, 'integer', ' ( `title` >= 42 ) '],
-            'float value as integer' => [42.5, 'integer', ' ( `title` >= 42 ) '],
-            'comma value as integer' => ['42,5', 'integer', ' ( `title` >= 42 ) '],
-            'string as number value as integer' => ['42', 'integer', ' ( `title` >= 42 ) '],
-            'string as string value as integer' => ['foo', 'integer', ' ( `title` >= 0 ) '],
+            'integer value as integer' => [42, 'integer', 'SELECT  WHERE `title` >= 42', []],
+            'float value as integer' => [42.5, 'integer', 'SELECT  WHERE `title` >= 42', []],
+            'comma value as integer' => ['42,5', 'integer', 'SELECT  WHERE `title` >= 42', []],
+            'string as number value as integer' => ['42', 'integer', 'SELECT  WHERE `title` >= 42', []],
+            'string as string value as integer' => ['foo', 'integer', 'SELECT  WHERE `title` >= 0', []],
 
-            'integer value as type double' => [42, 'double', ' ( `title` >= 42 ) '],
-            'float value as type double' => [42.5, 'double', ' ( `title` >= 42.5 ) '],
-            'comma value as type double' => ['42,5', 'double', ' ( `title` >= 42.5 ) '],
-            'string as number value as type double' => ['42', 'double', ' ( `title` >= 42 ) '],
+            'integer value as type double' => [42, 'double', 'SELECT  WHERE `title` >= 42', []],
+            'float value as type double' => [42.5, 'double', 'SELECT  WHERE `title` >= 42.5', []],
+            'comma value as type double' => ['42,5', 'double', 'SELECT  WHERE `title` >= 42.5', []],
+            'string as number value as type double' => ['42', 'double', 'SELECT  WHERE `title` >= 42', []],
 
-            'string as date value as type date' => ['2017-01-01', 'date', ' ( `title` >= 1483221600 ) '],
+            'string as date value as type date' => ['2017-01-01', 'date', 'SELECT  WHERE `title` >= 1483221600', []],
 
-            'string as type time' => ['16:30', 'time', ' ( `title` >= 59400 ) '],
+            'string as type time' => ['16:30', 'time', 'SELECT  WHERE `title` >= 59400', []],
 
-            'string as datetime value as type datetime' => ['2017-01-01 00:00', 'datetime', ' ( `title` >= 1483221600 ) '],
+            'string as datetime value as type datetime' => ['2017-01-01 00:00', 'datetime', 'SELECT  WHERE `title` >= 1483221600', []],
         ];
     }
 
@@ -1065,9 +1107,10 @@ class QueryParserTest extends FunctionalTestCase
      *
      * @param $number
      * @param $type
-     * @param $expectedResult
+     * @param $expectedSQL
+     * @param $expectedParameters
      */
-    public function parseReturnsValidWhereClauseForSimpleGreaterOrEqualQuery($number, $type, $expectedResult)
+    public function parseReturnsValidWhereClauseForSimpleGreaterOrEqualQuery($number, $type, $expectedSQL, $expectedParameters)
     {
         $query = '{
           "condition": "AND",
@@ -1086,7 +1129,9 @@ class QueryParserTest extends FunctionalTestCase
         $query = json_decode($query);
         $query->rules[0]->value = $number;
         $query->rules[0]->type = $type;
-        self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
+        $queryBuilder = $this->subject->parse($query, $this->getConnectionPool()->getQueryBuilderForTable($this->table));
+        self::assertEquals($expectedSQL, $queryBuilder->getSQL());
+        self::assertEquals($expectedParameters, $queryBuilder->getParameters());
     }
 
     /**
@@ -1121,9 +1166,10 @@ class QueryParserTest extends FunctionalTestCase
      *
      * @param $number
      * @param $type
-     * @param $expectedResult
+     * @param $expectedSQL
+     * @param $expectedParameters
      */
-    public function parseReturnsValidWhereClauseForSimpleBetweenQuery($number, $type, $expectedResult)
+    public function parseReturnsValidWhereClauseForSimpleBetweenQuery($number, $type, $expectedSQL, $expectedParameters)
     {
         $query = '{
           "condition": "AND",
@@ -1142,7 +1188,9 @@ class QueryParserTest extends FunctionalTestCase
         $query = json_decode($query);
         $query->rules[0]->value = $number;
         $query->rules[0]->type = $type;
-        self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
+        $queryBuilder = $this->subject->parse($query, $this->getConnectionPool()->getQueryBuilderForTable($this->table));
+        self::assertEquals($expectedSQL, $queryBuilder->getSQL());
+        self::assertEquals($expectedParameters, $queryBuilder->getParameters());
     }
 
     /**
@@ -1176,9 +1224,10 @@ class QueryParserTest extends FunctionalTestCase
      *
      * @param $number
      * @param $type
-     * @param $expectedResult
+     * @param $expectedSQL
+     * @param $expectedParameters
      */
-    public function parseReturnsValidWhereClauseForSimpleNotBetweenQuery($number, $type, $expectedResult)
+    public function parseReturnsValidWhereClauseForSimpleNotBetweenQuery($number, $type, $expectedSQL, $expectedParameters)
     {
         $query = '{
           "condition": "AND",
@@ -1197,6 +1246,8 @@ class QueryParserTest extends FunctionalTestCase
         $query = json_decode($query);
         $query->rules[0]->value = $number;
         $query->rules[0]->type = $type;
-        self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
+        $queryBuilder = $this->subject->parse($query, $this->getConnectionPool()->getQueryBuilderForTable($this->table));
+        self::assertEquals($expectedSQL, $queryBuilder->getSQL());
+        self::assertEquals($expectedParameters, $queryBuilder->getParameters());
     }
 }
