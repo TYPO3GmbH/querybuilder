@@ -20,12 +20,6 @@
 	"require": {
 		"typo3/cms": "^8.6"
 	},
-	"extra": {
-		"branch-alias": {
-			"dev-master": "9.0.x-dev",
-			"v8.7.x-dev": "8.7.x-dev"
-		}
-	},
 	"replace": {
       "querybuilder": "self.version",
       "typo3-ter/querybuilder": "self.version"
