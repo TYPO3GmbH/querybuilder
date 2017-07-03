@@ -189,10 +189,10 @@ class QueryParser
                 $quotedValue[0] = (double)$unQuotedValue[0];
                 $quotedValue[1] = (double)$unQuotedValue[1];
             } else {
-                $quotedValue[0] = $queryBuilder->quote($unQuotedValue[0], $databaseType);
-                $quotedValue[1] = $queryBuilder->quote($unQuotedValue[1], $databaseType);
+                $quotedValue[0] = $queryBuilderObject->createNamedParameter($unQuotedValue[0], $databaseType);
+                $quotedValue[1] = $queryBuilderObject->createNamedParameter($unQuotedValue[1], $databaseType);
                 if ($rule->type === static::TYPE_BOOLEAN) {
-                    $quotedValue = $queryBuilder->quote($unQuotedValue[0], $databaseType);
+                    $quotedValue = $queryBuilderObject->createNamedParameter($unQuotedValue[0], $databaseType);
                 }
             }
         } else {
@@ -201,7 +201,7 @@ class QueryParser
             } elseif ($rule->type === static::TYPE_DOUBLE) {
                 $quotedValue = (double)$unQuotedValue;
             } else {
-                $quotedValue = $queryBuilder->quote($unQuotedValue, $databaseType);
+                $quotedValue = $queryBuilderObject->createNamedParameter($unQuotedValue, $databaseType);
             }
         }
 
@@ -219,7 +219,7 @@ class QueryParser
                 }
                 $escapedValues = [];
                 foreach ($values as $singleValue) {
-                    $escapedValues[] = $queryBuilder->quote($singleValue);
+                    $escapedValues[] = $queryBuilderObject->createNamedParameter($singleValue);
                 }
                 $where = $queryBuilder->expr()->in($field, implode(',', $escapedValues));
                 break;
@@ -230,7 +230,7 @@ class QueryParser
                 }
                 $escapedValues = [];
                 foreach ($values as $singleValue) {
-                    $escapedValues[] = $queryBuilder->quote($singleValue);
+                    $escapedValues[] = $queryBuilderObject->createNamedParameter($singleValue);
                 }
                 $where = $queryBuilder->expr()->notIn($field, implode(',', $escapedValues));
                 break;
