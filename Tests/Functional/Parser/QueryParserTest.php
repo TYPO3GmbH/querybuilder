@@ -69,42 +69,42 @@ class QueryParserTest extends FunctionalTestCase
     public function parseReturnsValidWhereClauseForSimpleEqualQueryDataProvider() : array
     {
         return [
-            'integer value as type string' => [42, 'string', 'SELECT  WHERE `title` = :dcValue1', ['dcValue1' => 42]],
-            'string as number value as type string' => ['42', 'string', 'SELECT  WHERE `title` = :dcValue1', ['dcValue1' => 42]],
-            'float value as type string' => [42.5, 'string', 'SELECT  WHERE `title` = :dcValue1', ['dcValue1' => 42.5]],
-            'string float value as type string' => ['42.5', 'string', 'SELECT  WHERE `title` = :dcValue1', ['dcValue1' => 42.5]],
-            'comma value as type string' => ['42,5', 'string', 'SELECT  WHERE `title` = :dcValue1', ['dcValue1' => '42,5']],
-            'string as string value as type string' => ['foo', 'string', 'SELECT  WHERE `title` = :dcValue1', ['dcValue1' => 'foo']],
+            'integer value as type string' => [42, 'string', 'SELECT  WHERE `title` = :dcValue1', ['dcValue1' => 42, 'dcValue1' => '42']],
+            'string as number value as type string' => ['42', 'string', 'SELECT  WHERE `title` = :dcValue1', ['dcValue1' => 42, 'dcValue1' => '42']],
+            'float value as type string' => [42.5, 'string', 'SELECT  WHERE `title` = :dcValue1', ['dcValue1' => 42.5, 'dcValue1' => '42.5']],
+            'string float value as type string' => ['42.5', 'string', 'SELECT  WHERE `title` = :dcValue1', ['dcValue1' => 42.5, 'dcValue1' => '42.5']],
+            'comma value as type string' => ['42,5', 'string', 'SELECT  WHERE `title` = :dcValue1', ['dcValue1' => '42,5', 'dcValue1' => '42,5']],
+            'string as string value as type string' => ['foo', 'string', 'SELECT  WHERE `title` = :dcValue1', ['dcValue1' => 'foo', 'dcValue1' => 'foo']],
 
-            'integer value as type integer' => [42, 'integer', 'SELECT  WHERE `title` = 42', []],
-            'string as number value as type integer' => ['42', 'integer', 'SELECT  WHERE `title` = 42', []],
-            'integer(negative) value as type integer' => [-5, 'integer', 'SELECT  WHERE `title` = -5', []],
-            'string(negative) as number value as type integer' => ['-5', 'integer', 'SELECT  WHERE `title` = -5', []],
+            'integer value as type integer' => [42, 'integer', 'SELECT  WHERE `title` = 42', ['dcValue1' => '42']],
+            'string as number value as type integer' => ['42', 'integer', 'SELECT  WHERE `title` = 42', ['dcValue1' => '42']],
+            'integer(negative) value as type integer' => [-5, 'integer', 'SELECT  WHERE `title` = -5', ['dcValue1' => '-5']],
+            'string(negative) as number value as type integer' => ['-5', 'integer', 'SELECT  WHERE `title` = -5', ['dcValue1' => '-5']],
 
-            'integer(1) value as type boolean' => [[1], 'boolean', 'SELECT  WHERE `title` = :dcValue3', ['dcValue1' => 1, 'dcValue2' => null, 'dcValue3' => 1]],
-            'string(1) as number value as type boolean' => [['1'], 'boolean', 'SELECT  WHERE `title` = :dcValue3', ['dcValue1' => '1', 'dcValue2' => null, 'dcValue3' => '1']],
-            'integer(0) value as type boolean' => [[0], 'boolean', 'SELECT  WHERE `title` = :dcValue3', ['dcValue1' => 0, 'dcValue2' => null, 'dcValue3' => 0]],
-            'string(0) as number value as type boolean' => [['0'], 'boolean', 'SELECT  WHERE `title` = :dcValue3', ['dcValue1' => '0', 'dcValue2' => null, 'dcValue3' => '0']],
+            'integer(1) value as type boolean' => [[1], 'boolean', 'SELECT  WHERE `title` = :dcValue3', ['dcValue1' => 1, 'dcValue2' => null, 'dcValue3' => 1, 'dcValue1' => '[1]']],
+            'string(1) as number value as type boolean' => [['1'], 'boolean', 'SELECT  WHERE `title` = :dcValue3', ['dcValue1' => '1', 'dcValue2' => null, 'dcValue3' => '1', 'dcValue1' => '['1']']],
+            'integer(0) value as type boolean' => [[0], 'boolean', 'SELECT  WHERE `title` = :dcValue3', ['dcValue1' => 0, 'dcValue2' => null, 'dcValue3' => 0, 'dcValue1' => '[0]']],
+            'string(0) as number value as type boolean' => [['0'], 'boolean', 'SELECT  WHERE `title` = :dcValue3', ['dcValue1' => '0', 'dcValue2' => null, 'dcValue3' => '0', 'dcValue1' => '['0']']],
 
-            'integer value as type double' => [42, 'double', 'SELECT  WHERE `title` = 42', []],
-            'string as number value as type double' => ['42', 'double', 'SELECT  WHERE `title` = 42', []],
-            'integer(negative)value as type double' => [-5, 'double', 'SELECT  WHERE `title` = -5', []],
-            'string(negative) as number value as type double' => ['-5', 'double', 'SELECT  WHERE `title` = -5', []],
-            'float value as type double' => [42.5, 'double', 'SELECT  WHERE `title` = 42.5', []],
-            'string float value as type double' => ['42.5', 'double', 'SELECT  WHERE `title` = 42.5', []],
-            'float value (2 decimal w 00) as type double' => [42.00, 'double', 'SELECT  WHERE `title` = 42', []],
-            'float value (2 decimal w 50) as type double' => [42.50, 'double', 'SELECT  WHERE `title` = 42.5', []],
-            'float value (2 decimal w 55) as type double' => [42.55, 'double', 'SELECT  WHERE `title` = 42.55', []],
-            'string float value (2 decimal) as type double' => ['42.50', 'double', 'SELECT  WHERE `title` = 42.5', []],
-            'comma value as type double' => ['42,50', 'double', 'SELECT  WHERE `title` = 42.5', []],
-            'comma value (2 decimal) as type double' => ['42,50', 'double', 'SELECT  WHERE `title` = 42.5', []],
-            'string as type double' => ['foo', 'double', 'SELECT  WHERE `title` = 0', []],
+            'integer value as type double' => [42, 'double', 'SELECT  WHERE `title` = 42', ['dcValue1' => '42']],
+            'string as number value as type double' => ['42', 'double', 'SELECT  WHERE `title` = 42', ['dcValue1' => '42']],
+            'integer(negative)value as type double' => [-5, 'double', 'SELECT  WHERE `title` = -5', ['dcValue1' => '-5']],
+            'string(negative) as number value as type double' => ['-5', 'double', 'SELECT  WHERE `title` = -5', ['dcValue1' => '-5']],
+            'float value as type double' => [42.5, 'double', 'SELECT  WHERE `title` = 42.5', ['dcValue1' => '42.5']],
+            'string float value as type double' => ['42.5', 'double', 'SELECT  WHERE `title` = 42.5', ['dcValue1' => '42.5']],
+            'float value (2 decimal w 00) as type double' => [42.00, 'double', 'SELECT  WHERE `title` = 42', ['dcValue1' => '42.00']],
+            'float value (2 decimal w 50) as type double' => [42.50, 'double', 'SELECT  WHERE `title` = 42.5', ['dcValue1' => '42.50']],
+            'float value (2 decimal w 55) as type double' => [42.55, 'double', 'SELECT  WHERE `title` = 42.55', ['dcValue1' => '42.55']],
+            'string float value (2 decimal) as type double' => ['42.50', 'double', 'SELECT  WHERE `title` = 42.5', ['dcValue1' => '42.50']],
+            'comma value as type double' => ['42,50', 'double', 'SELECT  WHERE `title` = 42.5', ['dcValue1' => '42,50']],
+            'comma value (2 decimal) as type double' => ['42,50', 'double', 'SELECT  WHERE `title` = 42.5', ['dcValue1' => '42,50']],
+            'string as type double' => ['foo', 'double', 'SELECT  WHERE `title` = 0', ['dcValue1' => 'foo']],
 
-            'comma value as type date' => ['2017-06-26', 'date', 'SELECT  WHERE `title` = 1498420800', []],
+            'comma value as type date' => ['2017-06-26', 'date', 'SELECT  WHERE `title` = 1498420800', ['dcValue1' => '2017-06-26']],
 
-            'comma value as type time' => ['18:30', 'time', 'SELECT  WHERE `title` = 66600', []],
+            'comma value as type time' => ['18:30', 'time', 'SELECT  WHERE `title` = 66600', ['dcValue1' => '18:30']],
 
-            'string as number value as type datetime' => ['2017-01-01 00:00', 'datetime', 'SELECT  WHERE `title` = 1483221600', []],
+            'string as number value as type datetime' => ['2017-01-01 00:00', 'datetime', 'SELECT  WHERE `title` = 1483221600', ['dcValue1' => '2017-01-01 00:00']],
         ];
     }
 
@@ -269,41 +269,41 @@ class QueryParserTest extends FunctionalTestCase
     public function parseReturnsValidWhereClauseForSimpleNotEqualQueryDataProvider() : array
     {
         return [
-            'integer value as type string' => [42, 'string', 'SELECT  WHERE `title` <> :dcValue1', ['dcValue1' => 42]],
-            'string as number value as type string' => ['42', 'string', 'SELECT  WHERE `title` <> :dcValue1', ['dcValue1' => 42]],
-            'float value as type string' => [42.5, 'string', 'SELECT  WHERE `title` <> :dcValue1', ['dcValue1' => 42.5]],
-            'string float value as type string' => ['42.5', 'string', 'SELECT  WHERE `title` <> :dcValue1', ['dcValue1' => 42.5]],
-            'comma value as type string' => ['42,5', 'string', 'SELECT  WHERE `title` <> :dcValue1', ['dcValue1' => '42,5']],
-            'string as string value as type string' => ['foo', 'string', 'SELECT  WHERE `title` <> :dcValue1', ['dcValue1' => 'foo']],
+            'integer value as type string' => [42, 'string', 'SELECT  WHERE `title` <> :dcValue1', ['dcValue1' => 42, 'dcValue1' => '42']],
+            'string as number value as type string' => ['42', 'string', 'SELECT  WHERE `title` <> :dcValue1', ['dcValue1' => 42, 'dcValue1' => '42']],
+            'float value as type string' => [42.5, 'string', 'SELECT  WHERE `title` <> :dcValue1', ['dcValue1' => 42.5, 'dcValue1' => '42.5']],
+            'string float value as type string' => ['42.5', 'string', 'SELECT  WHERE `title` <> :dcValue1', ['dcValue1' => 42.5, 'dcValue1' => '42.5']],
+            'comma value as type string' => ['42,5', 'string', 'SELECT  WHERE `title` <> :dcValue1', ['dcValue1' => '42,5', 'dcValue1' => '42,5']],
+            'string as string value as type string' => ['foo', 'string', 'SELECT  WHERE `title` <> :dcValue1', ['dcValue1' => 'foo', 'dcValue1' => 'foo']],
 
-            'integer value as type integer' => [42, 'integer', 'SELECT  WHERE `title` <> 42', []],
-            'string as number value as type integer' => ['42', 'integer', 'SELECT  WHERE `title` <> 42', []],
-            'integer(negative) value as type integer' => [-5, 'integer', 'SELECT  WHERE `title` <> -5', []],
-            'string(negative) as number value as type integer' => ['-5', 'integer', 'SELECT  WHERE `title` <> -5', []],
+            'integer value as type integer' => [42, 'integer', 'SELECT  WHERE `title` <> 42', ['dcValue1' => '42']],
+            'string as number value as type integer' => ['42', 'integer', 'SELECT  WHERE `title` <> 42', ['dcValue1' => '42']],
+            'integer(negative) value as type integer' => [-5, 'integer', 'SELECT  WHERE `title` <> -5', ['dcValue1' => '-5']],
+            'string(negative) as number value as type integer' => ['-5', 'integer', 'SELECT  WHERE `title` <> -5', ['dcValue1' => '-5']],
 
-            'integer(1) value as type boolean' => [[1], 'boolean', 'SELECT  WHERE `title` <> :dcValue3',[]],
-            'string(1) as number value as type boolean' => [['1'], 'boolean', 'SELECT  WHERE `title` <> :dcValue3',[]],
-            'integer(0) value as type boolean' => [[0], 'boolean', 'SELECT  WHERE `title` <> :dcValue3',[]],
-            'string(0) as number value as type boolean' => [['0'], 'boolean', 'SELECT  WHERE `title` <> :dcValue3',[]],
+            'integer(1) value as type boolean' => [[1], 'boolean', 'SELECT  WHERE `title` <> :dcValue3',['dcValue1' => 1, 'dcValue2' => null,'dcValue3' => 1]],
+            'string(1) as number value as type boolean' => [['1'], 'boolean', 'SELECT  WHERE `title` <> :dcValue3',['dcValue1' => 1, 'dcValue2' => null,'dcValue3' => 1]],
+            'integer(0) value as type boolean' => [[0], 'boolean', 'SELECT  WHERE `title` <> :dcValue3',['dcValue1' => 0, 'dcValue2' => null,'dcValue3' => 0]],
+            'string(0) as number value as type boolean' => [['0'], 'boolean', 'SELECT  WHERE `title` <> :dcValue3',['dcValue1' => 0, 'dcValue2' => null,'dcValue3' => 0]],
 
-            'integer value as type double' => [42, 'double', 'SELECT  WHERE `title` <> 42', []],
-            'string as number value as type double' => ['42', 'double', 'SELECT  WHERE `title` <> 42', []],
-            'integer(negative)value as type double' => [-5, 'double', 'SELECT  WHERE `title` <> -5', []],
-            'string(negative) as number value as type double' => ['-5', 'double', 'SELECT  WHERE `title` <> -5', []],
-            'float value as type double' => [42.5, 'double', 'SELECT  WHERE `title` <> 42.5', []],
-            'string float value as type double' => ['42.5', 'double', 'SELECT  WHERE `title` <> 42.5', []],
-            'float value (2 decimal w 00) as type double' => [42.00, 'double', 'SELECT  WHERE `title` <> 42', []],
-            'float value (2 decimal w 50) as type double' => [42.50, 'double', 'SELECT  WHERE `title` <> 42.5', []],
-            'float value (2 decimal w 55) as type double' => [42.55, 'double', 'SELECT  WHERE `title` <> 42.55', []],
-            'string float value (2 decimal) as type double' => ['42.50', 'double', 'SELECT  WHERE `title` <> 42.5', []],
-            'comma value as type double' => ['42,50', 'double', 'SELECT  WHERE `title` <> 42.5', []],
-            'comma value (2 decimal) as type double' => ['42,50', 'double', 'SELECT  WHERE `title` <> 42.5', []],
+            'integer value as type double' => [42, 'double', 'SELECT  WHERE `title` <> 42', ['dcValue1' => '42']],
+            'string as number value as type double' => ['42', 'double', 'SELECT  WHERE `title` <> 42', ['dcValue1' => '42']],
+            'integer(negative)value as type double' => [-5, 'double', 'SELECT  WHERE `title` <> -5', ['dcValue1' => '-5']],
+            'string(negative) as number value as type double' => ['-5', 'double', 'SELECT  WHERE `title` <> -5', ['dcValue1' => '-5']],
+            'float value as type double' => [42.5, 'double', 'SELECT  WHERE `title` <> 42.5', ['dcValue1' => '42.5']],
+            'string float value as type double' => ['42.5', 'double', 'SELECT  WHERE `title` <> 42.5', ['dcValue1' => '42.5']],
+            'float value (2 decimal w 00) as type double' => [42.00, 'double', 'SELECT  WHERE `title` <> 42', ['dcValue1' => '42.00']],
+            'float value (2 decimal w 50) as type double' => [42.50, 'double', 'SELECT  WHERE `title` <> 42.5', ['dcValue1' => '42.50']],
+            'float value (2 decimal w 55) as type double' => [42.55, 'double', 'SELECT  WHERE `title` <> 42.55', ['dcValue1' => '42.55']],
+            'string float value (2 decimal) as type double' => ['42.50', 'double', 'SELECT  WHERE `title` <> 42.5', ['dcValue1' => '42.50']],
+            'comma value as type double' => ['42,50', 'double', 'SELECT  WHERE `title` <> 42.5', ['dcValue1' => '42,50']],
+            'comma value (2 decimal) as type double' => ['42,50', 'double', 'SELECT  WHERE `title` <> 42.5', ['dcValue1' => '42,50']],
 
-            'comma value as type date' => ['2017-06-26', 'date', 'SELECT  WHERE `title` <> 1498420800', []],
+            'comma value as type date' => ['2017-06-26', 'date', 'SELECT  WHERE `title` <> 1498420800', ['dcValue1' => '2017-06-26']],
 
-            'comma value as type time' => ['18:30', 'time', 'SELECT  WHERE `title` <> 66600', []],
+            'comma value as type time' => ['18:30', 'time', 'SELECT  WHERE `title` <> 66600', ['dcValue1' => '18:30']],
 
-            'string as number value as type datetime' => ['2017-01-21 00:00', 'datetime', 'SELECT  WHERE `title` <> 1484949600', []],
+            'string as number value as type datetime' => ['2017-01-21 00:00', 'datetime', 'SELECT  WHERE `title` <> 1484949600', ['dcValue1' => '2017-01-21 00:00']],
         ];
     }
 
@@ -347,32 +347,32 @@ class QueryParserTest extends FunctionalTestCase
     public function parseReturnsValidWhereClauseForSimpleInQueryDataProvider() : array
     {
         return [
-            'integer value as type string' => [42, 'string', 'SELECT  WHERE `title` IN (:dcValue2)', ['dcValue2' => 42]],
-            'string as number value as type string' => ['42', 'string', 'SELECT  WHERE `title` IN (:dcValue2)', ['dcValue2' => 42]],
-            'float value as type string' => [42.5, 'string', 'SELECT  WHERE `title` IN (:dcValue2)', ['dcValue2' => 42]],
-            'two float values as type string' => ['42.5;50.5', 'string', 'SELECT  WHERE `title` IN (:dcValue2, :dcValue3)', ['dcValue2' => '42,5', 'dcValue3' => '50,5']],
-            'comma value as type string' => ['42,5', 'string', 'SELECT  WHERE `title` IN (:dcValue2)', ['dcValue2' => 42]],
-            'two comma values as type string with ; as delimiter' => ['42,5;5,5', 'string', 'SELECT  WHERE `title` IN (:dcValue2, :dcValue3)', ['dcValue2' => '42,5', 'dcValue3' => '50,5']],
-            'two comma values as type string with # as delimiter' => ['42,5#5,5', 'string', 'SELECT  WHERE `title` IN (:dcValue2, :dcValue3)', ['dcValue2' => '42,5', 'dcValue3' => '50,5']],
-            'two comma values as type string with | as delimiter' => ['42,5|5,5', 'string', 'SELECT  WHERE `title` IN (:dcValue2, :dcValue3)', ['dcValue2' => '42,5', 'dcValue3' => '50,5']],
-            'multiple comma values as type string with mixed delimiters' => ['42,5;5,5#6,6|7,7', 'string', 'SELECT  WHERE `title` IN (:dcValue2, :dcValue3, :dcValue4, :dcValue5)', ['dcValue2' => '42,5', 'dcValue3' => '5,5', 'dcvalue4' => '6,6', 'dcValue5' => '7,7']],
-            'string(1 words) as string value as type string' => ['foo', 'string', 'SELECT  WHERE `title` IN (:dcValue2)', ['dcValue2' => 42]],
-            'string(2 words) as string value as type string' => ['foo;bar', 'string', 'SELECT  WHERE `title` IN (:dcValue2, :dcValue3)', ['dcValue2' => 'foo', 'dcValue3' => 'bar']],
-            'string(3 words) as string value as type string' => ['foo;bar;dong', 'string', 'SELECT  WHERE `title` IN (:dcValue2, :dcValue3, :dcValue4)', ['dcValue2' => 'foo', 'dcValue3' => 'bar', 'dcvalue4' => 'dong']],
-            'mixed values as type string' => ['foo;42,5;dong', 'string', 'SELECT  WHERE `title` IN (:dcValue2, :dcValue3, :dcValue4)', ['dcValue2' => 'foo', 'dcValue3' => '42,5', 'dcvalue4' => 'dong']],
+            'integer value as type string' => [42, 'string', 'SELECT  WHERE `title` IN (:dcValue2)', ['dcValue2' => 42, 'dcValue1' => '42']],
+            'string as number value as type string' => ['42', 'string', 'SELECT  WHERE `title` IN (:dcValue2)', ['dcValue2' => 42, 'dcValue1' => '42']],
+            'float value as type string' => [42.5, 'string', 'SELECT  WHERE `title` IN (:dcValue2)', ['dcValue2' => 42, 'dcValue1' => '42.5']],
+            'two float values as type string' => ['42.5;50.5', 'string', 'SELECT  WHERE `title` IN (:dcValue2,:dcValue3)', ['dcValue2' => '42.5', 'dcValue3' => '50.5', 'dcValue1' => '42.5;50.5']],
+            'comma value as type string' => ['42,5', 'string', 'SELECT  WHERE `title` IN (:dcValue2)', ['dcValue2' => 42, 'dcValue1' => '42,5']],
+            'two comma values as type string with ; as delimiter' => ['42,5;5,5', 'string', 'SELECT  WHERE `title` IN (:dcValue2,:dcValue3)', ['dcValue2' => '42,5', 'dcValue3' => '50,5', 'dcValue1' => '42,5;5,5']],
+            'two comma values as type string with # as delimiter' => ['42,5#5,5', 'string', 'SELECT  WHERE `title` IN (:dcValue2,:dcValue3)', ['dcValue2' => '42,5', 'dcValue3' => '50,5', 'dcValue1' => '42,5#5,5']],
+            'two comma values as type string with | as delimiter' => ['42,5|5,5', 'string', 'SELECT  WHERE `title` IN (:dcValue2,:dcValue3)', ['dcValue2' => '42,5', 'dcValue3' => '50,5', 'dcValue1' => '42,5|5,5']],
+            'multiple comma values as type string with mixed delimiters' => ['42,5;5,5#6,6|7,7', 'string', 'SELECT  WHERE `title` IN (:dcValue2,:dcValue3,:dcValue4,:dcValue5)', ['dcValue2' => '42,5', 'dcValue3' => '5,5', 'dcValue4' => '6,6', 'dcValue5' => '7,7', 'dcValue1' => '42,5;5,5#6,6|7,7']],
+            'string(1 words) as string value as type string' => ['foo', 'string', 'SELECT  WHERE `title` IN (:dcValue2)', ['dcValue2' => 'foo', 'dcValue1' => 'foo']],
+            'string(2 words) as string value as type string' => ['foo;bar', 'string', 'SELECT  WHERE `title` IN (:dcValue2,:dcValue3)', ['dcValue2' => 'foo', 'dcValue3' => 'bar', 'dcValue1' => 'foo;bar']],
+            'string(3 words) as string value as type string' => ['foo;bar;dong', 'string', 'SELECT  WHERE `title` IN (:dcValue2,:dcValue3,:dcValue4)', ['dcValue2' => 'foo', 'dcValue3' => 'bar', 'dcValue4' => 'dong', 'dcValue1' => 'foo;bar;dong']],
+            'mixed values as type string' => ['foo;42,5;dong', 'string', 'SELECT  WHERE `title` IN (:dcValue2,:dcValue3,:dcValue4)', ['dcValue2' => 'foo', 'dcValue3' => '42,5', 'dcValue4' => 'dong', 'dcValue1' => 'foo;42,5;dong']],
 
-            'integer value as type integer' => [42, 'integer', 'SELECT  WHERE `title` IN (\'42\')', []],
-            'string as number value as type integer' => ['42', 'integer', 'SELECT  WHERE `title` IN (\'42\')', []],
+            'integer value as type integer' => [42, 'integer', 'SELECT  WHERE `title` IN (\'42\')', ['dcValue1' => '42']],
+            'string as number value as type integer' => ['42', 'integer', 'SELECT  WHERE `title` IN (\'42\')', ['dcValue1' => '42']],
 
-            'float value as type double' => [42.5, 'double', 'SELECT  WHERE `title` IN (\'42.5\')', []],
-            'string float value as type double' => ['42.5', 'double', 'SELECT  WHERE `title` IN (\'42.5\')', []],
-            'comma value as type double' => ['42,5', 'double', 'SELECT  WHERE `title` IN (\'42.5\')', []],
+            'float value as type double' => [42.5, 'double', 'SELECT  WHERE `title` IN (\'42.5\')', ['dcValue1' => '42.5']],
+            'string float value as type double' => ['42.5', 'double', 'SELECT  WHERE `title` IN (\'42.5\')', ['dcValue1' => '42.5']],
+            'comma value as type double' => ['42,5', 'double', 'SELECT  WHERE `title` IN (\'42.5\')', ['dcValue1' => '42,5']],
 
-            'comma value as type date' => ['2017-06-26', 'date', 'SELECT  WHERE `title` IN (\'1498420800\')', []],
+            'comma value as type date' => ['2017-06-26', 'date', 'SELECT  WHERE `title` IN (\'1498420800\')', ['dcValue1' => '2017-06-26']],
 
-            'comma value as type time' => ['18:30', 'time', 'SELECT  WHERE `title` IN (\'66600\')', []],
+            'comma value as type time' => ['18:30', 'time', 'SELECT  WHERE `title` IN (\'66600\')', ['dcValue1' => '18:30']],
 
-            'string as number value as type datetime' => ['2017-01-01 00:00', 'datetime', 'SELECT  WHERE `title` IN (\'1483221600\')', []],
+            'string as number value as type datetime' => ['2017-01-01 00:00', 'datetime', 'SELECT  WHERE `title` IN (\'1483221600\')', ['dcValue1' => '2017-01-01 00:00']],
         ];
     }
 
@@ -415,32 +415,32 @@ class QueryParserTest extends FunctionalTestCase
     public function parseReturnsValidWhereClauseForSimpleNotInQueryDataProvider() : array
     {
         return [
-            'integer value as type string' => [42, 'string', 'SELECT  WHERE `title` NOT IN (:dcValue2)', ['dcValue2' => 42]],
-            'string as number value as type string' => ['42', 'string', 'SELECT  WHERE `title` NOT IN (:dcValue2)', ['dcValue2' => 42]],
-            'float value as type string' => [42.5, 'string', 'SELECT  WHERE `title` NOT IN (:dcValue2)', ['dcValue2' => 42]],
-            'two float values as type string' => ['42.5;50.5', 'string', 'SELECT  WHERE `title` NOT IN (:dcValue2, :dcValue3)', ['dcValue2' => '42,5', 'dcValue3' => '50,5']],
-            'comma value as type string' => ['42,5', 'string', 'SELECT  WHERE `title` NOT IN (:dcValue2)', ['dcValue2' => 42]],
-            'two comma values as type string with ; as delimiter' => ['42,5;5,5', 'string', 'SELECT  WHERE `title` NOT IN (:dcValue2, :dcValue3)', ['dcValue2' => '42,5', 'dcValue3' => '50,5']],
-            'two comma values as type string with # as delimiter' => ['42,5#5,5', 'string', 'SELECT  WHERE `title` NOT IN (:dcValue2, :dcValue3)', ['dcValue2' => '42,5', 'dcValue3' => '50,5']],
-            'two comma values as type string with | as delimiter' => ['42,5|5,5', 'string', 'SELECT  WHERE `title` NOT IN (:dcValue2, :dcValue3)', ['dcValue2' => '42,5', 'dcValue3' => '50,5']],
-            'multiple comma values as type string with mixed delimiters' => ['42,5;5,5#6,6|7,7', 'string', 'SELECT  WHERE `title` NOT IN (:dcValue2, :dcValue3, :dcValue4, :dcValue5)', ['dcValue2' => '42,5', 'dcValue3' => '5,5', 'dcvalue4' => '6,6', 'dcValue5' => '7,7']],
-            'string(1 words) as string value as type string' => ['foo', 'string', 'SELECT  WHERE `title` NOT IN (:dcValue2)', ['dcValue2' => 42]],
-            'string(2 words) as string value as type string' => ['foo;bar', 'string', 'SELECT  WHERE `title` NOT IN (:dcValue2, :dcValue3)', ['dcValue2' => 'foo', 'dcValue3' => 'bar']],
-            'string(3 words) as string value as type string' => ['foo;bar;dong', 'string', 'SELECT  WHERE `title` NOT IN (:dcValue2, :dcValue3, :dcValue4)', ['dcValue2' => 'foo', 'dcValue3' => 'bar', 'dcvalue4' => 'dong']],
-            'mixed values as type string' => ['foo;42,5;dong', 'string', 'SELECT  WHERE `title` NOT IN (:dcValue2, :dcValue3, :dcValue4)', ['dcValue2' => 'foo', 'dcValue3' => '42,5', 'dcvalue4' => 'dong']],
+            'integer value as type string' => [42, 'string', 'SELECT  WHERE `title` NOT IN (:dcValue2)', ['dcValue2' => 42, 'dcValue1' => '42', 'dcValue1' => '42']],
+            'string as number value as type string' => ['42', 'string', 'SELECT  WHERE `title` NOT IN (:dcValue2)', ['dcValue2' => 42, 'dcValue1' => '42']],
+            'float value as type string' => [42.5, 'string', 'SELECT  WHERE `title` NOT IN (:dcValue2)', ['dcValue2' => 42, 'dcValue1' => '42.5']],
+            'two float values as type string' => ['42.5;50.5', 'string', 'SELECT  WHERE `title` NOT IN (:dcValue2,:dcValue3)', ['dcValue2' => '425', 'dcValue3' => '505', 'dcValue1' => '42.5;50.5']],
+            'comma value as type string' => ['42,5', 'string', 'SELECT  WHERE `title` NOT IN (:dcValue2)', ['dcValue2' => 42, 'dcValue1' => '42,5']],
+            'two comma values as type string with ; as delimiter' => ['42,5;5,5', 'string', 'SELECT  WHERE `title` NOT IN (:dcValue2,:dcValue3)', ['dcValue2' => '42,5', 'dcValue3' => '5,5', 'dcValue1' => '42,5;5,5']],
+            'two comma values as type string with # as delimiter' => ['42,5#5,5', 'string', 'SELECT  WHERE `title` NOT IN (:dcValue2,:dcValue3)', ['dcValue2' => '42,5', 'dcValue3' => '5,5', 'dcValue1' => '42,5#5,5']],
+            'two comma values as type string with | as delimiter' => ['42,5|5,5', 'string', 'SELECT  WHERE `title` NOT IN (:dcValue2,:dcValue3)', ['dcValue2' => '42,5', 'dcValue3' => '5,5', 'dcValue1' => '42,5|5,5']],
+            'multiple comma values as type string with mixed delimiters' => ['42,5;5,5#6,6|7,7', 'string', 'SELECT  WHERE `title` NOT IN (:dcValue2, :dcValue3,:dcValue4,:dcValue5)', ['dcValue2' => '42,5', 'dcValue3' => '5,5', 'dcValue4' => '6,6', 'dcValue5' => '7,7', 'dcValue1' => '42,5;5,5#6,6|7,7']],
+            'string(1 words) as string value as type string' => ['foo', 'string', 'SELECT  WHERE `title` NOT IN (:dcValue2)', ['dcValue2' => 'foo', 'dcValue1' => 'foo']],
+            'string(2 words) as string value as type string' => ['foo;bar', 'string', 'SELECT  WHERE `title` NOT IN (:dcValue2,:dcValue3)', ['dcValue2' => 'foo', 'dcValue3' => 'bar', 'dcValue1' => 'foo;bar']],
+            'string(3 words) as string value as type string' => ['foo;bar;dong', 'string', 'SELECT  WHERE `title` NOT IN (:dcValue2,:dcValue3,:dcValue4)', ['dcValue2' => 'foo', 'dcValue3' => 'bar', 'dcValue4' => 'dong', 'dcValue1' => 'foo;bar;dong']],
+            'mixed values as type string' => ['foo;42,5;dong', 'string', 'SELECT  WHERE `title` NOT IN (:dcValue2,:dcValue3,:dcValue4)', ['dcValue2' => 'foo', 'dcValue3' => '42,5', 'dcValue4' => 'dong', 'dcValue1' => 'foo;42,5;dong']],
 
-            'integer value as type integer' => [42, 'integer', 'SELECT  WHERE `title` NOT IN (\'42\')', []],
-            'string as number value as type integer' => ['42', 'integer', 'SELECT  WHERE `title` NOT IN (\'42\')', []],
+            'integer value as type integer' => [42, 'integer', 'SELECT  WHERE `title` NOT IN (\'42\')', ['dcValue1' => '42']],
+            'string as number value as type integer' => ['42', 'integer', 'SELECT  WHERE `title` NOT IN (\'42\')', ['dcValue1' => '42']],
 
-            'float value as type double' => [42.5, 'double', 'SELECT  WHERE `title` NOT IN (\'42.5\')', []],
-            'string float value as type double' => ['42.5', 'double', 'SELECT  WHERE `title` NOT IN (\'42.5\')', []],
-            'comma value as type double' => ['42,5', 'double', 'SELECT  WHERE `title` NOT IN (\'42.5\')', []],
+            'float value as type double' => [42.5, 'double', 'SELECT  WHERE `title` NOT IN (\'42.5\')', ['dcValue1' => '42.5']],
+            'string float value as type double' => ['42.5', 'double', 'SELECT  WHERE `title` NOT IN (\'42.5\')', ['dcValue1' => '42.5']],
+            'comma value as type double' => ['42,5', 'double', 'SELECT  WHERE `title` NOT IN (\'42.5\')', ['dcValue1' => '42,5']],
 
-            'comma value as type date' => ['2017-06-26', 'date', 'SELECT  WHERE `title` NOT IN (\'1498420800\')', []],
+            'comma value as type date' => ['2017-06-26', 'date', 'SELECT  WHERE `title` NOT IN (\'1498420800\')', ['dcValue1' => '2017-06-26']],
 
-            'comma value as type time' => ['18:30', 'time', 'SELECT  WHERE `title` NOT IN (\'66600\')', []],
+            'comma value as type time' => ['18:30', 'time', 'SELECT  WHERE `title` NOT IN (\'66600\')', ['dcValue1' => '18:30']],
 
-            'string as number value as type datetime' => ['2017-01-01 00:00', 'datetime', 'SELECT  WHERE `title` NOT IN (\'1483221600\')', []],
+            'string as number value as type datetime' => ['2017-01-01 00:00', 'datetime', 'SELECT  WHERE `title` NOT IN (\'1483221600\')', ['dcValue1' => '2017-01-01 00:00']],
         ];
     }
 
@@ -486,7 +486,7 @@ class QueryParserTest extends FunctionalTestCase
             'string as number value as type string' => ['42', 'string', 'SELECT  WHERE `title` LIKE \'42%\'', ['dcValue1' => 42]],
             'comma value as type string' => ['42,5', 'string', 'SELECT  WHERE `title` LIKE \'42,5%\'', ['dcValue1' => '42,5']],
             'string(1 words) as string value as type string' => ['foo', 'string', 'SELECT  WHERE `title` LIKE \'foo%\'', ['dcValue1' => 'foo']],
-            'string(2 words) as string value as type string' => ['foo bar', 'string', 'SELECT  WHERE `title` LIKE \'foo bar%\''],
+            'string(2 words) as string value as type string' => ['foo bar', 'string', 'SELECT  WHERE `title` LIKE \'foo bar%\'', ['dcValue1' => 'foo bar']],
             'string(2 words) as string value as type string with %' => ['foo%bar', 'string', 'SELECT  WHERE `title` LIKE \'foo\\\\%bar%\'', ['dcValue1' => 'foo%bar']],
             'string(2 words) as string value as type string with _' => ['foo_bar', 'string', 'SELECT  WHERE `title` LIKE \'foo\\\\_bar%\'', ['dcValue1' => 'foo_bar']],
         ];
@@ -531,12 +531,12 @@ class QueryParserTest extends FunctionalTestCase
     public function parseReturnsValidWhereClauseForSimpleNotBeginsQueryDataProvider() : array
     {
         return [
-            'string as number value as type string' => ['42', 'string', 'SELECT  WHERE `title` NOT LIKE \'42%\''],
-            'comma value as type string' => ['42,5', 'string', 'SELECT  WHERE `title` NOT LIKE \'42,5%\''],
-            'string(1 words) as string value as type string' => ['foo', 'string', 'SELECT  WHERE `title` NOT LIKE \'foo%\''],
-            'string(2 words) as string value as type string' => ['foo bar', 'string', 'SELECT  WHERE `title` NOT LIKE \'foo bar%\''],
-            'string(2 words) as string value as type string with %' => ['foo%bar', 'string', 'SELECT  WHERE `title` NOT LIKE \'foo\\\\%bar%\''],
-            'string(2 words) as string value as type string with _' => ['foo_bar', 'string', 'SELECT  WHERE `title` NOT LIKE \'foo\\\\_bar%\''],
+            'string as number value as type string' => ['42', 'string', 'SELECT  WHERE `title` NOT LIKE \'42%\'', ['dcValue1' => '42']],
+            'comma value as type string' => ['42,5', 'string', 'SELECT  WHERE `title` NOT LIKE \'42,5%\'', ['dcValue1' => '42,5']],
+            'string(1 words) as string value as type string' => ['foo', 'string', 'SELECT  WHERE `title` NOT LIKE \'foo%\'', ['dcValue1' => 'foo']],
+            'string(2 words) as string value as type string' => ['foo bar', 'string', 'SELECT  WHERE `title` NOT LIKE \'foo bar%\'', ['dcValue1' => 'foo bar']],
+            'string(2 words) as string value as type string with %' => ['foo%bar', 'string', 'SELECT  WHERE `title` NOT LIKE \'foo\\\\%bar%\'', ['dcValue1' => 'foo%bar']],
+            'string(2 words) as string value as type string with _' => ['foo_bar', 'string', 'SELECT  WHERE `title` NOT LIKE \'foo\\\\_bar%\'', ['dcValue1' => 'foo_bar']],
         ];
     }
 
@@ -579,12 +579,12 @@ class QueryParserTest extends FunctionalTestCase
     public function parseReturnsValidWhereClauseForSimpleContainsQueryDataProvider() : array
     {
         return [
-            'string as number value as type string' => ['42', 'string', 'SELECT  WHERE `title` LIKE \'%42%'],
-            'comma value as type string' => ['42,5', 'string', 'SELECT  WHERE `title` LIKE \'%42,5%'],
-            'string(1 words) as string value as type string' => ['foo', 'string', 'SELECT  WHERE `title` LIKE \'%foo%\''],
-            'string(2 words) as string value as type string' => ['foo bar', 'string', 'SELECT  WHERE `title` LIKE \'%foo bar%\''],
-            'string(2 words) as string value as type string with %' => ['foo%bar', 'string', 'SELECT  WHERE `title` LIKE \'%foo\\\\%bar%\''],
-            'string(2 words) as string value as type string with _' => ['foo_bar', 'string', 'SELECT  WHERE `title` LIKE \'%foo\\\\_bar%\''],
+            'string as number value as type string' => ['42', 'string', 'SELECT  WHERE `title` LIKE \'%42%', ['dcValue1' => '42']],
+            'comma value as type string' => ['42,5', 'string', 'SELECT  WHERE `title` LIKE \'%42,5%', ['dcValue1' => '42,5']],
+            'string(1 words) as string value as type string' => ['foo', 'string', 'SELECT  WHERE `title` LIKE \'%foo%\'', ['dcValue1' => 'foo']],
+            'string(2 words) as string value as type string' => ['foo bar', 'string', 'SELECT  WHERE `title` LIKE \'%foo bar%\'', ['dcValue1' => 'foo bar']],
+            'string(2 words) as string value as type string with %' => ['foo%bar', 'string', 'SELECT  WHERE `title` LIKE \'%foo\\\\%bar%\'', ['dcValue1' => 'foo%bar']],
+            'string(2 words) as string value as type string with _' => ['foo_bar', 'string', 'SELECT  WHERE `title` LIKE \'%foo\\\\_bar%\'', ['dcValue1' => 'foo_bar']],
         ];
     }
 
@@ -627,12 +627,12 @@ class QueryParserTest extends FunctionalTestCase
     public function parseReturnsValidWhereClauseForSimpleNotContainsQueryDataProvider() : array
     {
         return [
-            'string as number value as type string' => ['42', 'string', 'SELECT  WHERE `title` NOT LIKE \'%42%'],
-            'comma value as type string' => ['42,5', 'string', 'SELECT  WHERE `title` NOT LIKE \'%42,5%'],
-            'string(1 words) as string value as type string' => ['foo', 'string', 'SELECT  WHERE `title` NOT LIKE \'%foo%\''],
-            'string(2 words) as string value as type string' => ['foo bar', 'string', 'SELECT  WHERE `title` NOT LIKE \'%foo bar%\''],
-            'string(2 words) as string value as type string with %' => ['foo%bar', 'string', 'SELECT  WHERE `title` NOT LIKE \'%foo\\\\%bar%\''],
-            'string(2 words) as string value as type string with _' => ['foo_bar', 'string', 'SELECT  WHERE `title` NOT LIKE \'%foo\\\\_bar%\''],
+            'string as number value as type string' => ['42', 'string', 'SELECT  WHERE `title` NOT LIKE \'%42%', ['dcValue1' => '42']],
+            'comma value as type string' => ['42,5', 'string', 'SELECT  WHERE `title` NOT LIKE \'%42,5%', ['dcValue1' => '42,5']],
+            'string(1 words) as string value as type string' => ['foo', 'string', 'SELECT  WHERE `title` NOT LIKE \'%foo%\'', ['dcValue1' => 'foo']],
+            'string(2 words) as string value as type string' => ['foo bar', 'string', 'SELECT  WHERE `title` NOT LIKE \'%foo bar%\'', ['dcValue1' => 'foo bar']],
+            'string(2 words) as string value as type string with %' => ['foo%bar', 'string', 'SELECT  WHERE `title` NOT LIKE \'%foo\\\\%bar%\'', ['dcValue1' => 'foo%bar']],
+            'string(2 words) as string value as type string with _' => ['foo_bar', 'string', 'SELECT  WHERE `title` NOT LIKE \'%foo\\\\_bar%\'', ['dcValue1' => 'foo_bar']],
         ];
     }
 
@@ -677,10 +677,10 @@ class QueryParserTest extends FunctionalTestCase
         return [
             'string as number value as type string' => ['42', 'string', 'SELECT  WHERE `title` LIKE \'%42'],
             'comma value as type string' => ['42,5', 'string', 'SELECT  WHERE `title` LIKE \'%42,5'],
-            'string(1 words) as string value as type string' => ['foo', 'string', 'SELECT  WHERE `title` LIKE \'%foo\''],
-            'string(2 words) as string value as type string' => ['foo bar', 'string', 'SELECT  WHERE `title` LIKE \'%foo bar\''],
-            'string(2 words) as string value as type string with %' => ['foo%bar', 'string', 'SELECT  WHERE `title` LIKE \'%foo\\\\%bar\''],
-            'string(2 words) as string value as type string with _' => ['foo_bar', 'string', 'SELECT  WHERE `title` LIKE \'%foo\\\\_bar\''],
+            'string(1 words) as string value as type string' => ['foo', 'string', 'SELECT  WHERE `title` LIKE \'%foo\'', ['dcValue1' => 'foo']],
+            'string(2 words) as string value as type string' => ['foo bar', 'string', 'SELECT  WHERE `title` LIKE \'%foo bar\'', ['dcValue1' => 'foo bar']],
+            'string(2 words) as string value as type string with %' => ['foo%bar', 'string', 'SELECT  WHERE `title` LIKE \'%foo\\\\%bar\'', ['dcValue1' => 'foo%bar']],
+            'string(2 words) as string value as type string with _' => ['foo_bar', 'string', 'SELECT  WHERE `title` LIKE \'%foo\\\\_bar\'', ['dcValue1' => 'foo_bar']],
         ];
     }
 
@@ -724,11 +724,11 @@ class QueryParserTest extends FunctionalTestCase
     {
         return [
             'string as number value as type string' => ['42', 'string', 'SELECT  WHERE `title` NOT LIKE \'%42'],
-            'comma value as type string' => ['42,5', 'string', 'SELECT  WHERE `title` NOT LIKE \'%42,5'],
-            'string(1 words) as string value as type string' => ['foo', 'string', 'SELECT  WHERE `title` NOT LIKE \'%foo\''],
-            'string(2 words) as string value as type string' => ['foo bar', 'string', 'SELECT  WHERE `title` NOT LIKE \'%foo bar\''],
-            'string(2 words) as string value as type string with %' => ['foo%bar', 'string', 'SELECT  WHERE `title` NOT LIKE \'%foo\\\\%bar\''],
-            'string(2 words) as string value as type string with _' => ['foo_bar', 'string', 'SELECT  WHERE `title` NOT LIKE \'%foo\\\\_bar\''],
+            'comma value as type string' => ['42,5', 'string', 'SELECT  WHERE `title` NOT LIKE \'%42,5\'', ['dcValue1' => '42,5']],
+            'string(1 words) as string value as type string' => ['foo', 'string', 'SELECT  WHERE `title` NOT LIKE \'%foo\'', ['dcValue1' => 'foo']],
+            'string(2 words) as string value as type string' => ['foo bar', 'string', 'SELECT  WHERE `title` NOT LIKE \'%foo bar\'', ['dcValue1' => 'foo bar']],
+            'string(2 words) as string value as type string with %' => ['foo%bar', 'string', 'SELECT  WHERE `title` NOT LIKE \'%foo\\\\%bar\'', ['dcValue1' => 'foo%bar']],
+            'string(2 words) as string value as type string with _' => ['foo_bar', 'string', 'SELECT  WHERE `title` NOT LIKE \'%foo\\\\_bar\'', ['dcValue1' => 'foo_bar']],
         ];
     }
 
@@ -907,22 +907,22 @@ class QueryParserTest extends FunctionalTestCase
     public function parseReturnsValidWhereClauseForSimpleLessQueryDataProvider() : array
     {
         return [
-            'integer value as type integer' => [42, 'integer', 'SELECT  WHERE `title` < 42', []],
-            'float value as type integer' => [42.5, 'integer', 'SELECT  WHERE `title` < 42', []],
-            'comma value as type integer' => ['42,5', 'integer', 'SELECT  WHERE `title` < 42', []],
-            'string as number value as type integer' => ['42', 'integer', 'SELECT  WHERE `title` < 42', []],
-            'string as string value as type integer' => ['foo', 'integer', 'SELECT  WHERE `title` < 0', []],
+            'integer value as type integer' => [42, 'integer', 'SELECT  WHERE `title` < 42', ['dcValue1' => '42']],
+            'float value as type integer' => [42.5, 'integer', 'SELECT  WHERE `title` < 42', ['dcValue1' => '42.5']],
+            'comma value as type integer' => ['42,5', 'integer', 'SELECT  WHERE `title` < 42', ['dcValue1' => '42,5']],
+            'string as number value as type integer' => ['42', 'integer', 'SELECT  WHERE `title` < 42', ['dcValue1' => '42']],
+            'string as string value as type integer' => ['foo', 'integer', 'SELECT  WHERE `title` < 0', ['dcValue1' => 'foo']],
 
-            'integer value as type double' => [42, 'double', 'SELECT  WHERE `title` < 42', []],
-            'float value as type double' => [42.5, 'double', 'SELECT  WHERE `title` < 42.5', []],
-            'comma value as type double' => ['42,5', 'double', 'SELECT  WHERE `title` < 42.5', []],
-            'string as number value as type double' => ['42', 'double', 'SELECT  WHERE `title` < 42', []],
+            'integer value as type double' => [42, 'double', 'SELECT  WHERE `title` < 42', ['dcValue1' => '42']],
+            'float value as type double' => [42.5, 'double', 'SELECT  WHERE `title` < 42.5', ['dcValue1' => '42.5']],
+            'comma value as type double' => ['42,5', 'double', 'SELECT  WHERE `title` < 42.5', ['dcValue1' => '42,5']],
+            'string as number value as type double' => ['42', 'double', 'SELECT  WHERE `title` < 42', ['dcValue1' => '42']],
 
-            'string as date value as type date' => ['2017-01-01', 'date', 'SELECT  WHERE `title` < 1483221600', []],
+            'string as date value as type date' => ['2017-01-01', 'date', 'SELECT  WHERE `title` < 1483221600', ['dcValue1' => '2017-01-01']],
 
-            'string as type time' => ['16:30', 'time', 'SELECT  WHERE `title` < 59400', []],
+            'string as type time' => ['16:30', 'time', 'SELECT  WHERE `title` < 59400', ['dcValue1' => '16:30']],
 
-            'string as datetime value as type datetime' => ['2017-01-01 00:00', 'datetime', 'SELECT  WHERE `title` < 1483221600', []],
+            'string as datetime value as type datetime' => ['2017-01-01 00:00', 'datetime', 'SELECT  WHERE `title` < 1483221600', ['dcValue1' => '2017-01-01 00:00']],
         ];
     }
 
@@ -965,22 +965,22 @@ class QueryParserTest extends FunctionalTestCase
     public function parseReturnsValidWhereClauseForSimpleLessOrEqualQueryDataProvider() : array
     {
         return [
-            'integer value as integer' => [42, 'integer', 'SELECT  WHERE `title` <= 42', []],
-            'float value as integer' => [42.5, 'integer', 'SELECT  WHERE `title` <= 42', []],
-            'comma value as integer' => ['42,5', 'integer', 'SELECT  WHERE `title` <= 42', []],
-            'string as number value as integer' => ['42', 'integer', 'SELECT  WHERE `title` <= 42', []],
-            'string as string value as integer' => ['foo', 'integer', 'SELECT  WHERE `title` <= 0', []],
+            'integer value as integer' => [42, 'integer', 'SELECT  WHERE `title` <= 42', ['dcValue1' => '42']],
+            'float value as integer' => [42.5, 'integer', 'SELECT  WHERE `title` <= 42', ['dcValue1' => '42.5']],
+            'comma value as integer' => ['42,5', 'integer', 'SELECT  WHERE `title` <= 42', ['dcValue1' => '42,5']],
+            'string as number value as integer' => ['42', 'integer', 'SELECT  WHERE `title` <= 42', ['dcValue1' => '42']],
+            'string as string value as integer' => ['foo', 'integer', 'SELECT  WHERE `title` <= 0', ['dcValue1' => 'foo']],
 
-            'integer value as type double' => [42, 'double', 'SELECT  WHERE `title` <= 42', []],
-            'float value as type double' => [42.5, 'double', 'SELECT  WHERE `title` <= 42.5', []],
-            'comma value as type double' => ['42,5', 'double', 'SELECT  WHERE `title` <= 42.5', []],
-            'string as number value as type double' => ['42', 'double', 'SELECT  WHERE `title` <= 42', []],
+            'integer value as type double' => [42, 'double', 'SELECT  WHERE `title` <= 42', ['dcValue1' => '42']],
+            'float value as type double' => [42.5, 'double', 'SELECT  WHERE `title` <= 42.5', ['dcValue1' => '42.5']],
+            'comma value as type double' => ['42,5', 'double', 'SELECT  WHERE `title` <= 42.5', ['dcValue1' => '42,5']],
+            'string as number value as type double' => ['42', 'double', 'SELECT  WHERE `title` <= 42', ['dcValue1' => '42']],
 
-            'string as date value as type date' => ['2017-01-01', 'date', 'SELECT  WHERE `title` <= 1483221600', []],
+            'string as date value as type date' => ['2017-01-01', 'date', 'SELECT  WHERE `title` <= 1483221600', ['dcValue1' => '2017-01-01']],
 
-            'string as type time' => ['16:30', 'time', 'SELECT  WHERE `title` <= 59400', []],
+            'string as type time' => ['16:30', 'time', 'SELECT  WHERE `title` <= 59400', ['dcValue1' => '16:30']],
 
-            'string as datetime value as type datetime' => ['2017-01-01 00:00', 'datetime', 'SELECT  WHERE `title` <= 1483221600', []],
+            'string as datetime value as type datetime' => ['2017-01-01 00:00', 'datetime', 'SELECT  WHERE `title` <= 1483221600', ['dcValue1' => '2017-01-01 00:00']],
         ];
     }
 
@@ -1024,22 +1024,22 @@ class QueryParserTest extends FunctionalTestCase
     public function parseReturnsValidWhereClauseForSimpleGreaterQueryDataProvider() : array
     {
         return [
-            'integer value as integer' => [42, 'integer', 'SELECT  WHERE `title` > 42', []],
-            'float value as integer' => [42.5, 'integer', 'SELECT  WHERE `title` > 42', []],
-            'comma value as integer' => ['42,5', 'integer', 'SELECT  WHERE `title` > 42', []],
-            'string as number value as integer' => ['42', 'integer', 'SELECT  WHERE `title` > 42', []],
-            'string as string value as integer' => ['foo', 'integer', 'SELECT  WHERE `title` > 0', []],
+            'integer value as integer' => [42, 'integer', 'SELECT  WHERE `title` > 42', ['dcValue1' => '42']],
+            'float value as integer' => [42.5, 'integer', 'SELECT  WHERE `title` > 42', ['dcValue1' => '42.5']],
+            'comma value as integer' => ['42,5', 'integer', 'SELECT  WHERE `title` > 42', ['dcValue1' => '42,5']],
+            'string as number value as integer' => ['42', 'integer', 'SELECT  WHERE `title` > 42', ['dcValue1' => '42']],
+            'string as string value as integer' => ['foo', 'integer', 'SELECT  WHERE `title` > 0', ['dcValue1' => 'foo']],
 
-            'integer value as type double' => [42, 'double', 'SELECT  WHERE `title` > 42', []],
-            'float value as type double' => [42.5, 'double', 'SELECT  WHERE `title` > 42.5', []],
-            'comma value as type double' => ['42,5', 'double', 'SELECT  WHERE `title` > 42.5', []],
-            'string as number value as type double' => ['42', 'double', 'SELECT  WHERE `title` > 42', []],
+            'integer value as type double' => [42, 'double', 'SELECT  WHERE `title` > 42', ['dcValue1' => '42']],
+            'float value as type double' => [42.5, 'double', 'SELECT  WHERE `title` > 42.5', ['dcValue1' => '42.5']],
+            'comma value as type double' => ['42,5', 'double', 'SELECT  WHERE `title` > 42.5', ['dcValue1' => '42,5']],
+            'string as number value as type double' => ['42', 'double', 'SELECT  WHERE `title` > 42', ['dcValue1' => '42']],
 
-            'string as date value as type date' => ['2017-01-01', 'date', 'SELECT  WHERE `title` > 1483221600', []],
+            'string as date value as type date' => ['2017-01-01', 'date', 'SELECT  WHERE `title` > 1483221600', ['dcValue1' => '2017-01-01']],
 
-            'string as type time' => ['16:30', 'time', 'SELECT  WHERE `title` > 59400', []],
+            'string as type time' => ['16:30', 'time', 'SELECT  WHERE `title` > 59400', ['dcValue1' => '16:30']],
 
-            'string as datetime value as type datetime' => ['2017-01-01 00:00', 'datetime', 'SELECT  WHERE `title` > 1483221600', []],
+            'string as datetime value as type datetime' => ['2017-01-01 00:00', 'datetime', 'SELECT  WHERE `title` > 1483221600', ['dcValue1' => '2017-01-01 00:00']],
         ];
     }
 
@@ -1082,22 +1082,22 @@ class QueryParserTest extends FunctionalTestCase
     public function parseReturnsValidWhereClauseForSimpleGreaterOrEqualQueryDataProvider() : array
     {
         return [
-            'integer value as integer' => [42, 'integer', 'SELECT  WHERE `title` >= 42', []],
-            'float value as integer' => [42.5, 'integer', 'SELECT  WHERE `title` >= 42', []],
-            'comma value as integer' => ['42,5', 'integer', 'SELECT  WHERE `title` >= 42', []],
-            'string as number value as integer' => ['42', 'integer', 'SELECT  WHERE `title` >= 42', []],
-            'string as string value as integer' => ['foo', 'integer', 'SELECT  WHERE `title` >= 0', []],
+            'integer value as integer' => [42, 'integer', 'SELECT  WHERE `title` >= 42', ['dcValue1' => '42']],
+            'float value as integer' => [42.5, 'integer', 'SELECT  WHERE `title` >= 42', ['dcValue1' => '42.5']],
+            'comma value as integer' => ['42,5', 'integer', 'SELECT  WHERE `title` >= 42', ['dcValue1' => '42,5']],
+            'string as number value as integer' => ['42', 'integer', 'SELECT  WHERE `title` >= 42', ['dcValue1' => '42']],
+            'string as string value as integer' => ['foo', 'integer', 'SELECT  WHERE `title` >= 0', ['dcValue1' => 'foo']],
 
-            'integer value as type double' => [42, 'double', 'SELECT  WHERE `title` >= 42', []],
-            'float value as type double' => [42.5, 'double', 'SELECT  WHERE `title` >= 42.5', []],
-            'comma value as type double' => ['42,5', 'double', 'SELECT  WHERE `title` >= 42.5', []],
-            'string as number value as type double' => ['42', 'double', 'SELECT  WHERE `title` >= 42', []],
+            'integer value as type double' => [42, 'double', 'SELECT  WHERE `title` >= 42', ['dcValue1' => '42']],
+            'float value as type double' => [42.5, 'double', 'SELECT  WHERE `title` >= 42.5', ['dcValue1' => '42.5']],
+            'comma value as type double' => ['42,5', 'double', 'SELECT  WHERE `title` >= 42.5', ['dcValue1' => '42,5']],
+            'string as number value as type double' => ['42', 'double', 'SELECT  WHERE `title` >= 42', ['dcValue1' => '42']],
 
-            'string as date value as type date' => ['2017-01-01', 'date', 'SELECT  WHERE `title` >= 1483221600', []],
+            'string as date value as type date' => ['2017-01-01', 'date', 'SELECT  WHERE `title` >= 1483221600', ['dcValue1' => '2017-01-01']],
 
-            'string as type time' => ['16:30', 'time', 'SELECT  WHERE `title` >= 59400', []],
+            'string as type time' => ['16:30', 'time', 'SELECT  WHERE `title` >= 59400', ['dcValue1' => '16:30']],
 
-            'string as datetime value as type datetime' => ['2017-01-01 00:00', 'datetime', 'SELECT  WHERE `title` >= 1483221600', []],
+            'string as datetime value as type datetime' => ['2017-01-01 00:00', 'datetime', 'SELECT  WHERE `title` >= 1483221600', ['dcValue1' => '2017-01-01 00:00']],
         ];
     }
 
