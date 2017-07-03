@@ -5,7 +5,6 @@ namespace T3G\Querybuilder\Tests\Functional\Parser;
 use T3G\Querybuilder\Parser\QueryParser;
 use T3G\Querybuilder\QueryBuilder;
 use T3G\Querybuilder\Tests\Functional\FunctionalTestCase;
-use TYPO3\CMS\Core\Database\ConnectionPool;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -34,7 +33,7 @@ class QueryParserTest extends FunctionalTestCase
     protected $table = 'pages';
 
     /**
-     * @var QueryBuilder
+     * @var \TYPO3\CMS\Core\Database\Query\QueryBuilder
      */
     protected $queryBuilder;
 
@@ -48,12 +47,11 @@ class QueryParserTest extends FunctionalTestCase
      */
     protected function setUp()
     {
+        parent::setUp();
         $this->originalTimeZone = date_default_timezone_get();
         date_default_timezone_set('Europe/Berlin');
         $this->subject = new QueryParser();
-        $this->queryBuilder = (new ConnectionPool())->getQueryBuilderForTable($this->table);
-
-        parent::setUp();
+        $this->queryBuilder = $this->getConnectionPool()->getQueryBuilderForTable($this->table);
     }
 
     /**
@@ -71,42 +69,42 @@ class QueryParserTest extends FunctionalTestCase
     public function parseReturnsValidWhereClauseForSimpleEqualQueryDataProvider() : array
     {
         return [
-            'integer value as type string' => [42, 'string', ' ( `title` = \'42\' ) '],
-            'string as number value as type string' => ['42', 'string', ' ( `title` = \'42\' ) '],
-            'float value as type string' => [42.5, 'string', ' ( `title` = \'42.5\' ) '],
-            'string float value as type string' => ['42.5', 'string', ' ( `title` = \'42.5\' ) '],
-            'comma value as type string' => ['42,5', 'string', ' ( `title` = \'42,5\' ) '],
-            'string as string value as type string' => ['foo', 'string', ' ( `title` = \'foo\' ) '],
+            'integer value as type string' => [42, 'string', 'SELECT  WHERE `title` = :dcValue1', ['dcValue1' => 42]],
+            'string as number value as type string' => ['42', 'string', ' ( `title` = \'42\' ) ', []],
+            'float value as type string' => [42.5, 'string', ' ( `title` = \'42.5\' ) ', []],
+            'string float value as type string' => ['42.5', 'string', ' ( `title` = \'42.5\' ) ', []],
+            'comma value as type string' => ['42,5', 'string', ' ( `title` = \'42,5\' ) ', []],
+            'string as string value as type string' => ['foo', 'string', ' ( `title` = \'foo\' ) ', []],
 
-            'integer value as type integer' => [42, 'integer', ' ( `title` = 42 ) '],
-            'string as number value as type integer' => ['42', 'integer', ' ( `title` = 42 ) '],
-            'integer(negative) value as type integer' => [-5, 'integer', ' ( `title` = -5 ) '],
-            'string(negative) as number value as type integer' => ['-5', 'integer', ' ( `title` = -5 ) '],
+            'integer value as type integer' => [42, 'integer', ' ( `title` = 42 ) ', []],
+            'string as number value as type integer' => ['42', 'integer', ' ( `title` = 42 ) ', []],
+            'integer(negative) value as type integer' => [-5, 'integer', ' ( `title` = -5 ) ', []],
+            'string(negative) as number value as type integer' => ['-5', 'integer', ' ( `title` = -5 ) ', []],
 
-            'integer(1) value as type boolean' => [[1], 'boolean', ' ( `title` = \'1\' ) '],
-            'string(1) as number value as type boolean' => [['1'], 'boolean', ' ( `title` = \'1\' ) '],
-            'integer(0) value as type boolean' => [[0], 'boolean', ' ( `title` = \'0\' ) '],
-            'string(0) as number value as type boolean' => [['0'], 'boolean', ' ( `title` = \'0\' ) '],
+            'integer(1) value as type boolean' => [[1], 'boolean', ' ( `title` = \'1\' ) ', []],
+            'string(1) as number value as type boolean' => [['1'], 'boolean', ' ( `title` = \'1\' ) ', []],
+            'integer(0) value as type boolean' => [[0], 'boolean', ' ( `title` = \'0\' ) ', []],
+            'string(0) as number value as type boolean' => [['0'], 'boolean', ' ( `title` = \'0\' ) ', []],
 
-            'integer value as type double' => [42, 'double', ' ( `title` = 42 ) '],
-            'string as number value as type double' => ['42', 'double', ' ( `title` = 42 ) '],
-            'integer(negative)value as type double' => [-5, 'double', ' ( `title` = -5 ) '],
-            'string(negative) as number value as type double' => ['-5', 'double', ' ( `title` = -5 ) '],
-            'float value as type double' => [42.5, 'double', ' ( `title` = 42.5 ) '],
-            'string float value as type double' => ['42.5', 'double', ' ( `title` = 42.5 ) '],
-            'float value (2 decimal w 00) as type double' => [42.00, 'double', ' ( `title` = 42 ) '],
-            'float value (2 decimal w 50) as type double' => [42.50, 'double', ' ( `title` = 42.5 ) '],
-            'float value (2 decimal w 55) as type double' => [42.55, 'double', ' ( `title` = 42.55 ) '],
-            'string float value (2 decimal) as type double' => ['42.50', 'double', ' ( `title` = 42.5 ) '],
-            'comma value as type double' => ['42,50', 'double', ' ( `title` = 42.5 ) '],
-            'comma value (2 decimal) as type double' => ['42,50', 'double', ' ( `title` = 42.5 ) '],
-            'string as type double' => ['foo', 'double', ' ( `title` = 0 ) '],
+            'integer value as type double' => [42, 'double', ' ( `title` = 42 ) ', []],
+            'string as number value as type double' => ['42', 'double', ' ( `title` = 42 ) ', []],
+            'integer(negative)value as type double' => [-5, 'double', ' ( `title` = -5 ) ', []],
+            'string(negative) as number value as type double' => ['-5', 'double', ' ( `title` = -5 ) ', []],
+            'float value as type double' => [42.5, 'double', ' ( `title` = 42.5 ) ', []],
+            'string float value as type double' => ['42.5', 'double', ' ( `title` = 42.5 ) ', []],
+            'float value (2 decimal w 00) as type double' => [42.00, 'double', ' ( `title` = 42 ) ', []],
+            'float value (2 decimal w 50) as type double' => [42.50, 'double', ' ( `title` = 42.5 ) ', []],
+            'float value (2 decimal w 55) as type double' => [42.55, 'double', ' ( `title` = 42.55 ) ', []],
+            'string float value (2 decimal) as type double' => ['42.50', 'double', ' ( `title` = 42.5 ) ', []],
+            'comma value as type double' => ['42,50', 'double', ' ( `title` = 42.5 ) ', []],
+            'comma value (2 decimal) as type double' => ['42,50', 'double', ' ( `title` = 42.5 ) ', []],
+            'string as type double' => ['foo', 'double', ' ( `title` = 0 ) ', []],
 
-            'comma value as type date' => ['2017-06-26', 'date', ' ( `title` = 1498420800 ) '],
+            'comma value as type date' => ['2017-06-26', 'date', ' ( `title` = 1498420800 ) ', []],
 
-            'comma value as type time' => ['18:30', 'time', ' ( `title` = 66600 ) '],
+            'comma value as type time' => ['18:30', 'time', ' ( `title` = 66600 ) ', []],
 
-            'string as number value as type datetime' => ['2017-01-01 00:00', 'datetime', ' ( `title` = 1483221600 ) '],
+            'string as number value as type datetime' => ['2017-01-01 00:00', 'datetime', ' ( `title` = 1483221600 ) ', []],
         ];
     }
 
@@ -116,9 +114,10 @@ class QueryParserTest extends FunctionalTestCase
      *
      * @param $number
      * @param $type
-     * @param $expectedResult
+     * @param $expectedSQL
+     * @param $expectedParameters
      */
-    public function parseReturnsValidWhereClauseForSimpleEqualQuery($number, $type, $expectedResult)
+    public function parseReturnsValidWhereClauseForSimpleEqualQuery($number, $type, $expectedSQL, $expectedParameters)
     {
         $query = '{
           "condition": "AND",
@@ -137,7 +136,9 @@ class QueryParserTest extends FunctionalTestCase
         $query = json_decode($query);
         $query->rules[0]->value = $number;
         $query->rules[0]->type = $type;
-        self::assertEquals($expectedResult, $this->subject->parse($query, $this->queryBuilder)->getSQL());
+        $queryBuilder = $this->subject->parse($query, $this->queryBuilder);
+        self::assertEquals($expectedSQL, $queryBuilder->getSQL());
+        self::assertEquals($expectedParameters, $queryBuilder->getParameters());
     }
 
     /**
