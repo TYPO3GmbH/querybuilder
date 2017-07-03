@@ -56,11 +56,8 @@ class QueryParser
      * @return string
      * @throws \InvalidArgumentException
      */
-    public function parse(stdClass $filterObject, QueryBuilder $queryBuilderObject) : string
+    public function parse(stdClass $filterObject, QueryBuilder $queryBuilderObject) : Querybuilder
     {
-        $condition = $filterObject->condition === static::CONDITION_AND
-            ? static::CONDITION_AND
-            : static::CONDITION_OR;
         $whereParts = [];
         if (!empty($filterObject->rules)) {
             foreach ($filterObject->rules as $rule) {
@@ -71,18 +68,49 @@ class QueryParser
                 }
             }
         }
-
+        if (!empty($whereParts)) {
+            $filterObject->condition === static::CONDITION_AND
+                ? $queryBuilderObject->andWhere(...$whereParts)
+                : $queryBuilderObject->orWhere(...$whereParts);
+        }
         return $queryBuilderObject;
     }
 
+//    public function parse(stdClass $queryObject, string $table) : string
+//    {
+//        $condition = $queryObject->condition === static::CONDITION_AND
+//            ? static::CONDITION_AND
+//            : static::CONDITION_OR;
+//        $whereParts = [];
+//        if (!empty($queryObject->rules)) {
+//            foreach ($queryObject->rules as $rule) {
+//                if ($rule->condition && $rule->rules) {
+//                    $whereParts[] = $this->parse($rule, $table);
+//                } else {
+//                    $whereParts[] = $this->getWhereClause($rule, $table);
+//                }
+//            }
+//        }
+//
+//        return empty($whereParts) ? '' :
+//            ' ( ' .
+//            implode(' ' .
+//                $condition .
+//                ' ', $whereParts) .
+//            ' ) ';
+//    }
+
+
+
+
     /**
      * @param stdClass $rule
-     * @param string $table
+     * @param QueryBuilder $queryBuilderObject
      *
      * @return string
      * @throws \InvalidArgumentException
      */
-    protected function getWhereClause(stdClass $rule, string $table) : string
+    protected function getWhereClause(stdClass $rule, QueryBuilder $queryBuilderObject) : string
     {
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
             ->getQueryBuilderForTable($table);
