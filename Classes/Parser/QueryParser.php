@@ -76,33 +76,6 @@ class QueryParser
         return $queryBuilderObject;
     }
 
-//    public function parse(stdClass $queryObject, string $table) : string
-//    {
-//        $condition = $queryObject->condition === static::CONDITION_AND
-//            ? static::CONDITION_AND
-//            : static::CONDITION_OR;
-//        $whereParts = [];
-//        if (!empty($queryObject->rules)) {
-//            foreach ($queryObject->rules as $rule) {
-//                if ($rule->condition && $rule->rules) {
-//                    $whereParts[] = $this->parse($rule, $table);
-//                } else {
-//                    $whereParts[] = $this->getWhereClause($rule, $table);
-//                }
-//            }
-//        }
-//
-//        return empty($whereParts) ? '' :
-//            ' ( ' .
-//            implode(' ' .
-//                $condition .
-//                ' ', $whereParts) .
-//            ' ) ';
-//    }
-
-
-
-
     /**
      * @param stdClass $rule
      * @param QueryBuilder $queryBuilderObject
@@ -112,8 +85,6 @@ class QueryParser
      */
     protected function getWhereClause(stdClass $rule, QueryBuilder $queryBuilderObject) : string
     {
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
-            ->getQueryBuilderForTable($table);
         $where = '';
         $field = $rule->field;
         $unQuotedValue = $rule->value;
@@ -207,10 +178,10 @@ class QueryParser
 
         switch ($rule->operator) {
             case static::OPERATOR_EQUAL:
-                $where = $queryBuilder->expr()->eq($field, $quotedValue);
+                $where = $queryBuilderObject->expr()->eq($field, $quotedValue);
                 break;
             case static::OPERATOR_NOT_EQUAL:
-                $where = $queryBuilder->expr()->neq($field, $quotedValue);
+                $where = $queryBuilderObject->expr()->neq($field, $quotedValue);
                 break;
             case static::OPERATOR_IN:
                 $values = [$unQuotedValue];
@@ -221,7 +192,7 @@ class QueryParser
                 foreach ($values as $singleValue) {
                     $escapedValues[] = $queryBuilderObject->createNamedParameter($singleValue);
                 }
-                $where = $queryBuilder->expr()->in($field, implode(',', $escapedValues));
+                $where = $queryBuilderObject->expr()->in($field, implode(',', $escapedValues));
                 break;
             case static::OPERATOR_NOT_IN:
                 $values = [$unQuotedValue];
@@ -232,84 +203,84 @@ class QueryParser
                 foreach ($values as $singleValue) {
                     $escapedValues[] = $queryBuilderObject->createNamedParameter($singleValue);
                 }
-                $where = $queryBuilder->expr()->notIn($field, implode(',', $escapedValues));
+                $where = $queryBuilderObject->expr()->notIn($field, implode(',', $escapedValues));
                 break;
             case static::OPERATOR_BEGINS_WITH:
-                $where = $queryBuilder->expr()->like(
+                $where = $queryBuilderObject->expr()->like(
                     $field,
-                    $queryBuilder->expr()->literal($this->quoteLikeValue($unQuotedValue) . '%')
+                    $queryBuilderObject->expr()->literal($this->quoteLikeValue($unQuotedValue) . '%')
                 );
                 break;
             case static::OPERATOR_NOT_BEGINS_WITH:
-                $where = $queryBuilder->expr()->notLike(
+                $where = $queryBuilderObject->expr()->notLike(
                     $field,
-                    $queryBuilder->expr()->literal($this->quoteLikeValue($unQuotedValue) . '%')
+                    $queryBuilderObject->expr()->literal($this->quoteLikeValue($unQuotedValue) . '%')
                 );
                 break;
             case static::OPERATOR_CONTAINS:
-                $where = $queryBuilder->expr()->like(
+                $where = $queryBuilderObject->expr()->like(
                     $field,
-                    $queryBuilder->expr()->literal('%' . $this->quoteLikeValue($unQuotedValue) . '%')
+                    $queryBuilderObject->expr()->literal('%' . $this->quoteLikeValue($unQuotedValue) . '%')
                 );
                 break;
             case static::OPERATOR_NOT_CONTAINS:
-                $where = $queryBuilder->expr()->notLike(
+                $where = $queryBuilderObject->expr()->notLike(
                     $field,
-                    $queryBuilder->expr()->literal('%' . $this->quoteLikeValue($unQuotedValue) . '%')
+                    $queryBuilderObject->expr()->literal('%' . $this->quoteLikeValue($unQuotedValue) . '%')
                 );
                 break;
             case static::OPERATOR_ENDS_WITH:
-                $where = $queryBuilder->expr()->like(
+                $where = $queryBuilderObject->expr()->like(
                     $field,
-                    $queryBuilder->expr()->literal('%' . $this->quoteLikeValue($unQuotedValue))
+                    $queryBuilderObject->expr()->literal('%' . $this->quoteLikeValue($unQuotedValue))
                 );
                 break;
             case static::OPERATOR_NOT_ENDS_WITH:
-                $where = $queryBuilder->expr()->notLike(
+                $where = $queryBuilderObject->expr()->notLike(
                     $field,
-                    $queryBuilder->expr()->literal('%' . $this->quoteLikeValue($unQuotedValue))
+                    $queryBuilderObject->expr()->literal('%' . $this->quoteLikeValue($unQuotedValue))
                 );
                 break;
             case static::OPERATOR_IS_EMPTY:
-                $where = (string)$queryBuilder->expr()->orX(
-                    $queryBuilder->expr()->eq($field, $queryBuilder->expr()->literal('')),
-                    $queryBuilder->expr()->isNull($field)
+                $where = (string)$queryBuilderObject->expr()->orX(
+                    $queryBuilderObject->expr()->eq($field, $queryBuilderObject->expr()->literal('')),
+                    $queryBuilderObject->expr()->isNull($field)
                 );
                 break;
             case static::OPERATOR_IS_NOT_EMPTY:
-                $where = (string)$queryBuilder->expr()->andX(
-                    $queryBuilder->expr()->neq($field, $queryBuilder->expr()->literal('')),
-                    $queryBuilder->expr()->isNotNull($field)
+                $where = (string)$queryBuilderObject->expr()->andX(
+                    $queryBuilderObject->expr()->neq($field, $queryBuilderObject->expr()->literal('')),
+                    $queryBuilderObject->expr()->isNotNull($field)
                 );
                 break;
             case static::OPERATOR_IS_NULL:
-                $where = $queryBuilder->expr()->isNull($field);
+                $where = $queryBuilderObject->expr()->isNull($field);
                 break;
             case static::OPERATOR_IS_NOT_NULL:
-                $where = $queryBuilder->expr()->isNotNull($field);
+                $where = $queryBuilderObject->expr()->isNotNull($field);
                 break;
             case static::OPERATOR_LESS:
-                $where = $queryBuilder->expr()->lt($field, $quotedValue);
+                $where = $queryBuilderObject->expr()->lt($field, $quotedValue);
                 break;
             case static::OPERATOR_LESS_OR_EQUAL:
-                $where = $queryBuilder->expr()->lte($field, $quotedValue);
+                $where = $queryBuilderObject->expr()->lte($field, $quotedValue);
                 break;
             case static::OPERATOR_GREATER:
-                $where = $queryBuilder->expr()->gt($field, $quotedValue);
+                $where = $queryBuilderObject->expr()->gt($field, $quotedValue);
                 break;
             case static::OPERATOR_GREATER_OR_EQUAL:
-                $where = $queryBuilder->expr()->gte($field, $quotedValue);
+                $where = $queryBuilderObject->expr()->gte($field, $quotedValue);
                 break;
             case static::OPERATOR_BETWEEN:
-                $where = (string)$queryBuilder->expr()->andX(
-                    $queryBuilder->expr()->gt($field, $quotedValue[0]),
-                    $queryBuilder->expr()->lt($field, $quotedValue[1])
+                $where = (string)$queryBuilderObject->expr()->andX(
+                    $queryBuilderObject->expr()->gt($field, $quotedValue[0]),
+                    $queryBuilderObject->expr()->lt($field, $quotedValue[1])
                 );
                 break;
             case static::OPERATOR_NOT_BETWEEN:
-                $where = (string)$queryBuilder->expr()->orX(
-                    $queryBuilder->expr()->lt($field, $quotedValue[0]),
-                    $queryBuilder->expr()->gt($field, $quotedValue[1])
+                $where = (string)$queryBuilderObject->expr()->orX(
+                    $queryBuilderObject->expr()->lt($field, $quotedValue[0]),
+                    $queryBuilderObject->expr()->gt($field, $quotedValue[1])
                 );
                 break;
         }
