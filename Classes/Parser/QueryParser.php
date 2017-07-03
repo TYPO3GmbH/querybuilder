@@ -53,10 +53,10 @@ class QueryParser
      * @param stdClass $filterObject
      * @param QueryBuilder $queryBuilderObject
      *
-     * @return string
+     * @return QueryBuilder
      * @throws \InvalidArgumentException
      */
-    public function parse(stdClass $filterObject, QueryBuilder $queryBuilderObject) : Querybuilder
+    public function parse(stdClass $filterObject, QueryBuilder $queryBuilderObject) : QueryBuilder
     {
         $whereParts = [];
         if (!empty($filterObject->rules)) {

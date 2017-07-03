@@ -3,7 +3,9 @@
 namespace T3G\Querybuilder\Tests\Functional\Parser;
 
 use T3G\Querybuilder\Parser\QueryParser;
+use T3G\Querybuilder\QueryBuilder;
 use T3G\Querybuilder\Tests\Functional\FunctionalTestCase;
+use TYPO3\CMS\Core\Database\ConnectionPool;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -32,6 +34,11 @@ class QueryParserTest extends FunctionalTestCase
     protected $table = 'pages';
 
     /**
+     * @var QueryBuilder
+     */
+    protected $queryBuilder;
+
+    /**
      * @var string
      */
     protected $originalTimeZone;
@@ -44,6 +51,8 @@ class QueryParserTest extends FunctionalTestCase
         $this->originalTimeZone = date_default_timezone_get();
         date_default_timezone_set('Europe/Berlin');
         $this->subject = new QueryParser();
+        $this->queryBuilder = (new ConnectionPool())->getQueryBuilderForTable($this->table);
+
         parent::setUp();
     }
 
@@ -128,7 +137,7 @@ class QueryParserTest extends FunctionalTestCase
         $query = json_decode($query);
         $query->rules[0]->value = $number;
         $query->rules[0]->type = $type;
-        self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
+        self::assertEquals($expectedResult, $this->subject->parse($query, $this->queryBuilder)->getSQL());
     }
 
     /**

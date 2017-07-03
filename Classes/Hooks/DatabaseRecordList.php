@@ -21,6 +21,7 @@ class DatabaseRecordList
      * @param array $fieldList field list
      * @param AbstractDatabaseRecordList $parentObject
      *
+     * @return QueryBuilder
      * @throws \InvalidArgumentException
      */
     public function buildQueryParametersPostProcess(array &$parameters,
@@ -29,7 +30,7 @@ class DatabaseRecordList
                                    array $additionalConstraints,
                                    array $fieldList,
                                    AbstractDatabaseRecordList $parentObject,
-                                   QueryBuilder $queryBuilder)
+                                   QueryBuilder $queryBuilder) : QueryBuilder
     {
         if ($parentObject->table !== null && GeneralUtility::_GP('M') === 'web_list') {
             $filter = GeneralUtility::_GP('query');
