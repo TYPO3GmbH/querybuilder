@@ -1,5 +1,6 @@
 TCA Configuration
 =================
 
-The main goal for this querybuilder extension was to use TYPO3s core concepts and add an additional filter functionality for
-the list module, enabling editors and developers to search for different attributes on multiple data sets.
+Most important for the querybuilder is the TCA definition of the filtered field itself, as it
+influences the input options.
+For example `eval=date` causes the filter to generate a datepicker for fitting input and easier usage.
