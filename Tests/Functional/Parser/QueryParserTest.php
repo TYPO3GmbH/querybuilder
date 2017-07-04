@@ -247,7 +247,7 @@ class QueryParserTest extends FunctionalTestCase
                 ['dcValue1' => '1', 'dcValue2' => null, 'dcValue3' => '1']
             ],
 
-            'simple group' =>[
+            'simple group' => [
                 '{
                   "condition": "AND",
                   "rules": [
@@ -276,6 +276,33 @@ class QueryParserTest extends FunctionalTestCase
                   "valid": true
                 }',
                 'SELECT  WHERE (`header` = :dcValue1) AND (`header` = :dcValue2)',
+                ['dcValue1' => 'humbel', 'dcValue2' => 'bumbel']
+            ],
+
+            'or condition' => [
+                '{
+                  "condition": "OR",
+                  "rules": [
+                    {
+                        "id": "header",
+                        "field": "header",
+                        "type": "string",
+                        "input": "text",
+                        "operator": "equal",
+                        "value": "humbel"
+                        },
+                        {
+                          "id": "header",
+                          "field": "header",
+                          "type": "string",
+                          "input": "text",
+                          "operator": "equal",
+                          "value": "bumbel"
+                    }
+                  ],
+                  "valid": true
+                }',
+                'SELECT  WHERE (`header` = :dcValue1) OR (`header` = :dcValue2)',
                 ['dcValue1' => 'humbel', 'dcValue2' => 'bumbel']
             ]
         ];
