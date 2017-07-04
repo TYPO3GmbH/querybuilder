@@ -141,127 +141,127 @@ class QueryParserTest extends FunctionalTestCase
         self::assertEquals($expectedParameters, $queryBuilder->getParameters());
     }
 
-    /**
-     * @return array
-     */
-    public function parseReturnsValidWhereClauseForMultipleEqualsQueryDataProvider() : array
-    {
-        return [
-            'foo, bar, int and date' => [
-                '{
-                    "condition": "AND",
-                    "rules": [
-                        {
-                            "id": "input_1",
-                            "field": "input_1",
-                            "type": "string",
-                            "input": "text",
-                            "operator": "equal",
-                            "value": "foo"
-                        },
-                        {
-                            "id": "input_1",
-                            "field": "input_1",
-                            "type": "string",
-                            "input": "text",
-                            "operator": "equal",
-                            "value": "bar"
-                        },
-                        {
-                            "condition": "AND",
-                            "rules": [
-                                {
-                                    "id": "input_9",
-                                    "field": "input_9",
-                                    "type": "integer",
-                                    "input": "number",
-                                    "operator": "equal",
-                                    "value": "42"
-                                },
-                                {
-                                    "id": "inputdatetime_2",
-                                    "field": "inputdatetime_2",
-                                    "type": "date",
-                                    "input": "text",
-                                    "operator": "equal",
-                                    "value": "2017-06-26"
-                                }
-                            ]
-                        }
-                    ],
-                    "valid": true
-                }',
-                'SELECT  WHERE `input_1` = \'foo\' AND `input_1` = \'bar\' AND `input_9` = 42 AND `inputdatetime_2` = 1498420800', []
-            ],
-
-            'double, time, boolean, datetime' => [
-                '{
-                    "condition": "AND",
-                    "rules": [
-                        {
-                            "id": "input_8",
-                            "field": "input_8",
-                            "type": "double",
-                            "input": "number",
-                            "operator": "equal",
-                            "value": "42.42"
-                        },
-                        {
-                            "condition": "AND",
-                            "rules": [
-                                {
-                                    "id": "inputdatetime_5",
-                                    "field": "inputdatetime_5",
-                                    "type": "time",
-                                    "input": "text",
-                                    "operator": "equal",
-                                    "value": "16:30"
-                                },
-                                {
-                                    "id": "checkbox_2",
-                                    "field": "checkbox_2",
-                                    "type": "boolean",
-                                    "input": "checkbox",
-                                    "operator": "equal",
-                                    "value": ["1"]
-                                }
-                            ]
-                        },
-                        {
-                            "condition": "AND",
-                            "rules": [
-                            {
-                                "id": "inputdatetime_4",
-                                "field": "inputdatetime_4",
-                                "type": "datetime",
-                                "input": "text",
-                                "operator": "equal",
-                                "value": "2017-06-28 16:30"
-                            }
-                          ]
-                        }
-                    ],
-                    "valid": true
-                }',
-                'SELECT  WHERE `input_8` = 42.42 AND  `inputdatetime_5` = 59400 AND `checkbox_2` = \'1\' AND `inputdatetime_4` = 1498653000', []
-            ]
-        ];
-    }
-
-    /**
-     * @test
-     * @dataProvider parseReturnsValidWhereClauseForMultipleEqualsQueryDataProvider
-     *
-     * @param $expectedSQL
-     * @param $expectedParameters
-     */
-    public function parseReturnsValidWhereClauseForMultipleEqualsQuery($multipleRules, $expectedSQL, $expectedParameters)
-    {
-        $query = json_decode($multipleRules);
-        $queryBuilder = $this->subject->parse($query, $this->getConnectionPool()->getQueryBuilderForTable($this->table));
-        self::assertEquals($expectedSQL, $queryBuilder->getSQL());
-        self::assertEquals($expectedParameters, $queryBuilder->getParameters());
-    }
+//    /**
+//     * @return array
+//     */
+//    public function parseReturnsValidWhereClauseForMultipleEqualsQueryDataProvider() : array
+//    {
+//        return [
+//            'foo, bar, int and date' => [
+//                '{
+//                    "condition": "AND",
+//                    "rules": [
+//                        {
+//                            "id": "input_1",
+//                            "field": "input_1",
+//                            "type": "string",
+//                            "input": "text",
+//                            "operator": "equal",
+//                            "value": "foo"
+//                        },
+//                        {
+//                            "id": "input_1",
+//                            "field": "input_1",
+//                            "type": "string",
+//                            "input": "text",
+//                            "operator": "equal",
+//                            "value": "bar"
+//                        },
+//                        {
+//                            "condition": "AND",
+//                            "rules": [
+//                                {
+//                                    "id": "input_9",
+//                                    "field": "input_9",
+//                                    "type": "integer",
+//                                    "input": "number",
+//                                    "operator": "equal",
+//                                    "value": "42"
+//                                },
+//                                {
+//                                    "id": "inputdatetime_2",
+//                                    "field": "inputdatetime_2",
+//                                    "type": "date",
+//                                    "input": "text",
+//                                    "operator": "equal",
+//                                    "value": "2017-06-26"
+//                                }
+//                            ]
+//                        }
+//                    ],
+//                    "valid": true
+//                }',
+//                'SELECT  WHERE `input_1` = \'foo\' AND `input_1` = \'bar\' AND `input_9` = 42 AND `inputdatetime_2` = 1498420800', []
+//            ],
+//
+//            'double, time, boolean, datetime' => [
+//                '{
+//                    "condition": "AND",
+//                    "rules": [
+//                        {
+//                            "id": "input_8",
+//                            "field": "input_8",
+//                            "type": "double",
+//                            "input": "number",
+//                            "operator": "equal",
+//                            "value": "42.42"
+//                        },
+//                        {
+//                            "condition": "AND",
+//                            "rules": [
+//                                {
+//                                    "id": "inputdatetime_5",
+//                                    "field": "inputdatetime_5",
+//                                    "type": "time",
+//                                    "input": "text",
+//                                    "operator": "equal",
+//                                    "value": "16:30"
+//                                },
+//                                {
+//                                    "id": "checkbox_2",
+//                                    "field": "checkbox_2",
+//                                    "type": "boolean",
+//                                    "input": "checkbox",
+//                                    "operator": "equal",
+//                                    "value": ["1"]
+//                                }
+//                            ]
+//                        },
+//                        {
+//                            "condition": "AND",
+//                            "rules": [
+//                            {
+//                                "id": "inputdatetime_4",
+//                                "field": "inputdatetime_4",
+//                                "type": "datetime",
+//                                "input": "text",
+//                                "operator": "equal",
+//                                "value": "2017-06-28 16:30"
+//                            }
+//                          ]
+//                        }
+//                    ],
+//                    "valid": true
+//                }',
+//                'SELECT  WHERE `input_8` = 42.42 AND  `inputdatetime_5` = 59400 AND `checkbox_2` = \'1\' AND `inputdatetime_4` = 1498653000', []
+//            ]
+//        ];
+//    }
+//
+//    /**
+//     * @test
+//     * @dataProvider parseReturnsValidWhereClauseForMultipleEqualsQueryDataProvider
+//     *
+//     * @param $expectedSQL
+//     * @param $expectedParameters
+//     */
+//    public function parseReturnsValidWhereClauseForMultipleEqualsQuery($multipleRules, $expectedSQL, $expectedParameters)
+//    {
+//        $query = json_decode($multipleRules);
+//        $queryBuilder = $this->subject->parse($query, $this->getConnectionPool()->getQueryBuilderForTable($this->table));
+//        self::assertEquals($expectedSQL, $queryBuilder->getSQL());
+//        self::assertEquals($expectedParameters, $queryBuilder->getParameters());
+//    }
 
     /**
      * @return array
