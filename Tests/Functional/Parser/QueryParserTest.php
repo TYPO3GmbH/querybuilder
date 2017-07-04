@@ -191,8 +191,7 @@ class QueryParserTest extends FunctionalTestCase
                     ],
                     "valid": true
                 }',
-                'SELECT  WHERE `input_1` = \'foo\' AND `input_1` = \'bar\' AND `input_9` = 42 AND `inputdatetime_2` = 1498420800',
-                []
+                'SELECT  WHERE `input_1` = \'foo\' AND `input_1` = \'bar\' AND `input_9` = 42 AND `inputdatetime_2` = 1498420800', []
             ],
 
             'double, time, boolean, datetime' => [
@@ -244,8 +243,7 @@ class QueryParserTest extends FunctionalTestCase
                     ],
                     "valid": true
                 }',
-                'SELECT  WHERE `input_8` = 42.42 AND  `inputdatetime_5` = 59400 AND `checkbox_2` = \'1\' AND `inputdatetime_4` = 1498653000',
-                []
+                'SELECT  WHERE `input_8` = 42.42 AND  `inputdatetime_5` = 59400 AND `checkbox_2` = \'1\' AND `inputdatetime_4` = 1498653000', []
             ]
         ];
     }
@@ -725,7 +723,7 @@ class QueryParserTest extends FunctionalTestCase
     public function parseReturnsValidWhereClauseForSimpleNotEndsQueryDataProvider() : array
     {
         return [
-            'string as number value as type string' => ['42', 'string', 'SELECT  WHERE `title` NOT LIKE \'%42', ['dcValue1' => '42']],
+            'string as number value as type string' => ['42', 'string', 'SELECT  WHERE `title` NOT LIKE \'%42\'', ['dcValue1' => '42']],
             'comma value as type string' => ['42,5', 'string', 'SELECT  WHERE `title` NOT LIKE \'%42,5\'', ['dcValue1' => '42,5']],
             'string(1 words) as string value as type string' => ['foo', 'string', 'SELECT  WHERE `title` NOT LIKE \'%foo\'', ['dcValue1' => 'foo']],
             'string(2 words) as string value as type string' => ['foo bar', 'string', 'SELECT  WHERE `title` NOT LIKE \'%foo bar\'', ['dcValue1' => 'foo bar']],
@@ -1142,23 +1140,22 @@ class QueryParserTest extends FunctionalTestCase
     public function parseReturnsValidWhereClauseForSimpleBetweenQueryDataProvider() : array
     {
         return [
-            'integer value as integer' => [[42,62], 'integer', ' ( (`title` > 42) AND (`title` < 62) ) ', []],
-            'float value as integer' => [[42.5, 62.5], 'integer', ' ( (`title` > 42) AND (`title` < 62) ) ', []],
-            'comma value as integer' => [['42,5','62,5'], 'integer', ' ( (`title` > 42) AND (`title` < 62) ) ', []],
-            'string as number value as integer' => [['42', '62'], 'integer', ' ( (`title` > 42) AND (`title` < 62) ) ', []],
-            'string as string value as integer' => [['foo','bar'], 'integer', ' ( (`title` > 0) AND (`title` < 0) ) ', []],
+            'integer value as integer' => [[42,62], 'integer', 'SELECT  WHERE (`title` > 42) AND (`title` < 62)', []],
+            'float value as integer' => [[42.5, 62.5], 'integer', 'SELECT  WHERE (`title` > 42) AND (`title` < 62)', []],
+            'comma value as integer' => [['42,5','62,5'], 'integer', 'SELECT  WHERE (`title` > 42) AND (`title` < 62)', []],
+            'string as number value as integer' => [['42', '62'], 'integer', 'SELECT  WHERE (`title` > 42) AND (`title` < 62)', []],
+            'string as string value as integer' => [['foo','bar'], 'integer', 'SELECT  WHERE (`title` > 0) AND (`title` < 0)', []],
 
-            'integer value as type double' => [[42,62], 'double', ' ( (`title` > 42) AND (`title` < 62) ) ', []],
-            'float value as type double' => [[42.5,62.5], 'double', ' ( (`title` > 42.5) AND (`title` < 62.5) ) ', []],
-            'comma value as type double' => [['42,5','62,5'], 'double', ' ( (`title` > 42.5) AND (`title` < 62.5) ) ', []],
-            'string as number value as type double' => [['42','62'], 'double', ' ( (`title` > 42) AND (`title` < 62) ) ', []],
-            'string as string value as type double' => [['foo','bar'], 'double', ' ( (`title` > 0) AND (`title` < 0) ) ', []],
+            'integer value as type double' => [[42,62], 'double', 'SELECT  WHERE (`title` > 42) AND (`title` < 62)', []],
+            'float value as type double' => [[42.5,62.5], 'double', 'SELECT  WHERE (`title` > 42.5) AND (`title` < 62.5)', []],
+            'comma value as type double' => [['42,5','62,5'], 'double', 'SELECT  WHERE (`title` > 42.5) AND (`title` < 62.5)', []],
+            'string as number value as type double' => [['42','62'], 'double', 'SELECT  WHERE (`title` > 42) AND (`title` < 62)', []],
 
-            'string as date value as type date' => [['2017-01-01', '2017-06-30'], 'datetime', ' ( (`title` > 1483221600) AND (`title` < 1498766400) ) ', []],
+            'string as date value as type date' => [['2017-01-01', '2017-06-30'], 'datetime', 'SELECT  WHERE (`title` > 1483221600) AND (`title` < 1498766400)', []],
 
-            'string as type time' => [['16:30', '18:30'], 'time', ' ( (`title` > 59400) AND (`title` < 66600) ) ', []],
+            'string as type time' => [['16:30', '18:30'], 'time', 'SELECT  WHERE (`title` > 59400) AND (`title` < 66600)', []],
 
-            'string as datetime value as type datetime' => [['2017-01-01 00:00', '2017-06-30 23:59'], 'datetime', ' ( (`title` > 1483221600) AND (`title` < 1498852740) ) ', []],
+            'string as datetime value as type datetime' => [['2017-01-01 00:00', '2017-06-30 23:59'], 'datetime', 'SELECT  WHERE (`title` > 1483221600) AND (`title` < 1498852740)', []],
         ];
     }
 
@@ -1201,22 +1198,22 @@ class QueryParserTest extends FunctionalTestCase
     public function parseReturnsValidWhereClauseForSimpleNotBetweenQueryDataProvider() : array
     {
         return [
-            'integer value as integer' => [[42,62], 'integer', ' ( (`title` < 42) OR (`title` > 62) ) ', []],
-            'float value as integer' => [[42.5, 62.5], 'integer', ' ( (`title` < 42) OR (`title` > 62) ) ', []],
-            'comma value as integer' => [['42,5','62,5'], 'integer', ' ( (`title` < 42) OR (`title` > 62) ) ', []],
-            'string as number value as integer' => [['42', '62'], 'integer', ' ( (`title` < 42) OR (`title` > 62) ) ', []],
-            'string as string value as integer' => [['foo','bar'], 'integer', ' ( (`title` < 0) OR (`title` > 0) ) ', []],
+            'integer value as integer' => [[42,62], 'integer', 'SELECT  WHERE (`title` < 42) OR (`title` > 62)', []],
+            'float value as integer' => [[42.5, 62.5], 'integer', 'SELECT  WHERE (`title` < 42) OR (`title` > 62)', []],
+            'comma value as integer' => [['42,5','62,5'], 'integer', 'SELECT  WHERE (`title` < 42) OR (`title` > 62)', []],
+            'string as number value as integer' => [['42', '62'], 'integer', 'SELECT  WHERE (`title` < 42) OR (`title` > 62)', []],
+            'string as string value as integer' => [['foo','bar'], 'integer', 'SELECT  WHERE (`title` < 0) OR (`title` > 0)', []],
 
-            'integer value as type double' => [[42,62], 'double', ' ( (`title` < 42) OR (`title` > 62) ) ', []],
-            'float value as type double' => [[42.5,62.5], 'double', ' ( (`title` < 42.5) OR (`title` > 62.5) ) ', []],
-            'comma value as type double' => [['42,5','62,5'], 'double', ' ( (`title` < 42.5) OR (`title` > 62.5) ) ', []],
-            'string as number value as type double' => [['42','62'], 'double', ' ( (`title` < 42) OR (`title` > 62) ) ', []],
+            'integer value as type double' => [[42,62], 'double', 'SELECT  WHERE (`title` < 42) OR (`title` > 62)', []],
+            'float value as type double' => [[42.5,62.5], 'double', 'SELECT  WHERE (`title` < 42.5) OR (`title` > 62.5)', []],
+            'comma value as type double' => [['42,5','62,5'], 'double', 'SELECT  WHERE (`title` < 42.5) OR (`title` > 62.5)', []],
+            'string as number value as type double' => [['42','62'], 'double', 'SELECT  WHERE (`title` < 42) OR (`title` > 62)', []],
 
-            'string as date value as type date' => [['2017-01-01', '2017-06-30'], 'date', ' ( (`title` < 1483221600) OR (`title` > 1498766400) ) ', []],
+            'string as date value as type date' => [['2017-01-01', '2017-06-30'], 'date', 'SELECT  WHERE (`title` < 1483221600) OR (`title` > 1498766400)', []],
 
-            'string as type time' => [['16:30', '18:30'], 'time', ' ( (`title` < 59400) OR (`title` > 66600) ) ', []],
+            'string as type time' => [['16:30', '18:30'], 'time', 'SELECT  WHERE (`title` < 59400) OR (`title` > 66600)', []],
 
-            'string as datetime value as type datetime' => [['2017-01-01 00:00', '2017-06-30 23:59'], 'datetime', ' ( (`title` < 1483221600) OR (`title` > 1498852740) ) ', []],
+            'string as datetime value as type datetime' => [['2017-01-01 00:00', '2017-06-30 23:59'], 'datetime', 'SELECT  WHERE (`title` < 1483221600) OR (`title` > 1498852740)', []],
         ];
     }
 
