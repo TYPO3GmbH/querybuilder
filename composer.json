@@ -18,7 +18,7 @@
 		}
 	],
 	"require": {
-		"typo3/cms": "^8.6"
+		"typo3/cms": "^9.0"
 	},
 	"replace": {
       "querybuilder": "self.version",
