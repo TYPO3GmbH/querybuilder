@@ -168,7 +168,7 @@ class QueryParserTest extends FunctionalTestCase
 //                            "value": "bar"
 //                        },
 //                        {
-//                            "condition": "AND",
+//                            "condition": "OR",
 //                            "rules": [
 //                                {
 //                                    "id": "input_9",
