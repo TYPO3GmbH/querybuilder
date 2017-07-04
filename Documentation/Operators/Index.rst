@@ -5,6 +5,8 @@ The are different operators for different types of data, enabling filtering as t
 In general the TCA definition of the field defines the possible operators as e.g. `greater` is only possible for numbers.
 The concrete list of possible inputs:
 
+.. code-block:: php
+
     equal:            'string', 'number', 'datetime', 'boolean'
     not_equal:        'string', 'number', 'datetime', 'boolean'
     in:               'string', 'number', 'datetime'
@@ -25,3 +27,12 @@ The concrete list of possible inputs:
     is_not_empty:     'string'
     is_null:          'string', 'number', 'datetime', 'boolean'
     is_not_null:      'string', 'number', 'datetime', 'boolean'
+
+Type definition and not supported types
+---------------------------------------
+
+   number = integer and double
+
+   datetime = date, time and datetime
+
+   Not supported: time and year

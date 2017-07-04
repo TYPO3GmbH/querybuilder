@@ -1,5 +1,5 @@
 Save Query Functionality
 ========================
 
-The main goal for this querybuilder extension was to use TYPO3s core concepts and add an additional filter functionality for
-the list module, enabling editors and developers to search for different attributes on multiple data sets.
+You can save your queries for multiple usages. Queries are saved based on the rules/groups, the userid, the affected table
+and the name you can give
