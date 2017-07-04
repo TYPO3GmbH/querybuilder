@@ -52,25 +52,34 @@ class QueryParser
      * @param stdClass $filterObject
      * @param QueryBuilder $queryBuilderObject
      *
+     * @param int $iteration
+     *
      * @return QueryBuilder
-     * @throws \InvalidArgumentException
      */
-    public function parse(stdClass $filterObject, QueryBuilder $queryBuilderObject) : QueryBuilder
+    public function parse(stdClass $filterObject, QueryBuilder $queryBuilderObject, int $iteration = 1) : QueryBuilder
     {
         $whereParts = [];
         if (!empty($filterObject->rules)) {
             foreach ($filterObject->rules as $rule) {
                 if ($rule->condition && $rule->rules) {
-                    $queryBuilderObject = $this->parse($rule, $queryBuilderObject);
+                    $queryBuilderObject = $this->parse($rule, $queryBuilderObject, $iteration++);
                 } else {
                     $whereParts[] = $this->getWhereClause($rule, $queryBuilderObject);
                 }
             }
         }
-        if (!empty($whereParts)) {
-            $filterObject->condition === static::CONDITION_AND
-                ? $queryBuilderObject->andWhere(...$whereParts)
-                : $queryBuilderObject->orWhere(...$whereParts);
+        if ($iteration === 1) {
+            if (!empty($whereParts)) {
+                $filterObject->condition === static::CONDITION_AND
+                    ? $queryBuilderObject->andWhere($queryBuilderObject->expr()->andX($queryBuilderObject->expr()->andX(...$whereParts)))
+                    : $queryBuilderObject->andWhere($queryBuilderObject->expr()->andX($queryBuilderObject->expr()->orX(...$whereParts)));
+            }
+        } else {
+            if (!empty($whereParts)) {
+                $filterObject->condition === static::CONDITION_AND
+                    ? $queryBuilderObject->andWhere($queryBuilderObject->expr()->andX(...$whereParts))
+                    : $queryBuilderObject->orWhere($queryBuilderObject->expr()->orX(...$whereParts));
+            }
         }
         return $queryBuilderObject;
     }

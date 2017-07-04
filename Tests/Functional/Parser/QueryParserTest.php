@@ -190,7 +190,7 @@ class QueryParserTest extends FunctionalTestCase
                     ],
                     "valid": true
                 }',
-                'SELECT  WHERE ((`input_9` = 42) OR (`inputdatetime_2` = 1498420800)) AND (`input_1` = :dcValue1) AND (`input_1` = :dcValue2)',
+                'SELECT  WHERE ((`input_9` = 42) OR (`inputdatetime_2` = 1498420800)) AND ((`input_1` = :dcValue1) AND (`input_1` = :dcValue2))',
                 ['dcValue1' => 'foo', 'dcValue2' => 'bar']
             ],
 
@@ -243,7 +243,7 @@ class QueryParserTest extends FunctionalTestCase
                     ],
                     "valid": true
                 }',
-                'SELECT  WHERE (`inputdatetime_5` = 59400) AND (`checkbox_2` = :dcValue3) AND (`inputdatetime_4` = 1498653000) AND (`input_8` = 42.42)',
+                'SELECT  WHERE ((`inputdatetime_5` = 59400) AND (`checkbox_2` = :dcValue3)) AND (`inputdatetime_4` = 1498653000) AND (`input_8` = 42.42)',
                 ['dcValue1' => '1', 'dcValue2' => null, 'dcValue3' => '1']
             ],
 
