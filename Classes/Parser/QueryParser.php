@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace T3G\Querybuilder\Parser;
 
 use stdClass;
-use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 
@@ -62,7 +61,7 @@ class QueryParser
         if (!empty($filterObject->rules)) {
             foreach ($filterObject->rules as $rule) {
                 if ($rule->condition && $rule->rules) {
-                    $whereParts[] = $this->parse($rule, $queryBuilderObject);
+                    $queryBuilderObject = $this->parse($rule, $queryBuilderObject);
                 } else {
                     $whereParts[] = $this->getWhereClause($rule, $queryBuilderObject);
                 }

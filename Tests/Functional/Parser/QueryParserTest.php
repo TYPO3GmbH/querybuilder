@@ -3,7 +3,6 @@
 namespace T3G\Querybuilder\Tests\Functional\Parser;
 
 use T3G\Querybuilder\Parser\QueryParser;
-use T3G\Querybuilder\QueryBuilder;
 use T3G\Querybuilder\Tests\Functional\FunctionalTestCase;
 
 /*
@@ -191,7 +190,7 @@ class QueryParserTest extends FunctionalTestCase
                     ],
                     "valid": true
                 }',
-                'SELECT  WHERE `input_1` = :dcValue1 AND `input_1` = :dcValue2 AND `input_9` = 42 AND `inputdatetime_2` = 1498420800',
+                'SELECT  WHERE ((`input_9` = 42) OR (`inputdatetime_2` = 1498420800)) AND (`input_1` = :dcValue1) AND (`input_1` = :dcValue2)',
                 ['dcValue1' => 'foo', 'dcValue2' => 'bar']
             ],
 
@@ -244,7 +243,8 @@ class QueryParserTest extends FunctionalTestCase
                     ],
                     "valid": true
                 }',
-                'SELECT  WHERE `input_8` = 42.42 AND `inputdatetime_5` = 59400 AND `checkbox_2` = \'1\' AND `inputdatetime_4` = 1498653000', []
+                'SELECT  WHERE (`inputdatetime_5` = 59400) AND (`checkbox_2` = :dcValue3) AND (`inputdatetime_4` = 1498653000) AND (`input_8` = 42.42)',
+                ['dcValue1' => '1', 'dcValue2' => null, 'dcValue3' => '1']
             ],
 
             'simple group' =>[
@@ -275,7 +275,7 @@ class QueryParserTest extends FunctionalTestCase
                   ],
                   "valid": true
                 }',
-                'SELECT  WHERE `header` = :dcValue1 AND `header` = :dcValue2',
+                'SELECT  WHERE (`header` = :dcValue1) AND (`header` = :dcValue2)',
                 ['dcValue1' => 'humbel', 'dcValue2' => 'bumbel']
             ]
         ];
@@ -285,6 +285,7 @@ class QueryParserTest extends FunctionalTestCase
      * @test
      * @dataProvider parseReturnsValidWhereClauseForMultipleEqualsQueryDataProvider
      *
+     * @param $multipleRules
      * @param $expectedSQL
      * @param $expectedParameters
      */
