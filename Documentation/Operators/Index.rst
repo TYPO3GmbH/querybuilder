@@ -3,9 +3,9 @@ Operators
 
 The are different operators for different types of data, enabling filtering as the editor wishes.
 In general the TCA definition of the field defines the possible operators as e.g. `greater` is only possible for numbers.
-The concrete list of possible inputs:
+The concrete list of possible inputs in combination with the operators:
 
-.. code-block:: php
+.. code-block:: js
 
     equal:            'string', 'number', 'datetime', 'boolean'
     not_equal:        'string', 'number', 'datetime', 'boolean'
@@ -28,6 +28,8 @@ The concrete list of possible inputs:
     is_null:          'string', 'number', 'datetime', 'boolean'
     is_not_null:      'string', 'number', 'datetime', 'boolean'
 
+
+
 Type definition and not supported types
 ---------------------------------------
 
@@ -35,4 +37,22 @@ Type definition and not supported types
 
    datetime = date, time and datetime
 
-   Not supported: time and year
+.. note::
+
+   Not supported types:
+
+   Timesec - is handled like a simple time eval.
+
+   Year - is handled as string/text
+
+
+TCA Configuration
+-----------------
+
+Most important for the querybuilder is the TCA definition of the filtered field itself, as it
+influences the input options.
+For example `eval=datetime` causes the filter to generate a datepicker for fitting input and easier usage.
+
+.. figure:: ../Images/Datetimepicker-Querybuilder.png
+
+   datetime-picker example

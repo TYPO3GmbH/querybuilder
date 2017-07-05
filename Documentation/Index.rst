@@ -19,7 +19,6 @@ TYPO3 Querybuilder Extension
    :glob:
 
    Basics/Index
-   TCA/Index
    Operators/Index
    Save_Queries/Index
    Administration/Index
