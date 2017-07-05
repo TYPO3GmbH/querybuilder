@@ -1,5 +1,5 @@
-Operators
-=========
+Operators and TCA
+=================
 
 The are different operators for different types of data, enabling filtering as the editor wishes.
 In general the TCA definition of the field defines the possible operators as e.g. `greater` is only possible for numbers.
@@ -58,7 +58,12 @@ For example `eval=datetime` causes the filter to generate a datepicker for fitti
 
    datetime-picker example
 
-To get all p
+.. tip::
+
+   To get individual table fields into the querybuilder you just need to adapt the table TCA
+
+   `$TCA['ctrl']['queryFilterFields']` enables the wanted fields as filter option. If not defined `$TCA['ctrl']['searchFields']` acts as default.
+
 
 Specific operator information
 -----------------------------
