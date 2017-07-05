@@ -2,7 +2,8 @@ Operators and TCA
 =================
 
 The are different operators for different types of data, enabling filtering as the editor wishes.
-In general the TCA definition of the field defines the possible operators as e.g. `greater` is only possible for numbers.
+In general the TCA definition of the field defines the possible operators, as e.g. `greater` is only possible for numbers and datetime.
+
 The concrete list of possible inputs in combination with the operators:
 
 .. code-block:: js
@@ -43,7 +44,7 @@ Type definition and not supported types
 
    Timesec - is handled like a simple time eval.
 
-   Year - is handled as string/text
+   Year - is handled as string/text (this means no greater, less or similar operators)
 
 
 TCA Configuration
@@ -57,6 +58,19 @@ For example `eval=datetime` causes the filter to generate a datepicker for fitti
    :class: with-border
 
    datetime-picker example
+
+Operators with influence on the input:
+
+- date, time and datetime: a datetimepicker is created (adapted to the individual case)
+- double and integer: a number input filed is created
+- boolean: a checkbox input field is created
+- select: a select input field is created
+
+Datatypes with influence on the input:
+
+- between: two input fields are created for the less and the greater value
+- empty and null: no input field is created
+
 
 .. tip::
 
