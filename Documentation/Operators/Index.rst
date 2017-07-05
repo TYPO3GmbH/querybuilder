@@ -54,5 +54,50 @@ influences the input options.
 For example `eval=datetime` causes the filter to generate a datepicker for fitting input and easier usage.
 
 .. figure:: ../Images/Datetimepicker-Querybuilder.png
+   :class: with-border
 
    datetime-picker example
+
+To get all p
+
+Specific operator information
+-----------------------------
+
+IN
+^^
+The IN operator is a more specific operator. You can filter for more than one value by only one input.
+The complete input is split by separators to the individual values, which are severally checked with equal.
+
+Database-Query logic:
+
+.. code-block:: aspect
+
+    title IN (foo;bar;dong) =>  title = foo OR title = bar OR title = dong
+
+To separate the different values you have to use the defined chars.
+**Possible separators are:**
+ - ';' (semicolon)
+ - '+' (plus)
+ - '#' (hash)
+ - '|' (pipe)
+ - '!' (exlamationmark)
+
+
+Input examples:
+   - foo;bar;dong
+   - foo! bar+ dong
+   - hello world; that is| the new+ querybuilder
+
+
+.. note::
+
+   Proper usages for IN are only string input types, as date, integer etc. won't allow the seperator chars.
+
+EMPTY and NULL
+^^^^^^^^^^^^^^
+.. note::
+   Notice the different definition of empty and null:
+
+   - Null: title = null
+   - Empty: title = null OR title = ''
+

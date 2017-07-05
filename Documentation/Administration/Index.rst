@@ -14,9 +14,10 @@ Editing saved queries
 Be careful while editing given queries!
 Wrong editing could cause the querybuilder to not filter properly.
 
-Also adapting the user or the affected table could cause some trouble:
+Adapting the user or the affected table could cause some trouble:
 
-Changing the affected table of a query which is filtering the a field that does not exist in the new table throws an exception!
+- **Table:** Changing the affected table of a query which is filtering the a field that does not exist in the new table throws an exception!
 
-Changing the user does not directly influence the usability, but makes the query not usable for the actual owner (which is
-of course not very polite).
+- **User:** Changing the user does not directly influence the usability, but makes the query not usable for the actual owner (which is of course not very polite).
+
+- **Rules:** Last but not least changing the query rules/groups itself. In general you should not adapt the queries directly and use the given functionalities. If you still feel in need to change it, you should be careful and know what you are doing.
