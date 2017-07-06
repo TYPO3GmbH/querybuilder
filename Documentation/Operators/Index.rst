@@ -59,22 +59,21 @@ For example `eval=datetime` causes the filter to generate a datepicker for fitti
 
    datetime-picker example
 
-Operators with influence on the input:
+**Datatypes** with influence on the input:
 
 - date, time and datetime: a datetimepicker is created (adapted to the individual case)
 - double and integer: a number input filed is created
 - boolean: a checkbox input field is created
 - select: a select input field is created
 
-Datatypes with influence on the input:
+**Operators** with influence on the input:
 
 - between: two input fields are created for the less and the greater value
 - empty and null: no input field is created
 
-
 .. tip::
 
-   To get individual table fields into the querybuilder you just need to adapt the table TCA
+   To get individual table fields into the querybuilder you just need to adapt the table TCA.
 
    `$TCA['ctrl']['queryFilterFields']` enables the wanted fields as filter option. If not defined `$TCA['ctrl']['searchFields']` acts as default.
 
@@ -91,7 +90,7 @@ Database-Query logic:
 
 .. code-block:: aspect
 
-    title IN (foo;bar;dong) =>  title = foo OR title = bar OR title = dong
+    title IN (foo;bar;dong)  =>  title = foo OR title = bar OR title = dong
 
 To separate the different values you have to use the defined chars.
 **Possible separators are:**
@@ -99,7 +98,7 @@ To separate the different values you have to use the defined chars.
  - '+' (plus)
  - '#' (hash)
  - '|' (pipe)
- - '!' (exlamationmark)
+ - '!' (exclamation mark)
 
 
 Input examples:

@@ -6,3 +6,5 @@ the list module, enabling editors and developers to search for different attribu
 
 .. image:: ../Images/Querybuilder.png
    :class: with-border
+
+For more information see the official documentation of the `jQuery Querybuilder <http://querybuilder.js.org/>`_
