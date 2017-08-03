@@ -125,7 +125,6 @@ define(['jquery',
 			try {
 				lastQuery = JSON.parse(lastQuery);
 				QueryBuilder.instance.queryBuilder('setRules', lastQuery);
-				//QueryBuilder.applyFilter();
 			} catch (err) {
 				console.log(err.message);
 			}
@@ -225,13 +224,10 @@ define(['jquery',
 				$('<label />', {for: 'queryname'}).text(TYPO3.lang['modal.queryname'] || 'Name: '),
 				$('<input />', {name: 'queryname', class: 'form-control', value: queryName})
 			),
+			$('<dt />').text(TYPO3.lang['recent.header'] || 'Saved queries'),
 			$('<dd />').append(
-				$('<div />', {class: 'checkbox'}).append(
-					$('<label />').append(
-						$('<input />', {name: 'override', type: 'checkbox'}),
-						$('<span />').text(TYPO3.lang['modal.override'] || 'Override saved query?')
-					)
-				)
+				$('#t3js-querybuilder-recent-queries').clone()
+					.attr('id', null)
 			)
 		);
 		var queryBuilderAjaxUrl = TYPO3.settings.ajaxUrls.querybuilder_save_query;
@@ -258,9 +254,10 @@ define(['jquery',
 						$('input[name=queryname]', Modal.currentModal).parent().addClass('has-error');
 						return;
 					}
-					var uid = QueryBuilder.querySelector.val();
+					var $modalSelect = $('select[name=recent-queries]', Modal.currentModal);
 					var queryName = $('input[name=queryname]', Modal.currentModal).val();
-					var override = $('input[name=override]', Modal.currentModal).is(':checked');
+					var uid = $modalSelect.val();
+					var override = uid !== -1 ? 1 : 0;
 					var query = JSON.stringify(QueryBuilder.instance.queryBuilder('getRules'), null, 2);
 					$.ajax({
 						url: queryBuilderAjaxUrl,
@@ -270,7 +267,7 @@ define(['jquery',
 							query: query,
 							queryName: queryName,
 							uid: uid,
-							override: override ? 1 : 0
+							override: override
 						},
 						success: function(data) {
 							if (data.status === 'ok') {
@@ -288,11 +285,7 @@ define(['jquery',
 					});
 				}
 			}]
-		).on('shown.bs.modal', function() {
-			(QueryBuilder.querySelector.val() < 1)
-				? $('input[name=override]', Modal.currentModal).attr('disabled', true)
-				: $('input[name=override]', Modal.currentModal).attr('disabled', false);
-		});
+		)
 	};
 
 	QueryBuilder.applyFilter = function(configuration) {
