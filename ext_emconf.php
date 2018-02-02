@@ -1,19 +1,19 @@
 <?php
 
-$EM_CONF[$_EXTKEY] = array(
+$EM_CONF[$_EXTKEY] = [
     'title' => 'QueryBuilder',
     'description' => 'Backend extension for query builder in list module.',
     'category' => 'be',
-    'state' => 'alpha',
+    'state' => 'stable',
     'clearCacheOnLoad' => 0,
-    'author' => 'Frank Naegler',
-    'author_company' => 'TYPO3 GmbH',
-    'version' => '0.0.2',
-    'constraints' => array(
-        'depends' => array(
-            'typo3' => '8.3.0-*',
-        ),
-        'conflicts' => array(),
-        'suggests' => array(),
-    ),
-);
+    'author' => 'TYPO3 GmbH',
+    'author_email' => 'info@typo3.com',
+    'version' => '8.7.0',
+    'constraints' => [
+        'depends' => [
+            'typo3' => '8.3.0-8.7.99',
+        ],
+        'conflicts' => [],
+        'suggests' => [],
+    ],
+];
