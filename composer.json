@@ -10,17 +10,16 @@
 	"query"
   ],
   "homepage": "https://typo3.com",
-  "license": [
-	"GPL-2.0-or-later"
-  ],
+  "license": "GPL-2.0-or-later",
   "authors": [
 	{
-	  "name": "Frank Naegler",
-	  "role": "Developer"
+		"name": "TYPO3 GmbH",
+		"role": "Developer",
+		"homepage": "https://typo3.com/"
 	}
   ],
   "require": {
-	"typo3/cms-core": "^9.0"
+	"typo3/cms-core": "^9.1"
   },
   "replace": {
 	"querybuilder": "self.version",

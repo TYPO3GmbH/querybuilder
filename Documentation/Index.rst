@@ -8,7 +8,7 @@ TYPO3 Querybuilder Extension
 ===========================
 
 :Author:    TYPO3 GmbH Team <info@typo3.com>
-:License:   GPL 3.0
+:License:   GPL-2.0-or-later
 :Rendered:  |today|
 :Description:
    The querybuilder extension for TYPO3 provides a filter function based on TYPO3s core list module and features.
