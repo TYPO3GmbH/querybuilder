@@ -1,19 +1,33 @@
-# TYPO3 extension `QueryBuilder`
+# TYPO3 CMS Extension "blog"
 
 This extension improves the list module by a powerful filter mechanism.
 
-**Requirements**
+## Requirements
 
 v8.7: 
 - TYPO3 CMS 8.3+
-v9.x:
-- TYPO3 CMS 9.0
 
-- GPL-2.0-or-later
+v9.x:
+- TYPO3 CMS 9.2
+
+master:
+- TYPO3 CMS dev-master
+
+## License
+GPL-2.0-or-later
 
 ## Installation
 
-Use a `composer require t3g/querybuilder` or download it from [bitbucket.typo3.com/scm/ext/querybuilder](https://bitbucket.typo3.com/scm/ext/querybuilder).
+* Use a `composer require t3g/querybuilder`
+* or download it from [bitbucket.typo3.com/scm/ext/querybuilder](https://bitbucket.typo3.com/scm/ext/querybuilder)
+* or download ir from [TER](https://extensions.typo3.org/extension/querybuilder/)
+
+## Contribution
+
+Any contributor is welcome to join our team. All you need is an account on our bitbucket system.
+Please request a user account in our [service desk](https://jira.typo3.com/servicedesk/customer/portal/3/create/95). If you already have an account, please ask for access to the project in our [service desk](https://jira.typo3.com/servicedesk/customer/portal/3/create/95).
+
+It is also highly recommended to join our [Slack Channel: #ext-querybuilder](https://typo3.slack.com/archives/ext-querybuilder)
 
 ## Usage
 
