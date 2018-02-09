@@ -1,4 +1,4 @@
-# TYPO3 CMS Extension "blog"
+# TYPO3 CMS Extension "querybuilder"
 
 This extension improves the list module by a powerful filter mechanism.
 
@@ -14,7 +14,7 @@ v9.x:
 
 * Use a `composer require t3g/querybuilder`
 * or download it from [bitbucket.typo3.com/scm/ext/querybuilder](https://bitbucket.typo3.com/scm/ext/querybuilder)
-* or download ir from [TER](https://extensions.typo3.org/extension/querybuilder/)
+* or download it from [TER](https://extensions.typo3.org/extension/querybuilder/)
 
 ## Contribution
 
