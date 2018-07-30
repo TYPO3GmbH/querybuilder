@@ -30,7 +30,10 @@
   },
   "config": {
     "discard-changes": true,
-    "bin-dir": "bin"
+    "bin-dir": "bin",
+    "platform": {
+      "php": "7.0"
+    }
   },
   "extra": {
     "typo3/cms": {
