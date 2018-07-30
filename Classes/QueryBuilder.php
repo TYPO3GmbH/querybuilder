@@ -1,5 +1,13 @@
 <?php
 declare(strict_types=1);
+
+/*
+ * This file is part of the package t3g/querybuilder.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
+ */
+
 namespace T3G\Querybuilder;
 
 use InvalidArgumentException;
@@ -167,8 +175,7 @@ class QueryBuilder
     {
         if ($filter->type === 'date'
             || $filter->type === 'datetime'
-            || $filter->type === 'time')
-        {
+            || $filter->type === 'time') {
             $filter->validation = new stdClass();
             $filter->plugin = 'datetimepicker';
             $filter->plugin_config = new stdClass();
