@@ -33,12 +33,6 @@ abstract class FunctionalTestCase extends \TYPO3\TestingFramework\Core\Functiona
      */
     protected $assertionDataSetDirectory;
 
-    protected function setUp()
-    {
-        $this->testExtensionsToLoad[] = 'typo3conf/ext/querybuilder';
-        parent::setUp();
-    }
-
     /**
      * @param string $scenarioName
      */

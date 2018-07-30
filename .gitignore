@@ -6,3 +6,12 @@
 
 # Composer
 vendor/
+bin/
+
+# TYPO3 test
+typo3/
+typo3temp/
+var/
+logs/
+index.php
+.php_cs.cache
