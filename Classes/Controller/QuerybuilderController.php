@@ -1,24 +1,19 @@
 <?php
 declare(strict_types=1);
-namespace T3G\Querybuilder\Controller;
 
 /*
- * This file is part of the TYPO3 CMS project.
- *
- * It is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License, either version 2
- * of the License, or any later version.
+ * This file is part of the package t3g/querybuilder.
  *
  * For the full copyright and license information, please read the
- * LICENSE.txt file that was distributed with this source code.
- *
- * The TYPO3 project - inspiring people to share!
+ * LICENSE file that was distributed with this source code.
  */
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Database\ConnectionPool;
+namespace T3G\Querybuilder\Controller;
+
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Main script class for saving query
@@ -82,7 +77,7 @@ class QuerybuilderController
             ->getQueryBuilderForTable('sys_querybuilder');
 
         $results = $queryBuilder
-            ->select('uid','queryname', 'where_parts')
+            ->select('uid', 'queryname', 'where_parts')
             ->from('sys_querybuilder')
             ->where(
                 $queryBuilder->expr()->eq('affected_table', $queryBuilder->createNamedParameter($requestParams['table'])),
@@ -95,4 +90,3 @@ class QuerybuilderController
         return $response;
     }
 }
-

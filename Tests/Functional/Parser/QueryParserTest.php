@@ -1,5 +1,12 @@
 <?php
 
+/*
+ * This file is part of the package t3g/querybuilder.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
+ */
+
 namespace T3G\Querybuilder\Tests\Functional\Parser;
 
 use T3G\Querybuilder\Parser\QueryParser;
@@ -324,7 +331,6 @@ class QueryParserTest extends FunctionalTestCase
         $query->rules[0]->type = $type;
         self::assertEquals($expectedResult, $this->subject->parse($query, $this->table));
     }
-
 
     /**
      * @return array
@@ -938,7 +944,6 @@ class QueryParserTest extends FunctionalTestCase
         ];
     }
 
-
     /**
      * @test
      * @dataProvider parseReturnsValidWhereClauseForSimpleLessOrEqualQueryDataProvider
@@ -1085,17 +1090,17 @@ class QueryParserTest extends FunctionalTestCase
     public function parseReturnsValidWhereClauseForSimpleBetweenQueryDataProvider() : array
     {
         return [
-            'integer value as integer' => [[42,62], 'integer', ' ( (`title` > 42) AND (`title` < 62) ) '],
+            'integer value as integer' => [[42, 62], 'integer', ' ( (`title` > 42) AND (`title` < 62) ) '],
             'float value as integer' => [[42.5, 62.5], 'integer', ' ( (`title` > 42) AND (`title` < 62) ) '],
-            'comma value as integer' => [['42,5','62,5'], 'integer', ' ( (`title` > 42) AND (`title` < 62) ) '],
+            'comma value as integer' => [['42,5', '62,5'], 'integer', ' ( (`title` > 42) AND (`title` < 62) ) '],
             'string as number value as integer' => [['42', '62'], 'integer', ' ( (`title` > 42) AND (`title` < 62) ) '],
-            'string as string value as integer' => [['foo','bar'], 'integer', ' ( (`title` > 0) AND (`title` < 0) ) '],
+            'string as string value as integer' => [['foo', 'bar'], 'integer', ' ( (`title` > 0) AND (`title` < 0) ) '],
 
-            'integer value as type double' => [[42,62], 'double', ' ( (`title` > 42) AND (`title` < 62) ) '],
-            'float value as type double' => [[42.5,62.5], 'double', ' ( (`title` > 42.5) AND (`title` < 62.5) ) '],
-            'comma value as type double' => [['42,5','62,5'], 'double', ' ( (`title` > 42.5) AND (`title` < 62.5) ) '],
-            'string as number value as type double' => [['42','62'], 'double', ' ( (`title` > 42) AND (`title` < 62) ) '],
-            'string as string value as type double' => [['foo','bar'], 'double', ' ( (`title` > 0) AND (`title` < 0) ) '],
+            'integer value as type double' => [[42, 62], 'double', ' ( (`title` > 42) AND (`title` < 62) ) '],
+            'float value as type double' => [[42.5, 62.5], 'double', ' ( (`title` > 42.5) AND (`title` < 62.5) ) '],
+            'comma value as type double' => [['42,5', '62,5'], 'double', ' ( (`title` > 42.5) AND (`title` < 62.5) ) '],
+            'string as number value as type double' => [['42', '62'], 'double', ' ( (`title` > 42) AND (`title` < 62) ) '],
+            'string as string value as type double' => [['foo', 'bar'], 'double', ' ( (`title` > 0) AND (`title` < 0) ) '],
 
             'string as date value as type date' => [['2017-01-01', '2017-06-30'], 'datetime', ' ( (`title` > 1483221600) AND (`title` < 1498766400) ) '],
 
@@ -1141,16 +1146,16 @@ class QueryParserTest extends FunctionalTestCase
     public function parseReturnsValidWhereClauseForSimpleNotBetweenQueryDataProvider() : array
     {
         return [
-            'integer value as integer' => [[42,62], 'integer', ' ( (`title` < 42) OR (`title` > 62) ) '],
+            'integer value as integer' => [[42, 62], 'integer', ' ( (`title` < 42) OR (`title` > 62) ) '],
             'float value as integer' => [[42.5, 62.5], 'integer', ' ( (`title` < 42) OR (`title` > 62) ) '],
-            'comma value as integer' => [['42,5','62,5'], 'integer', ' ( (`title` < 42) OR (`title` > 62) ) '],
+            'comma value as integer' => [['42,5', '62,5'], 'integer', ' ( (`title` < 42) OR (`title` > 62) ) '],
             'string as number value as integer' => [['42', '62'], 'integer', ' ( (`title` < 42) OR (`title` > 62) ) '],
-            'string as string value as integer' => [['foo','bar'], 'integer', ' ( (`title` < 0) OR (`title` > 0) ) '],
+            'string as string value as integer' => [['foo', 'bar'], 'integer', ' ( (`title` < 0) OR (`title` > 0) ) '],
 
-            'integer value as type double' => [[42,62], 'double', ' ( (`title` < 42) OR (`title` > 62) ) '],
-            'float value as type double' => [[42.5,62.5], 'double', ' ( (`title` < 42.5) OR (`title` > 62.5) ) '],
-            'comma value as type double' => [['42,5','62,5'], 'double', ' ( (`title` < 42.5) OR (`title` > 62.5) ) '],
-            'string as number value as type double' => [['42','62'], 'double', ' ( (`title` < 42) OR (`title` > 62) ) '],
+            'integer value as type double' => [[42, 62], 'double', ' ( (`title` < 42) OR (`title` > 62) ) '],
+            'float value as type double' => [[42.5, 62.5], 'double', ' ( (`title` < 42.5) OR (`title` > 62.5) ) '],
+            'comma value as type double' => [['42,5', '62,5'], 'double', ' ( (`title` < 42.5) OR (`title` > 62.5) ) '],
+            'string as number value as type double' => [['42', '62'], 'double', ' ( (`title` < 42) OR (`title` > 62) ) '],
 
             'string as date value as type date' => [['2017-01-01', '2017-06-30'], 'date', ' ( (`title` < 1483221600) OR (`title` > 1498766400) ) '],
 

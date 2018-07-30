@@ -1,5 +1,12 @@
 <?php
 
+/*
+ * This file is part of the package t3g/querybuilder.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
+ */
+
 namespace T3G\Querybuilder\Hooks;
 
 use T3G\Querybuilder\Parser\QueryParser;
@@ -22,13 +29,14 @@ class DatabaseRecordList
      *
      * @throws \InvalidArgumentException
      */
-    public function buildQueryParametersPostProcess(array &$parameters,
+    public function buildQueryParametersPostProcess(
+        array &$parameters,
                                    string $table,
                                    int $pageId,
                                    array $additionalConstraints,
                                    array $fieldList,
-                                   AbstractDatabaseRecordList $parentObject)
-    {
+                                   AbstractDatabaseRecordList $parentObject
+    ) {
         if ($parentObject->table !== null && GeneralUtility::_GP('M') === 'web_list') {
             $query = GeneralUtility::_GP('query');
             if ($query !== null) {
