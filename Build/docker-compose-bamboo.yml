@@ -9,7 +9,7 @@ services:
     networks:
       - test
 
-  start_dependencies_functional_mariadb10:
+  start_dependencies:
     image: alpine:3.8
     links:
       - mariadb10

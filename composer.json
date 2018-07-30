@@ -2,38 +2,60 @@
   "name": "t3g/querybuilder",
   "type": "typo3-cms-extension",
   "description": "Backend extension for query builder in list module.",
-  "keywords": [
-	"TYPO3",
-	"extension",
-	"list",
-	"filter",
-	"query"
-  ],
-  "homepage": "https://typo3.com",
+  "minimum-stability": "dev",
   "license": "GPL-2.0-or-later",
   "authors": [
-	{
-		"name": "TYPO3 GmbH",
-		"role": "Developer",
-		"homepage": "https://typo3.com/"
-	}
+    {
+      "name": "TYPO3 GmbH",
+      "role": "Developer",
+      "homepage": "https://typo3.com/"
+    }
   ],
-  "require": {
-	"typo3/cms-core": "^9.1"
-  },
-  "replace": {
-	"querybuilder": "self.version",
-	"typo3-ter/querybuilder": "self.version"
+  "homepage": "https://extensions.typo3.org/extension/querybuilder/",
+  "support": {
+    "issues": "https://jira.typo3.com/servicedesk/customer/portal/3/create/95",
+    "docs": "https://docs.typo3.org/typo3cms/extensions/querybuilder/",
+    "source": "https://bitbucket.typo3.com/scm/ext/querybuilder.git",
+    "slack": "https://typo3.slack.com/archives/ext-querybuilder"
   },
   "autoload": {
-	"psr-4": {
-	  "T3G\\Querybuilder\\": "Classes/",
-	  "T3G\\Querybuilder\\Tests\\": "Tests/"
-	}
+    "psr-4": {
+      "T3G\\Querybuilder\\": "Classes/"
+    }
   },
   "autoload-dev": {
-	"psr-4": {
-	  "T3G\\Querybuilder\\Tests\\": "Tests/"
-	}
+    "psr-4": {
+      "T3G\\Querybuilder\\Tests\\": "Tests/"
+    }
+  },
+  "config": {
+    "discard-changes": true,
+    "bin-dir": "bin"
+  },
+  "extra": {
+    "typo3/cms": {
+      "web-dir": "."
+    }
+  },
+  "scripts": {
+    "t3g:test:php:functional": [
+      "phpunit -c Build/FunctionalTests.xml --log-junit logs/phpunit.xml"
+    ],
+    "t3g:test": [
+      "@t3g:test:php:functional"
+    ],
+    "t3g:cgl": [
+      "php-cs-fixer fix --config Build/.php_cs.dist --format=junit > logs/php-cs-fixer.xml"
+    ]
+  },
+  "require": {
+    "psr/http-message": "^1.0.0",
+    "typo3/cms-backend": "9.4.*@dev",
+    "typo3/cms-core": "9.4.*@dev"
+  },
+  "require-dev": {
+    "friendsofphp/php-cs-fixer": "^2.12",
+    "roave/security-advisories": "dev-master",
+    "typo3/testing-framework": "dev-master"
   }
 }
