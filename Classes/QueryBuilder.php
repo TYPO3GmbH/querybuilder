@@ -14,6 +14,7 @@ use InvalidArgumentException;
 use stdClass;
 use T3G\Querybuilder\Backend\Form\FormDataGroup\TcaOnly;
 use TYPO3\CMS\Backend\Form\FormDataCompiler;
+use TYPO3\CMS\Backend\Form\FormDataProvider\SiteResolving;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use UnexpectedValueException;
 
@@ -35,9 +36,9 @@ class QueryBuilder
      * @throws UnexpectedValueException
      * @throws InvalidArgumentException
      */
-    public function buildFilterFromTca($table) : array
+    public function buildFilterFromTca($table, $pageID) : array
     {
-        $dataProviderResult = $this->prepareTca($table);
+        $dataProviderResult = $this->prepareTca($table, $pageID);
         $TCA = $dataProviderResult['processedTca'];
         $filters = [];
         $filterFields = !empty($TCA['ctrl']['queryFilterFields']) ? $TCA['ctrl']['queryFilterFields'] : $TCA['ctrl']['searchFields'];
@@ -57,7 +58,7 @@ class QueryBuilder
             $filter->values = $this->determineFilterValues($fieldConfig);
             $filter->label = $fieldConfig['label'];
             $filter->description = !empty($fieldConfig['description']) ? $fieldConfig['description'] : '';
-            $this->determineAndAddExtras($filter, $fieldConfig);
+            $this->determineAndAddExtras($filter);
             $filters[] = $filter;
         }
 
@@ -169,9 +170,8 @@ class QueryBuilder
 
     /**
      * @param stdClass $filter
-     * @param array $fieldConfig
      */
-    protected function determineAndAddExtras(&$filter, $fieldConfig)
+    protected function determineAndAddExtras(&$filter)
     {
         if ($filter->type === 'date'
             || $filter->type === 'datetime'
@@ -211,15 +211,18 @@ class QueryBuilder
      * @throws UnexpectedValueException
      * @throws InvalidArgumentException
      */
-    protected function prepareTca($tableName) : array
+    protected function prepareTca($tableName, $pageID) : array
     {
         $formDataGroup = GeneralUtility::makeInstance(TcaOnly::class);
         $formDataCompiler = GeneralUtility::makeInstance(FormDataCompiler::class, $formDataGroup);
+        $siteResolver = GeneralUtility::makeInstance(SiteResolving::class);
 
         $formDataCompilerInput = [
             'tableName' => $tableName,
-            'command' => 'new'
+            'command' => 'new',
+            'effectivePid' => (int)$pageID
         ];
+        $formDataCompilerInput = $siteResolver->addData($formDataCompilerInput);
 
         return $formDataCompiler->compile($formDataCompilerInput);
     }

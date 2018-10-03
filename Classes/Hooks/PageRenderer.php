@@ -54,7 +54,9 @@ class PageRenderer
             $pageRenderer->addJsInlineCode('tx_querybuilder_query', 'var tx_querybuilder_query = ' . json_encode($query) . ';');
 
             $queryBuilder = GeneralUtility::makeInstance(QueryBuilder::class);
-            $filter = $queryBuilder->buildFilterFromTca($table);
+
+            $pageID = GeneralUtility::_GP('id');
+            $filter = $queryBuilder->buildFilterFromTca($table,$pageID);
             $pageRenderer->addJsInlineCode('tx_querybuilder_filter', 'var tx_querybuilder_filter = ' . json_encode($filter) . ';');
 
             $pageRenderer->loadRequireJsModule($languageModule);
