@@ -36,9 +36,9 @@ class QueryBuilder
      * @throws UnexpectedValueException
      * @throws InvalidArgumentException
      */
-    public function buildFilterFromTca($table, $pageID) : array
+    public function buildFilterFromTca($table, $pageId) : array
     {
-        $dataProviderResult = $this->prepareTca($table, $pageID);
+        $dataProviderResult = $this->prepareTca($table, $pageId);
         $TCA = $dataProviderResult['processedTca'];
         $filters = [];
         $filterFields = !empty($TCA['ctrl']['queryFilterFields']) ? $TCA['ctrl']['queryFilterFields'] : $TCA['ctrl']['searchFields'];
@@ -211,7 +211,7 @@ class QueryBuilder
      * @throws UnexpectedValueException
      * @throws InvalidArgumentException
      */
-    protected function prepareTca($tableName, $pageID) : array
+    protected function prepareTca($tableName, $pageId) : array
     {
         $formDataGroup = GeneralUtility::makeInstance(TcaOnly::class);
         $formDataCompiler = GeneralUtility::makeInstance(FormDataCompiler::class, $formDataGroup);
@@ -220,7 +220,7 @@ class QueryBuilder
         $formDataCompilerInput = [
             'tableName' => $tableName,
             'command' => 'new',
-            'effectivePid' => (int)$pageID
+            'effectivePid' => (int)$pageId
         ];
         $formDataCompilerInput = $siteResolver->addData($formDataCompilerInput);
 

@@ -55,8 +55,8 @@ class PageRenderer
 
             $queryBuilder = GeneralUtility::makeInstance(QueryBuilder::class);
 
-            $pageID = GeneralUtility::_GP('id');
-            $filter = $queryBuilder->buildFilterFromTca($table,$pageID);
+            $pageId = GeneralUtility::_GP('id');
+            $filter = $queryBuilder->buildFilterFromTca($table, $pageId);
             $pageRenderer->addJsInlineCode('tx_querybuilder_filter', 'var tx_querybuilder_filter = ' . json_encode($filter) . ';');
 
             $pageRenderer->loadRequireJsModule($languageModule);
