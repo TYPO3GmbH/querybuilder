@@ -19,41 +19,36 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class QueryParser
 {
-    const OPERATOR_EQUAL = 'equal';
-    const OPERATOR_NOT_EQUAL = 'not_equal';
-    const OPERATOR_IN = 'in';
-    const OPERATOR_NOT_IN = 'not_in';
-    const OPERATOR_BEGINS_WITH = 'begins_with';
-    const OPERATOR_NOT_BEGINS_WITH = 'not_begins_with';
-    const OPERATOR_CONTAINS = 'contains';
-    const OPERATOR_NOT_CONTAINS = 'not_contains';
-    const OPERATOR_ENDS_WITH = 'ends_with';
-    const OPERATOR_NOT_ENDS_WITH = 'not_ends_with';
-    const OPERATOR_IS_EMPTY = 'is_empty';
-    const OPERATOR_IS_NOT_EMPTY = 'is_not_empty';
-    const OPERATOR_IS_NULL = 'is_null';
-    const OPERATOR_IS_NOT_NULL = 'is_not_null';
-    const OPERATOR_LESS = 'less';
-    const OPERATOR_LESS_OR_EQUAL = 'less_or_equal';
-    const OPERATOR_GREATER = 'greater';
-    const OPERATOR_GREATER_OR_EQUAL = 'greater_or_equal';
-    const OPERATOR_BETWEEN = 'between';
-    const OPERATOR_NOT_BETWEEN = 'not_between';
+    private const OPERATOR_EQUAL = 'equal';
+    private const OPERATOR_NOT_EQUAL = 'not_equal';
+    private const OPERATOR_IN = 'in';
+    private const OPERATOR_NOT_IN = 'not_in';
+    private const OPERATOR_BEGINS_WITH = 'begins_with';
+    private const OPERATOR_NOT_BEGINS_WITH = 'not_begins_with';
+    private const OPERATOR_CONTAINS = 'contains';
+    private const OPERATOR_NOT_CONTAINS = 'not_contains';
+    private const OPERATOR_ENDS_WITH = 'ends_with';
+    private const OPERATOR_NOT_ENDS_WITH = 'not_ends_with';
+    private const OPERATOR_IS_EMPTY = 'is_empty';
+    private const OPERATOR_IS_NOT_EMPTY = 'is_not_empty';
+    private const OPERATOR_IS_NULL = 'is_null';
+    private const OPERATOR_IS_NOT_NULL = 'is_not_null';
+    private const OPERATOR_LESS = 'less';
+    private const OPERATOR_LESS_OR_EQUAL = 'less_or_equal';
+    private const OPERATOR_GREATER = 'greater';
+    private const OPERATOR_GREATER_OR_EQUAL = 'greater_or_equal';
+    private const OPERATOR_BETWEEN = 'between';
+    private const OPERATOR_NOT_BETWEEN = 'not_between';
 
-    const CONDITION_AND = 'AND';
-    const CONDITION_OR = 'OR';
+    private const CONDITION_AND = 'AND';
 
-    const FORMAT_DATETIME = 'Y-m-d H:i';
-    const FORMAT_DATE = 'Y-m-d';
-    const FORMAT_TIME = 'H:i';
-
-    const TYPE_STRING = 'string';
-    const TYPE_INTEGER = 'integer';
-    const TYPE_BOOLEAN = 'boolean';
-    const TYPE_DOUBLE = 'double';
-    const TYPE_DATE = 'date';
-    const TYPE_TIME= 'time';
-    const TYPE_DATETIME = 'datetime';
+    private const TYPE_STRING = 'string';
+    private const TYPE_INTEGER = 'integer';
+    private const TYPE_BOOLEAN = 'boolean';
+    private const TYPE_DOUBLE = 'double';
+    private const TYPE_DATE = 'date';
+    private const TYPE_TIME= 'time';
+    private const TYPE_DATETIME = 'datetime';
 
     /**
      * @param stdClass $filterObject
@@ -151,16 +146,16 @@ class QueryParser
         if ($rule->type === static::TYPE_TIME) {
             if (is_array($unQuotedValue)) {
                 if ($unQuotedValue[0] !== null) {
-                    list($hours, $minutes) = GeneralUtility::intExplode(':', $unQuotedValue[0]);
+                    [$hours, $minutes] = GeneralUtility::intExplode(':', $unQuotedValue[0]);
                     $unQuotedValue[0] = ($hours * 60 * 60) + ($minutes * 60);
                 }
                 if ($unQuotedValue[1] !== null) {
-                    list($hours, $minutes) = GeneralUtility::intExplode(':', $unQuotedValue[1]);
+                    [$hours, $minutes] = GeneralUtility::intExplode(':', $unQuotedValue[1]);
                     $unQuotedValue[1] = ($hours * 60 * 60) + ($minutes * 60);
                 }
             } else {
                 if ($unQuotedValue !== null) {
-                    list($hours, $minutes) = GeneralUtility::intExplode(':', $unQuotedValue);
+                    [$hours, $minutes] = GeneralUtility::intExplode(':', $unQuotedValue);
                     $unQuotedValue = ($hours * 60 * 60) + ($minutes * 60);
                 }
             }

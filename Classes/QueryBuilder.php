@@ -23,9 +23,9 @@ use UnexpectedValueException;
  */
 class QueryBuilder
 {
-    const FORMAT_DATETIME = 'YYYY-MM-DD HH:mm';
-    const FORMAT_DATE = 'YYYY-MM-DD';
-    const FORMAT_TIME = 'HH:mm';
+    private const FORMAT_DATETIME = 'YYYY-MM-DD HH:mm';
+    private const FORMAT_DATE = 'YYYY-MM-DD';
+    private const FORMAT_TIME = 'HH:mm';
 
     /**
      * Build the filter configuration from TCA
