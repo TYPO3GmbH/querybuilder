@@ -33,10 +33,9 @@ class PageRenderer
     {
         /** @var ServerRequestInterface $request */
         $request = $GLOBALS['TYPO3_REQUEST'];
-        $parsedBody = $request->getParsedBody();
         $queryParams = $request->getQueryParams();
-        $table = $parsedBody['table'] ?? $queryParams['table'] ?? '';
-        $route = $parsedBody['route'] ?? $queryParams['route'] ?? '';
+        $table = $queryParams['table'] ?? '';
+        $route = $queryParams['route'] ?? '';
         if (!empty($table) && $route === '/web/list/') {
             $pageRenderer = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Page\PageRenderer::class);
 
@@ -56,12 +55,12 @@ class PageRenderer
                 $languageModule = 'query-builder/lang/query-builder.' . $GLOBALS['BE_USER']->uc['lang'];
             }
 
-            $query = json_decode($parsedBody['query'] ?? $queryParams['query'] ?? '');
+            $query = json_decode($queryParams['query'] ?? '');
             $pageRenderer->addJsInlineCode('tx_querybuilder_query', 'var tx_querybuilder_query = ' . json_encode($query) . ';');
 
             $queryBuilder = GeneralUtility::makeInstance(QueryBuilder::class);
 
-            $pageId = GeneralUtility::_GP('id');
+            $pageId = $queryParams['id'];
             $filter = $queryBuilder->buildFilterFromTca($table, $pageId);
             $pageRenderer->addJsInlineCode('tx_querybuilder_filter', 'var tx_querybuilder_filter = ' . json_encode($filter) . ';');
 

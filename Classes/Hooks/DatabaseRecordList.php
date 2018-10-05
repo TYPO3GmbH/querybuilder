@@ -42,11 +42,10 @@ class DatabaseRecordList
     ): QueryBuilder {
         /** @var ServerRequestInterface $request */
         $request = $GLOBALS['TYPO3_REQUEST'];
-        $parsedBody = $request->getParsedBody();
         $queryParams = $request->getQueryParams();
-        $route = $parsedBody['route'] ?? $queryParams['route'] ?? '';
-        if ($table !== null && $route === '/web/list/') {
-            $query = $parsedBody['query'] ?? $queryParams['query'] ?? '';
+        $route = $queryParams['route'] ?? '';
+        if (!empty($table) && $route === '/web/list/') {
+            $query = $queryParams['query'] ?? '';
             if ($query !== null) {
                 $filter = json_decode($query);
                 if ($filter) {
