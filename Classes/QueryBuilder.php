@@ -146,8 +146,7 @@ class QueryBuilder
         $values = [];
         $fieldConfigType = $fieldConfig['config']['type'];
         $fieldConfigItems = $fieldConfig['config']['items'];
-        if ($fieldConfigType === 'select')
-        {
+        if ($fieldConfigType === 'select') {
             if (!empty($fieldConfigItems)) {
                 foreach ($fieldConfigItems as $item) {
                     $tmp = new stdClass();
@@ -155,8 +154,7 @@ class QueryBuilder
                     $values[] = $tmp;
                 }
             }
-        } elseif ($fieldConfigType === 'check')
-        {
+        } elseif ($fieldConfigType === 'check') {
             $values[] = 1;
         }
 
