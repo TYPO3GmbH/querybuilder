@@ -70,14 +70,12 @@ class QueryParser
                 }
             }
         }
-        if ($iteration === 1) {
-            if (!empty($whereParts)) {
+        if (!empty($whereParts)) {
+            if ($iteration === 1) {
                 $filterObject->condition === static::CONDITION_AND
                     ? $queryBuilderObject->andWhere($queryBuilderObject->expr()->andX($queryBuilderObject->expr()->andX(...$whereParts)))
                     : $queryBuilderObject->andWhere($queryBuilderObject->expr()->andX($queryBuilderObject->expr()->orX(...$whereParts)));
-            }
-        } else {
-            if (!empty($whereParts)) {
+            } else {
                 $filterObject->condition === static::CONDITION_AND
                     ? $queryBuilderObject->andWhere($queryBuilderObject->expr()->andX(...$whereParts))
                     : $queryBuilderObject->orWhere($queryBuilderObject->expr()->orX(...$whereParts));

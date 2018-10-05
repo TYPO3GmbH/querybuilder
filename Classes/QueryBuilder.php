@@ -98,18 +98,14 @@ class QueryBuilder
                         $type = 'time';
                         break;
                     }
-                    if (strpos($fieldConfig['config']['eval'], 'int') !== false) {
-                        $type = 'integer';
-                        break;
-                    }
-                    if (strpos($fieldConfig['config']['eval'], 'num') !== false) {
+                    if (strpos($fieldConfig['config']['eval'], 'int') !== false
+                        || strpos($fieldConfig['config']['eval'], 'num') !== false) {
                         $type = 'integer';
                         break;
                     }
                 }
                 break;
         }
-
         return $type;
     }
 
@@ -130,10 +126,8 @@ class QueryBuilder
                 break;
             case 'input':
                 if (isset($fieldConfig['config']['eval'])) {
-                    if (strpos($fieldConfig['config']['eval'], 'double2') !== false) {
-                        $input = 'number';
-                    }
-                    if (strpos($fieldConfig['config']['eval'], 'int') !== false) {
+                    if (strpos($fieldConfig['config']['eval'], 'double2') !== false
+                        || strpos($fieldConfig['config']['eval'], 'int') !== false) {
                         $input = 'number';
                     }
                 }
@@ -150,19 +144,20 @@ class QueryBuilder
     protected function determineFilterValues(array $fieldConfig) : array
     {
         $values = [];
-        switch ($fieldConfig['config']['type']) {
-            case 'select':
-                if (!empty($fieldConfig['config']['items'])) {
-                    foreach ($fieldConfig['config']['items'] as $item) {
-                        $tmp = new stdClass();
-                        $tmp->{$item[1]} = $item[0];
-                        $values[] = $tmp;
-                    }
+        $fieldConfigType = $fieldConfig['config']['type'];
+        $fieldConfigItems = $fieldConfig['config']['items'];
+        if ($fieldConfigType === 'select')
+        {
+            if (!empty($fieldConfigItems)) {
+                foreach ($fieldConfigItems as $item) {
+                    $tmp = new stdClass();
+                    $tmp->{$item[1]} = $item[0];
+                    $values[] = $tmp;
                 }
-                break;
-            case 'check':
-                $values[] = 1;
-                break;
+            }
+        } elseif ($fieldConfigType === 'check')
+        {
+            $values[] = 1;
         }
 
         return $values;

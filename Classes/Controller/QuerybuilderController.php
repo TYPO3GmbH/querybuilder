@@ -52,7 +52,8 @@ class QuerybuilderController
                 'affected_table' => $requestParams['table'],
                 'queryname' => $requestParams['queryName'],
             ];
-            $queryBuilder->insert('sys_querybuilder')
+            $queryBuilder
+                ->insert('sys_querybuilder')
                 ->values($data)
                 ->execute();
             $uid = $queryBuilder->getConnection()->lastInsertId('sys_querybuilder');

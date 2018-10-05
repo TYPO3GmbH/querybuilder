@@ -48,10 +48,7 @@ class DatabaseRecordList
             $query = $queryParams['query'] ?? '';
             if ($query !== null) {
                 $filter = json_decode($query);
-                if ($filter) {
-                    $queryBuilder = GeneralUtility::makeInstance(QueryParser::class)
-                        ->parse($filter, $queryBuilder);
-                }
+                $filter ? $queryBuilder = GeneralUtility::makeInstance(QueryParser::class)->parse($filter, $queryBuilder) : null;
             }
         }
         return $queryBuilder;
