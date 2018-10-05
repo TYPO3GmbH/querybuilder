@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace T3G\Querybuilder\Hooks;
 
 use InvalidArgumentException;
+use Psr\Http\Message\ServerRequestInterface;
 use T3G\Querybuilder\QueryBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\PathUtility;
@@ -30,8 +31,13 @@ class PageRenderer
      */
     public function renderPreProcess(array $params)
     {
-        $table = GeneralUtility::_GP('table');
-        if (!empty($table) && GeneralUtility::_GP('route') === '/web/list/') {
+        /** @var ServerRequestInterface $request */
+        $request = $GLOBALS['TYPO3_REQUEST'];
+        $parsedBody = $request->getParsedBody();
+        $queryParams = $request->getQueryParams();
+        $table = $parsedBody['table'] ?? $queryParams['table'] ?? '';
+        $route = $parsedBody['route'] ?? $queryParams['route'] ?? '';
+        if (!empty($table) && $route === '/web/list/') {
             $pageRenderer = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Page\PageRenderer::class);
 
             $pageRenderer->addInlineLanguageLabelFile('EXT:querybuilder/Resources/Private/Language/querybuilder-js.xlf');
@@ -50,8 +56,7 @@ class PageRenderer
                 $languageModule = 'query-builder/lang/query-builder.' . $GLOBALS['BE_USER']->uc['lang'];
             }
 
-            $query = GeneralUtility::_GP('query');
-            $query = json_decode($query);
+            $query = json_decode($parsedBody['query'] ?? $queryParams['query'] ?? '');
             $pageRenderer->addJsInlineCode('tx_querybuilder_query', 'var tx_querybuilder_query = ' . json_encode($query) . ';');
 
             $queryBuilder = GeneralUtility::makeInstance(QueryBuilder::class);

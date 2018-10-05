@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace T3G\Querybuilder\Hooks;
 
+use Psr\Http\Message\ServerRequestInterface;
 use T3G\Querybuilder\Parser\QueryParser;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -39,10 +40,15 @@ class DatabaseRecordList
         array $fieldList,
         QueryBuilder $queryBuilder
     ): QueryBuilder {
-        if ($table !== null && GeneralUtility::_GP('route') === '/web/list/') {
-            $filter = GeneralUtility::_GP('query');
-            if ($filter !== null) {
-                $filter = json_decode($filter);
+        /** @var ServerRequestInterface $request */
+        $request = $GLOBALS['TYPO3_REQUEST'];
+        $parsedBody = $request->getParsedBody();
+        $queryParams = $request->getQueryParams();
+        $route = $parsedBody['route'] ?? $queryParams['route'] ?? '';
+        if ($table !== null && $route === '/web/list/') {
+            $query = $parsedBody['query'] ?? $queryParams['query'] ?? '';
+            if ($query !== null) {
+                $filter = json_decode($query);
                 if ($filter) {
                     $queryBuilder = GeneralUtility::makeInstance(QueryParser::class)
                         ->parse($filter, $queryBuilder);
