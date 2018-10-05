@@ -193,9 +193,7 @@ class QueryParser
                 break;
             case static::OPERATOR_IN:
                 $values = [$unQuotedValue];
-                if (is_string($unQuotedValue)) {
-                    $values = $this->splitString($unQuotedValue);
-                }
+                is_string($unQuotedValue) ?  $values = $this->splitString($unQuotedValue) : null;
                 $escapedValues = [];
                 foreach ($values as $singleValue) {
                     $escapedValues[] = $queryBuilderObject->createNamedParameter($singleValue);
@@ -204,9 +202,7 @@ class QueryParser
                 break;
             case static::OPERATOR_NOT_IN:
                 $values = [$unQuotedValue];
-                if (is_string($unQuotedValue)) {
-                    $values = $this->splitString($unQuotedValue);
-                }
+                is_string($unQuotedValue) ? $values = $this->splitString($unQuotedValue) : null;
                 $escapedValues = [];
                 foreach ($values as $singleValue) {
                     $escapedValues[] = $queryBuilderObject->createNamedParameter($singleValue);
