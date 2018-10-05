@@ -60,7 +60,7 @@ define(['jquery',
 			id: 'title',
 			label: 'Title',
 			type: 'string',
-			description: 'foo'
+			// description: 'foo'
 		}],
 		basicRules: {
 			condition: 'AND',
