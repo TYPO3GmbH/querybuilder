@@ -20,7 +20,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class DatabaseRecordList
 {
-
     /**
      * @param array $parameters parameters
      * @param string $table the current database table

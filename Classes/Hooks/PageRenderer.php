@@ -29,7 +29,7 @@ class PageRenderer
      * @throws InvalidArgumentException
      * @throws UnexpectedValueException
      */
-    public function renderPreProcess(array $params)
+    public function renderPreProcess(array $params): void
     {
         /** @var ServerRequestInterface $request */
         $request = $GLOBALS['TYPO3_REQUEST'];
@@ -60,7 +60,7 @@ class PageRenderer
 
             $queryBuilder = GeneralUtility::makeInstance(QueryBuilder::class);
 
-            $pageId = $queryParams['id'];
+            $pageId = (int)$queryParams['id'];
             $filter = $queryBuilder->buildFilterFromTca($table, $pageId);
             $pageRenderer->addJsInlineCode('tx_querybuilder_filter', 'var tx_querybuilder_filter = ' . json_encode($filter) . ';');
 

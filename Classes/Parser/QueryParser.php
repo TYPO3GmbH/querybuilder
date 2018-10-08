@@ -100,6 +100,9 @@ class QueryParser
         // determine the correct database type for quoting
         switch ($rule->type) {
             case static::TYPE_INTEGER:
+            case static::TYPE_DATE:
+            case static::TYPE_TIME:
+            case static::TYPE_DATETIME:
                 $databaseType = \PDO::PARAM_INT;
                 break;
             case static::TYPE_BOOLEAN:
@@ -108,11 +111,6 @@ class QueryParser
             case static::TYPE_DOUBLE:
                 $unQuotedValue = str_replace(',', '.', $unQuotedValue);
                 $databaseType = \PDO::PARAM_STR;
-                break;
-            case static::TYPE_DATE:
-            case static::TYPE_TIME:
-            case static::TYPE_DATETIME:
-                $databaseType = \PDO::PARAM_INT;
                 break;
             case static::TYPE_STRING:
             default:
@@ -132,11 +130,9 @@ class QueryParser
                     $unQuotedValue[1] = (new \DateTime($unQuotedValue[1]))->getTimestamp();
                     $unQuotedValue[1] -= date('Z', $unQuotedValue[1]);
                 }
-            } else {
-                if ($unQuotedValue !== null) {
-                    $unQuotedValue = (new \DateTime($unQuotedValue))->getTimestamp();
-                    $unQuotedValue -= date('Z', $unQuotedValue);
-                }
+            } elseif ($unQuotedValue !== null) {
+                $unQuotedValue = (new \DateTime($unQuotedValue))->getTimestamp();
+                $unQuotedValue -= date('Z', $unQuotedValue);
             }
         }
 
@@ -151,11 +147,9 @@ class QueryParser
                     [$hours, $minutes] = GeneralUtility::intExplode(':', $unQuotedValue[1]);
                     $unQuotedValue[1] = ($hours * 60 * 60) + ($minutes * 60);
                 }
-            } else {
-                if ($unQuotedValue !== null) {
-                    [$hours, $minutes] = GeneralUtility::intExplode(':', $unQuotedValue);
-                    $unQuotedValue = ($hours * 60 * 60) + ($minutes * 60);
-                }
+            } elseif ($unQuotedValue !== null) {
+                [$hours, $minutes] = GeneralUtility::intExplode(':', $unQuotedValue);
+                $unQuotedValue = ($hours * 60 * 60) + ($minutes * 60);
             }
         }
 
@@ -174,14 +168,12 @@ class QueryParser
                     $quotedValue = $queryBuilderObject->createNamedParameter($unQuotedValue[0], $databaseType);
                 }
             }
+        } elseif ($databaseType === \PDO::PARAM_INT) {
+            $quotedValue = (int)$unQuotedValue;
+        } elseif ($rule->type === static::TYPE_DOUBLE) {
+            $quotedValue = (double)$unQuotedValue;
         } else {
-            if ($databaseType === \PDO::PARAM_INT) {
-                $quotedValue = (int)$unQuotedValue;
-            } elseif ($rule->type === static::TYPE_DOUBLE) {
-                $quotedValue = (double)$unQuotedValue;
-            } else {
-                $quotedValue = $queryBuilderObject->createNamedParameter($unQuotedValue, $databaseType);
-            }
+            $quotedValue = $queryBuilderObject->createNamedParameter($unQuotedValue, $databaseType);
         }
 
         switch ($rule->operator) {
@@ -212,37 +204,37 @@ class QueryParser
             case static::OPERATOR_BEGINS_WITH:
                 $where = $queryBuilderObject->expr()->like(
                     $field,
-                    $queryBuilderObject->expr()->literal($this->quoteLikeValue($unQuotedValue) . '%')
+                    $queryBuilderObject->expr()->literal($this->quoteLikeValue((string)$unQuotedValue) . '%')
                 );
                 break;
             case static::OPERATOR_NOT_BEGINS_WITH:
                 $where = $queryBuilderObject->expr()->notLike(
                     $field,
-                    $queryBuilderObject->expr()->literal($this->quoteLikeValue($unQuotedValue) . '%')
+                    $queryBuilderObject->expr()->literal($this->quoteLikeValue((string)$unQuotedValue) . '%')
                 );
                 break;
             case static::OPERATOR_CONTAINS:
                 $where = $queryBuilderObject->expr()->like(
                     $field,
-                    $queryBuilderObject->expr()->literal('%' . $this->quoteLikeValue($unQuotedValue) . '%')
+                    $queryBuilderObject->expr()->literal('%' . $this->quoteLikeValue((string)$unQuotedValue) . '%')
                 );
                 break;
             case static::OPERATOR_NOT_CONTAINS:
                 $where = $queryBuilderObject->expr()->notLike(
                     $field,
-                    $queryBuilderObject->expr()->literal('%' . $this->quoteLikeValue($unQuotedValue) . '%')
+                    $queryBuilderObject->expr()->literal('%' . $this->quoteLikeValue((string)$unQuotedValue) . '%')
                 );
                 break;
             case static::OPERATOR_ENDS_WITH:
                 $where = $queryBuilderObject->expr()->like(
                     $field,
-                    $queryBuilderObject->expr()->literal('%' . $this->quoteLikeValue($unQuotedValue))
+                    $queryBuilderObject->expr()->literal('%' . $this->quoteLikeValue((string)$unQuotedValue))
                 );
                 break;
             case static::OPERATOR_NOT_ENDS_WITH:
                 $where = $queryBuilderObject->expr()->notLike(
                     $field,
-                    $queryBuilderObject->expr()->literal('%' . $this->quoteLikeValue($unQuotedValue))
+                    $queryBuilderObject->expr()->literal('%' . $this->quoteLikeValue((string)$unQuotedValue))
                 );
                 break;
             case static::OPERATOR_IS_EMPTY:
@@ -312,11 +304,11 @@ class QueryParser
     }
 
     /**
-     * @param $unQuotedValue
+     * @param string $unQuotedValue
      *
      * @return string
      */
-    protected function quoteLikeValue($unQuotedValue) : string
+    protected function quoteLikeValue(string $unQuotedValue) : string
     {
         return addcslashes($unQuotedValue, '%_');
     }

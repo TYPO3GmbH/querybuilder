@@ -10,13 +10,11 @@ declare(strict_types=1);
 
 namespace T3G\Querybuilder;
 
-use InvalidArgumentException;
 use stdClass;
 use T3G\Querybuilder\Backend\Form\FormDataGroup\TcaOnly;
 use TYPO3\CMS\Backend\Form\FormDataCompiler;
 use TYPO3\CMS\Backend\Form\FormDataProvider\SiteResolving;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use UnexpectedValueException;
 
 /**
  * Class QueryParser.
@@ -31,12 +29,10 @@ class QueryBuilder
      * Build the filter configuration from TCA
      *
      * @param string $table
-     *
+     * @param int $pageId
      * @return array
-     * @throws UnexpectedValueException
-     * @throws InvalidArgumentException
      */
-    public function buildFilterFromTca($table, $pageId) : array
+    public function buildFilterFromTca(string $table, int $pageId) : array
     {
         $dataProviderResult = $this->prepareTca($table, $pageId);
         $TCA = $dataProviderResult['processedTca'];
@@ -163,8 +159,9 @@ class QueryBuilder
 
     /**
      * @param stdClass $filter
+     * @TODO: replace stdClass with a defined filter class
      */
-    protected function determineAndAddExtras(&$filter)
+    protected function determineAndAddExtras(&$filter): void
     {
         if ($filter->type === 'date'
             || $filter->type === 'datetime'
@@ -192,6 +189,7 @@ class QueryBuilder
                 case 'time':
                     $filter->plugin_config->format = self::FORMAT_TIME;
                     break;
+                default:
             }
             $filter->validation->format = $filter->plugin_config->format;
         }
@@ -199,12 +197,10 @@ class QueryBuilder
 
     /**
      * @param string $tableName
-     *
+     * @param int $pageId
      * @return array
-     * @throws UnexpectedValueException
-     * @throws InvalidArgumentException
      */
-    protected function prepareTca($tableName, $pageId) : array
+    protected function prepareTca(string $tableName, int $pageId) : array
     {
         $formDataGroup = GeneralUtility::makeInstance(TcaOnly::class);
         $formDataCompiler = GeneralUtility::makeInstance(FormDataCompiler::class, $formDataGroup);
@@ -213,7 +209,7 @@ class QueryBuilder
         $formDataCompilerInput = [
             'tableName' => $tableName,
             'command' => 'new',
-            'effectivePid' => (int)$pageId
+            'effectivePid' => $pageId
         ];
         $formDataCompilerInput = $siteResolver->addData($formDataCompilerInput);
 
