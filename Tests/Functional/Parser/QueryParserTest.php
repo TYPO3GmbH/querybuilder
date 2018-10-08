@@ -39,11 +39,6 @@ class QueryParserTest extends FunctionalTestCase
     protected $table = 'pages';
 
     /**
-     * @var \TYPO3\CMS\Core\Database\Query\QueryBuilder
-     */
-    protected $queryBuilder;
-
-    /**
      * @var string
      */
     protected $originalTimeZone;
@@ -51,13 +46,12 @@ class QueryParserTest extends FunctionalTestCase
     /**
      *
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->originalTimeZone = date_default_timezone_get();
         date_default_timezone_set('Europe/Berlin');
         $this->subject = new QueryParser();
-        $this->queryBuilder = $this->getConnectionPool()->getQueryBuilderForTable($this->table);
     }
 
     /**
@@ -123,9 +117,9 @@ class QueryParserTest extends FunctionalTestCase
      * @param $expectedSQL
      * @param $expectedParameters
      */
-    public function parseReturnsValidWhereClauseForSimpleEqualQuery($number, $type, $expectedSQL, $expectedParameters)
+    public function parseReturnsValidWhereClauseForSimpleEqualQuery($number, $type, $expectedSQL, $expectedParameters): void
     {
-        $query = '{
+        $query = json_decode('{
           "condition": "AND",
           "rules": [
             {
@@ -138,8 +132,7 @@ class QueryParserTest extends FunctionalTestCase
             }
           ],
           "valid": true
-        }';
-        $query = json_decode($query);
+        }');
         $query->rules[0]->value = $number;
         $query->rules[0]->type = $type;
         $queryBuilder = $this->subject->parse($query, $this->getConnectionPool()->getQueryBuilderForTable($this->table));
@@ -323,7 +316,7 @@ class QueryParserTest extends FunctionalTestCase
      * @param $expectedSQL
      * @param $expectedParameters
      */
-    public function parseReturnsValidWhereClauseForMultipleEqualsQuery($multipleRules, $expectedSQL, $expectedParameters)
+    public function parseReturnsValidWhereClauseForMultipleEqualsQuery($multipleRules, $expectedSQL, $expectedParameters): void
     {
         $query = json_decode($multipleRules);
         $queryBuilder = $this->subject->parse($query, $this->getConnectionPool()->getQueryBuilderForTable($this->table));
@@ -384,9 +377,9 @@ class QueryParserTest extends FunctionalTestCase
      * @param $expectedSQL
      * @param $expectedParameters
      */
-    public function parseReturnsValidWhereClauseForSimpleNotEqualQuery($number, $type, $expectedSQL, $expectedParameters)
+    public function parseReturnsValidWhereClauseForSimpleNotEqualQuery($number, $type, $expectedSQL, $expectedParameters): void
     {
-        $query = '{
+        $query = json_decode('{
           "condition": "AND",
           "rules": [
             {
@@ -399,8 +392,7 @@ class QueryParserTest extends FunctionalTestCase
             }
           ],
           "valid": true
-        }';
-        $query = json_decode($query);
+        }');
         $query->rules[0]->value = $number;
         $query->rules[0]->type = $type;
         $queryBuilder = $this->subject->parse($query, $this->getConnectionPool()->getQueryBuilderForTable($this->table));
@@ -452,9 +444,9 @@ class QueryParserTest extends FunctionalTestCase
      * @param $expectedSQL
      * @param $expectedParameters
      */
-    public function parseReturnsValidWhereClauseForSimpleInQuery($number, $type, $expectedSQL, $expectedParameters)
+    public function parseReturnsValidWhereClauseForSimpleInQuery($number, $type, $expectedSQL, $expectedParameters): void
     {
-        $query = '{
+        $query = json_decode('{
           "condition": "AND",
           "rules": [
             {
@@ -467,8 +459,7 @@ class QueryParserTest extends FunctionalTestCase
             }
           ],
           "valid": true
-        }';
-        $query = json_decode($query);
+        }');
         $query->rules[0]->value = $number;
         $query->rules[0]->type = $type;
         $queryBuilder = $this->subject->parse($query, $this->getConnectionPool()->getQueryBuilderForTable($this->table));
@@ -520,9 +511,9 @@ class QueryParserTest extends FunctionalTestCase
      * @param $expectedSQL
      * @param $expectedParameters
      */
-    public function parseReturnsValidWhereClauseForSimpleNotInQuery($number, $type, $expectedSQL, $expectedParameters)
+    public function parseReturnsValidWhereClauseForSimpleNotInQuery($number, $type, $expectedSQL, $expectedParameters): void
     {
-        $query = '{
+        $query = json_decode('{
           "condition": "AND",
           "rules": [
             {
@@ -535,8 +526,7 @@ class QueryParserTest extends FunctionalTestCase
             }
           ],
           "valid": true
-        }';
-        $query = json_decode($query);
+        }');
         $query->rules[0]->value = $number;
         $query->rules[0]->type = $type;
         $queryBuilder = $this->subject->parse($query, $this->getConnectionPool()->getQueryBuilderForTable($this->table));
@@ -568,9 +558,9 @@ class QueryParserTest extends FunctionalTestCase
      * @param $expectedSQL
      * @param $expectedParameters
      */
-    public function parseReturnsValidWhereClauseForSimpleBeginsQuery($number, $type, $expectedSQL, $expectedParameters)
+    public function parseReturnsValidWhereClauseForSimpleBeginsQuery($number, $type, $expectedSQL, $expectedParameters): void
     {
-        $query = '{
+        $query = json_decode('{
           "condition": "AND",
           "rules": [
             {
@@ -583,8 +573,7 @@ class QueryParserTest extends FunctionalTestCase
             }
           ],
           "valid": true
-        }';
-        $query = json_decode($query);
+        }');
         $query->rules[0]->value = $number;
         $query->rules[0]->type = $type;
         $queryBuilder = $this->subject->parse($query, $this->getConnectionPool()->getQueryBuilderForTable($this->table));
@@ -616,9 +605,9 @@ class QueryParserTest extends FunctionalTestCase
      * @param $expectedSQL
      * @param $expectedParameters
      */
-    public function parseReturnsValidWhereClauseForSimpleNotBeginsQuery($number, $type, $expectedSQL, $expectedParameters)
+    public function parseReturnsValidWhereClauseForSimpleNotBeginsQuery($number, $type, $expectedSQL, $expectedParameters): void
     {
-        $query = '{
+        $query = json_decode('{
           "condition": "AND",
           "rules": [
             {
@@ -631,8 +620,7 @@ class QueryParserTest extends FunctionalTestCase
             }
           ],
           "valid": true
-        }';
-        $query = json_decode($query);
+        }');
         $query->rules[0]->value = $number;
         $query->rules[0]->type = $type;
         $queryBuilder = $this->subject->parse($query, $this->getConnectionPool()->getQueryBuilderForTable($this->table));
@@ -664,9 +652,9 @@ class QueryParserTest extends FunctionalTestCase
      * @param $expectedSQL
      * @param $expectedParameters
      */
-    public function parseReturnsValidWhereClauseForSimpleContainsQuery($number, $type, $expectedSQL, $expectedParameters)
+    public function parseReturnsValidWhereClauseForSimpleContainsQuery($number, $type, $expectedSQL, $expectedParameters): void
     {
-        $query = '{
+        $query = json_decode('{
           "condition": "AND",
           "rules": [
             {
@@ -679,8 +667,7 @@ class QueryParserTest extends FunctionalTestCase
             }
           ],
           "valid": true
-        }';
-        $query = json_decode($query);
+        }');
         $query->rules[0]->value = $number;
         $query->rules[0]->type = $type;
         $queryBuilder = $this->subject->parse($query, $this->getConnectionPool()->getQueryBuilderForTable($this->table));
@@ -712,9 +699,9 @@ class QueryParserTest extends FunctionalTestCase
      * @param $expectedSQL
      * @param $expectedParameters
      */
-    public function parseReturnsValidWhereClauseForSimpleNotContainsQuery($number, $type, $expectedSQL, $expectedParameters)
+    public function parseReturnsValidWhereClauseForSimpleNotContainsQuery($number, $type, $expectedSQL, $expectedParameters): void
     {
-        $query = '{
+        $query = json_decode('{
           "condition": "AND",
           "rules": [
             {
@@ -727,8 +714,7 @@ class QueryParserTest extends FunctionalTestCase
             }
           ],
           "valid": true
-        }';
-        $query = json_decode($query);
+        }');
         $query->rules[0]->value = $number;
         $query->rules[0]->type = $type;
         $queryBuilder = $this->subject->parse($query, $this->getConnectionPool()->getQueryBuilderForTable($this->table));
@@ -760,9 +746,9 @@ class QueryParserTest extends FunctionalTestCase
      * @param $expectedSQL
      * @param $expectedParameters
      */
-    public function parseReturnsValidWhereClauseForSimpleEndsQuery($number, $type, $expectedSQL, $expectedParameters)
+    public function parseReturnsValidWhereClauseForSimpleEndsQuery($number, $type, $expectedSQL, $expectedParameters): void
     {
-        $query = '{
+        $query = json_decode('{
           "condition": "AND",
           "rules": [
             {
@@ -775,8 +761,7 @@ class QueryParserTest extends FunctionalTestCase
             }
           ],
           "valid": true
-        }';
-        $query = json_decode($query);
+        }');
         $query->rules[0]->value = $number;
         $query->rules[0]->type = $type;
         $queryBuilder = $this->subject->parse($query, $this->getConnectionPool()->getQueryBuilderForTable($this->table));
@@ -808,9 +793,9 @@ class QueryParserTest extends FunctionalTestCase
      * @param $expectedSQL
      * @param $expectedParameters
      */
-    public function parseReturnsValidWhereClauseForSimpleNotEndsQuery($number, $type, $expectedSQL, $expectedParameters)
+    public function parseReturnsValidWhereClauseForSimpleNotEndsQuery($number, $type, $expectedSQL, $expectedParameters): void
     {
-        $query = '{
+        $query = json_decode('{
           "condition": "AND",
           "rules": [
             {
@@ -823,8 +808,7 @@ class QueryParserTest extends FunctionalTestCase
             }
           ],
           "valid": true
-        }';
-        $query = json_decode($query);
+        }');
         $query->rules[0]->value = $number;
         $query->rules[0]->type = $type;
         $queryBuilder = $this->subject->parse($query, $this->getConnectionPool()->getQueryBuilderForTable($this->table));
@@ -835,9 +819,9 @@ class QueryParserTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function parseReturnsValidWhereClauseForSimpleEmptyQuery()
+    public function parseReturnsValidWhereClauseForSimpleEmptyQuery(): void
     {
-        $query = '{
+        $query = json_decode('{
           "condition": "AND",
           "rules": [
             {
@@ -849,8 +833,7 @@ class QueryParserTest extends FunctionalTestCase
             }
           ],
           "valid": true
-        }';
-        $query = json_decode($query);
+        }');
         $expectedResult = 'SELECT  WHERE (`title` = \'\') OR (`title` IS NULL)';
         $queryBuilder = $this->subject->parse($query, $this->getConnectionPool()->getQueryBuilderForTable($this->table));
         self::assertEquals($expectedResult, $queryBuilder->getSQL());
@@ -859,9 +842,9 @@ class QueryParserTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function parseReturnsValidWhereClauseForSimpleNotEmptyQuery()
+    public function parseReturnsValidWhereClauseForSimpleNotEmptyQuery(): void
     {
-        $query = '{
+        $query = json_decode('{
           "condition": "AND",
           "rules": [
             {
@@ -873,8 +856,7 @@ class QueryParserTest extends FunctionalTestCase
             }
           ],
           "valid": true
-        }';
-        $query = json_decode($query);
+        }');
         $expectedResult = 'SELECT  WHERE (`title` <> \'\') AND (`title` IS NOT NULL)';
         $queryBuilder = $this->subject->parse($query, $this->getConnectionPool()->getQueryBuilderForTable($this->table));
         self::assertEquals($expectedResult, $queryBuilder->getSQL());
@@ -902,9 +884,9 @@ class QueryParserTest extends FunctionalTestCase
      *
      * @param $type
      */
-    public function parseReturnsValidWhereClauseForSimpleNullQuery($type)
+    public function parseReturnsValidWhereClauseForSimpleNullQuery($type): void
     {
-        $query = '{
+        $query = json_decode('{
           "condition": "AND",
           "rules": [
             {
@@ -916,8 +898,7 @@ class QueryParserTest extends FunctionalTestCase
             }
           ],
           "valid": true
-        }';
-        $query = json_decode($query);
+        }');
         $query->rules[0]->type = $type;
         $expectedResult = 'SELECT  WHERE `title` IS NULL';
         $queryBuilder = $this->subject->parse($query, $this->getConnectionPool()->getQueryBuilderForTable($this->table));
@@ -946,9 +927,9 @@ class QueryParserTest extends FunctionalTestCase
      *
      * @param $type
      */
-    public function parseReturnsValidWhereClauseForSimpleNotNullQuery($type)
+    public function parseReturnsValidWhereClauseForSimpleNotNullQuery($type): void
     {
-        $query = '{
+        $query = json_decode('{
           "condition": "AND",
           "rules": [
             {
@@ -960,8 +941,7 @@ class QueryParserTest extends FunctionalTestCase
             }
           ],
           "valid": true
-        }';
-        $query = json_decode($query);
+        }');
         $query->rules[0]->type = $type;
         $expectedResult = 'SELECT  WHERE `title` IS NOT NULL';
         $queryBuilder = $this->subject->parse($query, $this->getConnectionPool()->getQueryBuilderForTable($this->table));
@@ -1002,9 +982,9 @@ class QueryParserTest extends FunctionalTestCase
      * @param $expectedSQL
      * @param $expectedParameters
      */
-    public function parseReturnsValidWhereClauseForSimpleLessQuery($number, $type, $expectedSQL, $expectedParameters)
+    public function parseReturnsValidWhereClauseForSimpleLessQuery($number, $type, $expectedSQL, $expectedParameters): void
     {
-        $query = '{
+        $query = json_decode('{
           "condition": "AND",
           "rules": [
             {
@@ -1017,8 +997,7 @@ class QueryParserTest extends FunctionalTestCase
             }
           ],
           "valid": true
-        }';
-        $query = json_decode($query);
+        }');
         $query->rules[0]->value = $number;
         $query->rules[0]->type = $type;
         $queryBuilder = $this->subject->parse($query, $this->getConnectionPool()->getQueryBuilderForTable($this->table));
@@ -1060,9 +1039,9 @@ class QueryParserTest extends FunctionalTestCase
      * @param $expectedSQL
      * @param $expectedParameters
      */
-    public function parseReturnsValidWhereClauseForSimpleLessOrEqualQuery($number, $type, $expectedSQL, $expectedParameters)
+    public function parseReturnsValidWhereClauseForSimpleLessOrEqualQuery($number, $type, $expectedSQL, $expectedParameters): void
     {
-        $query = '{
+        $query = json_decode('{
           "condition": "AND",
           "rules": [
             {
@@ -1075,8 +1054,7 @@ class QueryParserTest extends FunctionalTestCase
             }
           ],
           "valid": true
-        }';
-        $query = json_decode($query);
+        }');
         $query->rules[0]->value = $number;
         $query->rules[0]->type = $type;
         $queryBuilder = $this->subject->parse($query, $this->getConnectionPool()->getQueryBuilderForTable($this->table));
@@ -1118,9 +1096,9 @@ class QueryParserTest extends FunctionalTestCase
      * @param $expectedSQL
      * @param $expectedParameters
      */
-    public function parseReturnsValidWhereClauseForSimpleGreaterQuery($number, $type, $expectedSQL, $expectedParameters)
+    public function parseReturnsValidWhereClauseForSimpleGreaterQuery($number, $type, $expectedSQL, $expectedParameters): void
     {
-        $query = '{
+        $query = json_decode('{
           "condition": "AND",
           "rules": [
             {
@@ -1133,8 +1111,7 @@ class QueryParserTest extends FunctionalTestCase
             }
           ],
           "valid": true
-        }';
-        $query = json_decode($query);
+        }');
         $query->rules[0]->value = $number;
         $query->rules[0]->type = $type;
         $queryBuilder = $this->subject->parse($query, $this->getConnectionPool()->getQueryBuilderForTable($this->table));
@@ -1176,9 +1153,9 @@ class QueryParserTest extends FunctionalTestCase
      * @param $expectedSQL
      * @param $expectedParameters
      */
-    public function parseReturnsValidWhereClauseForSimpleGreaterOrEqualQuery($number, $type, $expectedSQL, $expectedParameters)
+    public function parseReturnsValidWhereClauseForSimpleGreaterOrEqualQuery($number, $type, $expectedSQL, $expectedParameters): void
     {
-        $query = '{
+        $query = json_decode('{
           "condition": "AND",
           "rules": [
             {
@@ -1191,8 +1168,7 @@ class QueryParserTest extends FunctionalTestCase
             }
           ],
           "valid": true
-        }';
-        $query = json_decode($query);
+        }');
         $query->rules[0]->value = $number;
         $query->rules[0]->type = $type;
         $queryBuilder = $this->subject->parse($query, $this->getConnectionPool()->getQueryBuilderForTable($this->table));
@@ -1234,9 +1210,9 @@ class QueryParserTest extends FunctionalTestCase
      * @param $expectedSQL
      * @param $expectedParameters
      */
-    public function parseReturnsValidWhereClauseForSimpleBetweenQuery($number, $type, $expectedSQL, $expectedParameters)
+    public function parseReturnsValidWhereClauseForSimpleBetweenQuery($number, $type, $expectedSQL, $expectedParameters): void
     {
-        $query = '{
+        $query = json_decode('{
           "condition": "AND",
           "rules": [
             {
@@ -1249,8 +1225,7 @@ class QueryParserTest extends FunctionalTestCase
             }
           ],
           "valid": true
-        }';
-        $query = json_decode($query);
+        }');
         $query->rules[0]->value = $number;
         $query->rules[0]->type = $type;
         $queryBuilder = $this->subject->parse($query, $this->getConnectionPool()->getQueryBuilderForTable($this->table));
@@ -1292,9 +1267,9 @@ class QueryParserTest extends FunctionalTestCase
      * @param $expectedSQL
      * @param $expectedParameters
      */
-    public function parseReturnsValidWhereClauseForSimpleNotBetweenQuery($number, $type, $expectedSQL, $expectedParameters)
+    public function parseReturnsValidWhereClauseForSimpleNotBetweenQuery($number, $type, $expectedSQL, $expectedParameters): void
     {
-        $query = '{
+        $query = json_decode('{
           "condition": "AND",
           "rules": [
             {
@@ -1307,8 +1282,7 @@ class QueryParserTest extends FunctionalTestCase
             }
           ],
           "valid": true
-        }';
-        $query = json_decode($query);
+        }');
         $query->rules[0]->value = $number;
         $query->rules[0]->type = $type;
         $queryBuilder = $this->subject->parse($query, $this->getConnectionPool()->getQueryBuilderForTable($this->table));

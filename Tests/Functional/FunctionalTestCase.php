@@ -43,7 +43,7 @@ abstract class FunctionalTestCase extends \TYPO3\TestingFramework\Core\Functiona
     /**
      * @param string $scenarioName
      */
-    protected function importCsvScenario(string $scenarioName = '')
+    protected function importCsvScenario(string $scenarioName = ''): void
     {
         $scenarioFileName = $this->scenarioDataSetDirectory . $scenarioName . '.csv';
         $scenarioFileName = GeneralUtility::getFileAbsFileName($scenarioFileName);
@@ -53,7 +53,7 @@ abstract class FunctionalTestCase extends \TYPO3\TestingFramework\Core\Functiona
     /**
      * @param string $scenarioName
      */
-    protected function importAssertCSVScenario(string $scenarioName = '')
+    protected function importAssertCSVScenario(string $scenarioName = ''): void
     {
         $scenarioFileName = $this->assertionDataSetDirectory . $scenarioName . '.csv';
         $scenarioFileName = GeneralUtility::getFileAbsFileName($scenarioFileName);
