@@ -47,6 +47,7 @@ class QueryBuilder
             }
             // Filter:Types: string, integer, double, date, time, datetime and boolean.
             // Filter:Required: id, type, values*
+//          @TODO replace with Filterclass
             $filter = new stdClass();
             $filter->id = $filterField;
             $filter->type = $this->determineFilterType($fieldConfig);
