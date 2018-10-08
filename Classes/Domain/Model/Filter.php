@@ -26,30 +26,25 @@ class Filter
      */
     protected $type;
 
-
     /**
      * @var string
      */
     protected $input;
-
 
     /**
      * @var array
      */
     protected $values;
 
-
     /**
      * @var string
      */
     protected $labels;
 
-
     /**
      * @var string
      */
     protected $description;
-
 
     /**
      * @var string
@@ -61,7 +56,7 @@ class Filter
      *
      * @param int $id
      */
-    public function setId($id)
+    public function setId(int $id)
     {
         $this->id = $id;
     }
@@ -81,7 +76,7 @@ class Filter
      *
      * @param string $type
      */
-    public function setType($type)
+    public function setType(string $type)
     {
         $this->type = $type;
     }
@@ -101,7 +96,7 @@ class Filter
      *
      * @param string $input
      */
-    public function setInput($input)
+    public function setInput(string $input)
     {
         $this->input = $input;
     }
@@ -121,7 +116,7 @@ class Filter
      *
      * @param array $values
      */
-    public function setValues($values)
+    public function setValues(array $values)
     {
         $this->values = $values;
     }
@@ -141,7 +136,7 @@ class Filter
      *
      * @param string $labels
      */
-    public function setLabels($labels)
+    public function setLabels(string $labels)
     {
         $this->labels = $labels;
     }
@@ -161,7 +156,7 @@ class Filter
      *
      * @param string $description
      */
-    public function setDescription($description)
+    public function setDescription(string $description)
     {
         $this->description = $description;
     }
@@ -181,7 +176,7 @@ class Filter
      *
      * @param string $plugin
      */
-    public function setPlugin($plugin)
+    public function setPlugin(string $plugin)
     {
         $this->plugin = $plugin;
     }
