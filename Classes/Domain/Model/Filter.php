@@ -8,7 +8,7 @@ declare(strict_types=1);
  * LICENSE file that was distributed with this source code.
  */
 
-namespace T3G\Querybuilder;
+namespace T3G\Querybuilder\Domain\Model;
 
 /**
  * Class QueryParser.
