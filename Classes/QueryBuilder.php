@@ -101,6 +101,7 @@ class QueryBuilder
                     }
                 }
                 break;
+            default:
         }
         return $type;
     }
@@ -128,6 +129,7 @@ class QueryBuilder
                     }
                 }
                 break;
+            default:
         }
 
         return $input;

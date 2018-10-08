@@ -279,6 +279,7 @@ class QueryParser
                     $queryBuilderObject->expr()->gt($field, $quotedValue[1])
                 );
                 break;
+            default:
         }
 
         return $where;
