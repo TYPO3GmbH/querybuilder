@@ -1,8 +1,6 @@
 <?php
 declare(strict_types = 1);
 
-namespace T3G\Querybuilder\Backend;
-
 /*
  * This file is part of the package t3g/querybuilder.
  *
@@ -10,9 +8,10 @@ namespace T3G\Querybuilder\Backend;
  * LICENSE file that was distributed with this source code.
  */
 
+namespace T3G\Querybuilder\Backend;
+
 use T3G\Querybuilder\QueryBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-
 /**
  * Creates queryBuilder
  */
