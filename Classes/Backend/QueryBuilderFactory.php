@@ -12,6 +12,7 @@ namespace T3G\Querybuilder\Backend;
 
 use T3G\Querybuilder\QueryBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * Creates queryBuilder
  */
@@ -22,7 +23,6 @@ class QueryBuilderFactory
      */
     public function create(): QueryBuilder
     {
-        $queryBuilder = GeneralUtility::makeInstance(QueryBuilder::class);
-        return $queryBuilder;
+        return GeneralUtility::makeInstance(QueryBuilder::class);
     }
 }

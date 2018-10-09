@@ -95,29 +95,15 @@ class QueryParser
     {
         $where = '';
         $field = $rule->field;
-        $unQuotedValue = $rule->value;
+        $unQuotedValue = ($rule->type === static::TYPE_DOUBLE)
+            ? str_replace(',', '.', $rule->value)
+            : $rule->value;
 
-        // determine the correct database type for quoting
-        switch ($rule->type) {
-            case static::TYPE_INTEGER:
-            case static::TYPE_DATE:
-            case static::TYPE_TIME:
-            case static::TYPE_DATETIME:
-                $databaseType = \PDO::PARAM_INT;
-                break;
-            case static::TYPE_BOOLEAN:
-                $databaseType = \PDO::PARAM_BOOL;
-                break;
-            case static::TYPE_DOUBLE:
-                $unQuotedValue = str_replace(',', '.', $unQuotedValue);
-                $databaseType = \PDO::PARAM_STR;
-                break;
-            case static::TYPE_STRING:
-            default:
-                $databaseType = \PDO::PARAM_STR;
-                break;
-        }
+        $databaseType = $this->determineDatabaseType($rule->type);
 
+        // @TODO: This method is very long and complex
+        // @TODO: Think about refactoring this method and split it up into
+        // @TODO: smaller methods likes $this->determineDatabaseType()
         // Field is a date string and must be converted
         if ($rule->type === static::TYPE_DATETIME || $rule->type === static::TYPE_DATE) {
             // @TODO: TCA supports dbType = date and dbType = datetime, this must be handled different.
@@ -285,6 +271,29 @@ class QueryParser
         return $where;
     }
 
+    protected function determineDatabaseType(string $ruleType): int
+    {
+        switch ($ruleType) {
+            case static::TYPE_INTEGER:
+            case static::TYPE_DATE:
+            case static::TYPE_TIME:
+            case static::TYPE_DATETIME:
+                $databaseType = \PDO::PARAM_INT;
+                break;
+            case static::TYPE_BOOLEAN:
+                $databaseType = \PDO::PARAM_BOOL;
+                break;
+            case static::TYPE_DOUBLE:
+                $databaseType = \PDO::PARAM_STR;
+                break;
+            case static::TYPE_STRING:
+            default:
+                $databaseType = \PDO::PARAM_STR;
+                break;
+        }
+        return $databaseType;
+    }
+
     /**
      * This method split the given string into chunks and return
      * it as array. As delimiter a set of special character is used:
@@ -304,11 +313,6 @@ class QueryParser
         return array_map('trim', preg_split($pattern, $string));
     }
 
-    /**
-     * @param string $unQuotedValue
-     *
-     * @return string
-     */
     protected function quoteLikeValue(string $unQuotedValue) : string
     {
         return addcslashes($unQuotedValue, '%_');

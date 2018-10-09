@@ -12,6 +12,10 @@ namespace T3G\Querybuilder;
 
 use stdClass;
 use T3G\Querybuilder\Backend\Form\FormDataGroup\TcaOnly;
+use T3G\Querybuilder\Entity\Filter;
+use T3G\Querybuilder\Factory\FilterFactory;
+use T3G\Querybuilder\Factory\PluginFactory;
+use T3G\Querybuilder\Factory\ValidationFactory;
 use TYPO3\CMS\Backend\Form\FormDataCompiler;
 use TYPO3\CMS\Backend\Form\FormDataProvider\SiteResolving;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -30,7 +34,7 @@ class QueryBuilder
      *
      * @param string $table
      * @param int $pageId
-     * @return array
+     * @return Filter[]
      */
     public function buildFilterFromTca(string $table, int $pageId) : array
     {
@@ -47,14 +51,15 @@ class QueryBuilder
             }
             // Filter:Types: string, integer, double, date, time, datetime and boolean.
             // Filter:Required: id, type, values*
-//          @TODO replace with Filterclass
-            $filter = new stdClass();
-            $filter->id = $filterField;
-            $filter->type = $this->determineFilterType($fieldConfig);
-            $filter->input = $this->determineFilterInput($fieldConfig);
-            $filter->values = $this->determineFilterValues($fieldConfig);
-            $filter->label = $fieldConfig['label'];
-            $filter->description = !empty($fieldConfig['description']) ? $fieldConfig['description'] : '';
+            $filter = GeneralUtility::makeInstance(FilterFactory::class)
+                ->create([
+                    'id' => $filterField,
+                    'type' => $this->determineFilterType($fieldConfig),
+                    'input' => $this->determineFilterInput($fieldConfig),
+                    'values' => $this->determineFilterValues($fieldConfig),
+                    'label' => $fieldConfig['label'],
+                    'description' => $fieldConfig['description'] ?? '',
+                ]);
             $this->determineAndAddExtras($filter);
             $filters[] = $filter;
         }
@@ -123,11 +128,11 @@ class QueryBuilder
                 $input = 'select';
                 break;
             case 'input':
-                if (isset($fieldConfig['config']['eval'])) {
-                    if (strpos($fieldConfig['config']['eval'], 'double2') !== false
-                        || strpos($fieldConfig['config']['eval'], 'int') !== false) {
-                        $input = 'number';
-                    }
+                if (!empty($fieldConfig['config']['eval'])
+                    && (strpos($fieldConfig['config']['eval'], 'double2') !== false
+                        || strpos($fieldConfig['config']['eval'], 'int') !== false)
+                ) {
+                    $input = 'number';
                 }
                 break;
             default:
@@ -161,40 +166,52 @@ class QueryBuilder
     }
 
     /**
-     * @param stdClass $filter
-     * @TODO: replace stdClass with a defined filter class
+     * @param Filter $filter
      */
-    protected function determineAndAddExtras(&$filter): void
+    protected function determineAndAddExtras(Filter $filter): void
     {
-        if ($filter->type === 'date'
-            || $filter->type === 'datetime'
-            || $filter->type === 'time') {
-            $filter->validation = new stdClass();
-            $filter->plugin = 'datetimepicker';
-            $filter->plugin_config = new stdClass();
-            $filter->plugin_config->sideBySide = true;
-            $filter->plugin_config->icons = new stdClass();
-            $filter->plugin_config->icons->time = 'fa fa-clock-o';
-            $filter->plugin_config->icons->date = 'fa fa-calendar';
-            $filter->plugin_config->icons->up = 'fa fa-chevron-up';
-            $filter->plugin_config->icons->down = 'fa fa-chevron-down';
-            $filter->plugin_config->icons->previous = 'fa fa-chevron-left';
-            $filter->plugin_config->icons->next = 'fa fa-chevron-right';
-            $filter->plugin_config->icons->today = 'fa fa-calendar-o';
-            $filter->plugin_config->icons->clear = 'fa fa-trash';
-            switch ($filter->type) {
+        if (\in_array($filter->getType(), ['date', 'datetime', 'time'], true)) {
+            $pluginConfiguration = [
+                'sideBySide' => true,
+                'icons' => [
+                    'time' => 'fa fa-clock-o',
+                    'date' => 'fa fa-calendar',
+                    'up' => 'fa fa-chevron-up',
+                    'down' => 'fa fa-chevron-down',
+                    'previous' => 'fa fa-chevron-left',
+                    'next' => 'fa fa-chevron-right',
+                    'today' => 'fa fa-calendar-o',
+                    'clear' => 'fa fa-trash',
+                ]
+            ];
+            switch ($filter->getType()) {
                 case 'datetime':
-                    $filter->plugin_config->format = self::FORMAT_DATETIME;
+                    $pluginConfiguration['format'] = self::FORMAT_DATETIME;
                     break;
                 case 'date':
-                    $filter->plugin_config->format = self::FORMAT_DATE;
+                    $pluginConfiguration['format'] = self::FORMAT_DATE;
                     break;
                 case 'time':
-                    $filter->plugin_config->format = self::FORMAT_TIME;
+                    $pluginConfiguration['format'] = self::FORMAT_TIME;
                     break;
                 default:
             }
-            $filter->validation->format = $filter->plugin_config->format;
+            $filter->setPlugin(
+                GeneralUtility::makeInstance(PluginFactory::class)
+                    ->create([
+                        'identifier' => 'datetimepicker',
+                        'configuration' => $pluginConfiguration,
+                    ])
+            );
+
+            if (!empty($pluginConfiguration['format'])) {
+                $filter->setValidation(
+                    GeneralUtility::makeInstance(ValidationFactory::class)
+                        ->create([
+                            'format' => $pluginConfiguration['format'],
+                        ])
+                );
+            }
         }
     }
 
