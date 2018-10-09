@@ -169,8 +169,6 @@ class QueryParser
         }
     }
 
-
-//    @todo add type hint for return and unquotedValue - mixed ??
     protected function quoteAllValues($unQuotedValue, int $databaseType, QueryBuilder $queryBuilderObject, string $type)
     {
         if (is_array($unQuotedValue)) {
@@ -197,7 +195,6 @@ class QueryParser
         return $quotedValue;
     }
 
-//    @todo add type hints
     protected function determineOperator(string $operator, string $field, $quotedValue, string $unQuotedValue, QueryBuilder $queryBuilderObject)
     {
         $where = '';
