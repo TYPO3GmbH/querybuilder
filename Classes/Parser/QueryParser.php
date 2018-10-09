@@ -99,10 +99,15 @@ class QueryParser
             : $rule->value;
 
         $databaseType = $this->determineDatabaseType($rule->type);
+
         // Convert date/dateime/time values
-        $this->convertFieldValueByType($rule->type, $unQuotedValue);
+        if ($rule->type === static::TYPE_DATETIME || $rule->type === static::TYPE_DATE || $rule->type === static::TYPE_TIME) {
+            $this->convertFieldValueByType($rule->type, $unQuotedValue);
+        }
+
         // Quote all values
         $quotedValue = $this->quoteAllValues($unQuotedValue, $databaseType, $queryBuilderObject, $rule->type);
+
         // Create where parts
         $where = $this->determineOperator($rule->operator, $field, $quotedValue, $unQuotedValue, $queryBuilderObject);
         return $where;
@@ -198,6 +203,7 @@ class QueryParser
     protected function determineOperator(string $operator, string $field, $quotedValue, $unQuotedValue, QueryBuilder $queryBuilderObject)
     {
         $where = '';
+
         switch ($operator) {
             case static::OPERATOR_EQUAL:
                 $where = $queryBuilderObject->expr()->eq($field, $quotedValue);
