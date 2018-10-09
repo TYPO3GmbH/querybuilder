@@ -93,19 +93,48 @@ class QueryParser
      */
     protected function getWhereClause(stdClass $rule, QueryBuilder $queryBuilderObject) : string
     {
-        $where = '';
         $field = $rule->field;
         $unQuotedValue = ($rule->type === static::TYPE_DOUBLE)
             ? str_replace(',', '.', $rule->value)
             : $rule->value;
 
         $databaseType = $this->determineDatabaseType($rule->type);
+        // Convert date/dateime/time values
+        $this->convertFieldValueByType($rule->type, $unQuotedValue);
+        // Quote all values
+        $quotedValue = $this->quoteAllValues($unQuotedValue, $databaseType, $queryBuilderObject, $rule->type);
+        // Create where parts
+        $where = $this->determineOperator($rule->operator, $field, $quotedValue, $unQuotedValue, $queryBuilderObject);
+        return $where;
+    }
 
-        // @TODO: This method is very long and complex
-        // @TODO: Think about refactoring this method and split it up into
-        // @TODO: smaller methods likes $this->determineDatabaseType()
+    protected function determineDatabaseType(string $ruleType): int
+    {
+        switch ($ruleType) {
+            case static::TYPE_INTEGER:
+            case static::TYPE_DATE:
+            case static::TYPE_TIME:
+            case static::TYPE_DATETIME:
+                $databaseType = \PDO::PARAM_INT;
+                break;
+            case static::TYPE_BOOLEAN:
+                $databaseType = \PDO::PARAM_BOOL;
+                break;
+            case static::TYPE_DOUBLE:
+                $databaseType = \PDO::PARAM_STR;
+                break;
+            case static::TYPE_STRING:
+            default:
+                $databaseType = \PDO::PARAM_STR;
+                break;
+        }
+        return $databaseType;
+    }
+
+    protected function convertFieldValueByType(string $type, &$unQuotedValue) : void
+    {
         // Field is a date string and must be converted
-        if ($rule->type === static::TYPE_DATETIME || $rule->type === static::TYPE_DATE) {
+        if ($type === static::TYPE_DATETIME || $type === static::TYPE_DATE) {
             // @TODO: TCA supports dbType = date and dbType = datetime, this must be handled different.
             if (is_array($unQuotedValue)) {
                 if ($unQuotedValue[0] !== null) {
@@ -121,9 +150,9 @@ class QueryParser
                 $unQuotedValue -= date('Z', $unQuotedValue);
             }
         }
-
-        // Field is a date string and must be converted
-        if ($rule->type === static::TYPE_TIME) {
+        
+        // Field is a time string and must be converted
+        if ($type === static::TYPE_TIME) {
             if (is_array($unQuotedValue)) {
                 if ($unQuotedValue[0] !== null) {
                     [$hours, $minutes] = GeneralUtility::intExplode(':', $unQuotedValue[0]);
@@ -138,31 +167,41 @@ class QueryParser
                 $unQuotedValue = ($hours * 60 * 60) + ($minutes * 60);
             }
         }
+    }
 
-        // Quote all values
+
+//    @todo add type hint for return and unquotedValue - mixed ??
+    protected function quoteAllValues($unQuotedValue, int $databaseType, QueryBuilder $queryBuilderObject, string $type)
+    {
         if (is_array($unQuotedValue)) {
             if ($databaseType === \PDO::PARAM_INT) {
                 $quotedValue[0] = (int)$unQuotedValue[0];
                 $quotedValue[1] = (int)$unQuotedValue[1];
-            } elseif ($rule->type === static::TYPE_DOUBLE) {
+            } elseif ($type === static::TYPE_DOUBLE) {
                 $quotedValue[0] = (double)$unQuotedValue[0];
                 $quotedValue[1] = (double)$unQuotedValue[1];
             } else {
                 $quotedValue[0] = $queryBuilderObject->createNamedParameter($unQuotedValue[0], $databaseType);
                 $quotedValue[1] = $queryBuilderObject->createNamedParameter($unQuotedValue[1], $databaseType);
-                if ($rule->type === static::TYPE_BOOLEAN) {
+                if ($type === static::TYPE_BOOLEAN) {
                     $quotedValue = $queryBuilderObject->createNamedParameter($unQuotedValue[0], $databaseType);
                 }
             }
         } elseif ($databaseType === \PDO::PARAM_INT) {
             $quotedValue = (int)$unQuotedValue;
-        } elseif ($rule->type === static::TYPE_DOUBLE) {
+        } elseif ($type === static::TYPE_DOUBLE) {
             $quotedValue = (double)$unQuotedValue;
         } else {
             $quotedValue = $queryBuilderObject->createNamedParameter($unQuotedValue, $databaseType);
         }
+        return $quotedValue;
+    }
 
-        switch ($rule->operator) {
+//    @todo add type hints
+    protected function determineOperator(string $operator, string $field, $quotedValue, string $unQuotedValue, QueryBuilder $queryBuilderObject)
+    {
+        $where = '';
+        switch ($operator) {
             case static::OPERATOR_EQUAL:
                 $where = $queryBuilderObject->expr()->eq($field, $quotedValue);
                 break;
@@ -267,31 +306,7 @@ class QueryParser
                 break;
             default:
         }
-
         return $where;
-    }
-
-    protected function determineDatabaseType(string $ruleType): int
-    {
-        switch ($ruleType) {
-            case static::TYPE_INTEGER:
-            case static::TYPE_DATE:
-            case static::TYPE_TIME:
-            case static::TYPE_DATETIME:
-                $databaseType = \PDO::PARAM_INT;
-                break;
-            case static::TYPE_BOOLEAN:
-                $databaseType = \PDO::PARAM_BOOL;
-                break;
-            case static::TYPE_DOUBLE:
-                $databaseType = \PDO::PARAM_STR;
-                break;
-            case static::TYPE_STRING:
-            default:
-                $databaseType = \PDO::PARAM_STR;
-                break;
-        }
-        return $databaseType;
     }
 
     /**
