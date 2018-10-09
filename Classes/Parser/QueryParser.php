@@ -195,7 +195,7 @@ class QueryParser
         return $quotedValue;
     }
 
-    protected function determineOperator(string $operator, string $field, $quotedValue, string $unQuotedValue, QueryBuilder $queryBuilderObject)
+    protected function determineOperator(string $operator, string $field, $quotedValue, $unQuotedValue, QueryBuilder $queryBuilderObject)
     {
         $where = '';
         switch ($operator) {
