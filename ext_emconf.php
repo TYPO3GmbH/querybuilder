@@ -9,7 +9,7 @@
 
 $EM_CONF[$_EXTKEY] = [
     'title' => 'QueryBuilder',
-    'description' => 'Backend extension for querybuilder in list module.',
+    'description' => 'Backend extension for a QueryBuilder in list module.',
     'category' => 'be',
     'state' => 'stable',
     'clearCacheOnLoad' => 0,
@@ -18,7 +18,7 @@ $EM_CONF[$_EXTKEY] = [
     'version' => '9.5.1',
     'constraints' => [
         'depends' => [
-            'typo3' => '9.0.0-9.9.99',
+            'typo3' => '9.5.0-9.5.99',
         ],
         'conflicts' => [],
         'suggests' => [],
