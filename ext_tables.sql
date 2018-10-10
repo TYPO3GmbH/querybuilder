@@ -12,5 +12,5 @@ CREATE TABLE sys_querybuilder (
 	hidden tinyint(1) unsigned DEFAULT '0' NOT NULL,
 	deleted tinyint(1) unsigned DEFAULT '0' NOT NULL,
 
-	PRIMARY KEY (uid),
+	PRIMARY KEY (uid)
 );
