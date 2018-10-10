@@ -54,7 +54,8 @@
     "ext-pdo": "*",
     "psr/http-message": "^1.0.0",
     "typo3/cms-backend": "^9.5",
-    "typo3/cms-core": "^9.5"
+    "typo3/cms-core": "^9.5",
+    "typo3/cms-recordlist": "^9.5"
   },
   "require-dev": {
     "friendsofphp/php-cs-fixer": "^2.12",
