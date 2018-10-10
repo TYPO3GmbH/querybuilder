@@ -59,8 +59,7 @@ define(['jquery',
 		filters: [{
 			id: 'title',
 			label: 'Title',
-			type: 'string',
-			// description: 'foo'
+			type: 'string'
 		}],
 		basicRules: {
 			condition: 'AND',
