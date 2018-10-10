@@ -45,7 +45,7 @@ class QueryBuilder
         $filterFields = GeneralUtility::trimExplode(',', $filterFields);
         foreach ($filterFields as $filterField) {
             $fieldConfig = $TCA['columns'][$filterField];
-            if (!is_array($fieldConfig)) {
+            if (!\is_array($fieldConfig)) {
                 // if a filter field has no column declaration continue...
                 continue;
             }

@@ -11,16 +11,19 @@ declare(strict_types=1);
 namespace T3G\Querybuilder\Factory;
 
 use T3G\Querybuilder\Entity\Filter;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-class FilterFactory extends AbstractFactory
+class FilterFactory
 {
-    public function __construct()
-    {
-        $this->entityClass = Filter::class;
-    }
-
     public function create(array $properties): Filter
     {
-        return parent::create($properties);
+        $entity = GeneralUtility::makeInstance(Filter::class);
+        foreach ($properties as $property => $value) {
+            $method = 'set' . GeneralUtility::underscoredToUpperCamelCase($property);
+            if (method_exists($entity, $method)) {
+                $entity->$method($value);
+            }
+        }
+        return $entity;
     }
 }

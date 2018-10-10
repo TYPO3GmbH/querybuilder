@@ -29,6 +29,8 @@ class QuerybuilderController
      *
      * @return ResponseInterface
      * @throws \InvalidArgumentException
+     * @throws \TYPO3\CMS\Core\Context\Exception\AspectNotFoundException
+     * @throws \TYPO3\CMS\Core\Context\Exception\AspectPropertyNotFoundException
      */
     public function ajaxSaveQuery(ServerRequestInterface $request, ResponseInterface $response) : ResponseInterface
     {
@@ -72,6 +74,8 @@ class QuerybuilderController
      *
      * @return ResponseInterface
      * @throws \InvalidArgumentException
+     * @throws \TYPO3\CMS\Core\Context\Exception\AspectNotFoundException
+     * @throws \TYPO3\CMS\Core\Context\Exception\AspectPropertyNotFoundException
      */
     public function ajaxGetRecentQueries(ServerRequestInterface $request, ResponseInterface $response) : ResponseInterface
     {

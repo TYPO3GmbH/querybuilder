@@ -101,7 +101,7 @@ class QueryParser
         $databaseType = $this->determineDatabaseType($rule->type);
 
         // Convert date/dateime/time values
-        if ($rule->type === static::TYPE_DATETIME || $rule->type === static::TYPE_DATE || $rule->type === static::TYPE_TIME) {
+        if (\in_array($rule->type, [static::TYPE_DATETIME, static::TYPE_DATE, static::TYPE_TIME], true)) {
             $this->convertFieldValueByType($rule->type, $unQuotedValue);
         }
 
@@ -109,7 +109,7 @@ class QueryParser
         $quotedValue = $this->quoteAllValues($unQuotedValue, $databaseType, $queryBuilderObject, $rule->type);
 
         // Create where parts
-        $where = $this->determineOperator($rule->operator, $field, $quotedValue, $unQuotedValue, $queryBuilderObject);
+        $where = $this->createWhereParts($rule->operator, $field, $quotedValue, $unQuotedValue, $queryBuilderObject);
         return $where;
     }
 
@@ -141,7 +141,7 @@ class QueryParser
         // Field is a date string and must be converted
         if ($type === static::TYPE_DATETIME || $type === static::TYPE_DATE) {
             // @TODO: TCA supports dbType = date and dbType = datetime, this must be handled different.
-            if (is_array($unQuotedValue)) {
+            if (\is_array($unQuotedValue)) {
                 if ($unQuotedValue[0] !== null) {
                     $unQuotedValue[0] = (new \DateTime($unQuotedValue[0]))->getTimestamp();
                     $unQuotedValue[0] -= date('Z', $unQuotedValue[0]);
@@ -155,10 +155,10 @@ class QueryParser
                 $unQuotedValue -= date('Z', $unQuotedValue);
             }
         }
-        
+
         // Field is a time string and must be converted
         if ($type === static::TYPE_TIME) {
-            if (is_array($unQuotedValue)) {
+            if (\is_array($unQuotedValue)) {
                 if ($unQuotedValue[0] !== null) {
                     [$hours, $minutes] = GeneralUtility::intExplode(':', $unQuotedValue[0]);
                     $unQuotedValue[0] = ($hours * 60 * 60) + ($minutes * 60);
@@ -174,25 +174,35 @@ class QueryParser
         }
     }
 
+    /**
+     * @param $unQuotedValue
+     * @param int $databaseType
+     * @param QueryBuilder $queryBuilderObject
+     * @param string $type
+     * @return mixed
+     */
     protected function quoteAllValues($unQuotedValue, int $databaseType, QueryBuilder $queryBuilderObject, string $type)
     {
-        if (is_array($unQuotedValue)) {
-            if ($databaseType === \PDO::PARAM_INT) {
+        $isInt = $databaseType === \PDO::PARAM_INT;
+        $isDouble = $type === static::TYPE_DOUBLE;
+        $isBool = $type === static::TYPE_BOOLEAN;
+        if (\is_array($unQuotedValue)) {
+            if ($isInt) {
                 $quotedValue[0] = (int)$unQuotedValue[0];
                 $quotedValue[1] = (int)$unQuotedValue[1];
-            } elseif ($type === static::TYPE_DOUBLE) {
+            } elseif ($isDouble) {
                 $quotedValue[0] = (double)$unQuotedValue[0];
                 $quotedValue[1] = (double)$unQuotedValue[1];
             } else {
                 $quotedValue[0] = $queryBuilderObject->createNamedParameter($unQuotedValue[0], $databaseType);
                 $quotedValue[1] = $queryBuilderObject->createNamedParameter($unQuotedValue[1], $databaseType);
-                if ($type === static::TYPE_BOOLEAN) {
+                if ($isBool) {
                     $quotedValue = $queryBuilderObject->createNamedParameter($unQuotedValue[0], $databaseType);
                 }
             }
-        } elseif ($databaseType === \PDO::PARAM_INT) {
+        } elseif ($isInt) {
             $quotedValue = (int)$unQuotedValue;
-        } elseif ($type === static::TYPE_DOUBLE) {
+        } elseif ($isDouble) {
             $quotedValue = (double)$unQuotedValue;
         } else {
             $quotedValue = $queryBuilderObject->createNamedParameter($unQuotedValue, $databaseType);
@@ -200,7 +210,7 @@ class QueryParser
         return $quotedValue;
     }
 
-    protected function determineOperator(string $operator, string $field, $quotedValue, $unQuotedValue, QueryBuilder $queryBuilderObject)
+    protected function createWhereParts(string $operator, string $field, $quotedValue, $unQuotedValue, QueryBuilder $queryBuilderObject): string
     {
         $where = '';
 
@@ -212,22 +222,16 @@ class QueryParser
                 $where = $queryBuilderObject->expr()->neq($field, $quotedValue);
                 break;
             case static::OPERATOR_IN:
-                $values = [$unQuotedValue];
-                is_string($unQuotedValue) ?  $values = $this->splitString($unQuotedValue) : null;
-                $escapedValues = [];
-                foreach ($values as $singleValue) {
-                    $escapedValues[] = $queryBuilderObject->createNamedParameter($singleValue);
-                }
-                $where = $queryBuilderObject->expr()->in($field, implode(',', $escapedValues));
-                break;
             case static::OPERATOR_NOT_IN:
                 $values = [$unQuotedValue];
-                is_string($unQuotedValue) ? $values = $this->splitString($unQuotedValue) : null;
+                \is_string($unQuotedValue) ? $values = $this->splitString($unQuotedValue) : null;
                 $escapedValues = [];
                 foreach ($values as $singleValue) {
                     $escapedValues[] = $queryBuilderObject->createNamedParameter($singleValue);
                 }
-                $where = $queryBuilderObject->expr()->notIn($field, implode(',', $escapedValues));
+                $where = $operator === static::OPERATOR_IN
+                    ? $queryBuilderObject->expr()->in($field, implode(',', $escapedValues))
+                    : $queryBuilderObject->expr()->notIn($field, implode(',', $escapedValues));
                 break;
             case static::OPERATOR_BEGINS_WITH:
                 $where = $queryBuilderObject->expr()->like(

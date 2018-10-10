@@ -11,16 +11,19 @@ declare(strict_types=1);
 namespace T3G\Querybuilder\Factory;
 
 use T3G\Querybuilder\Entity\Validation;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-class ValidationFactory extends AbstractFactory
+class ValidationFactory
 {
-    public function __construct()
-    {
-        $this->entityClass = Validation::class;
-    }
-
     public function create(array $properties): Validation
     {
-        return parent::create($properties);
+        $entity = GeneralUtility::makeInstance(Validation::class);
+        foreach ($properties as $property => $value) {
+            $method = 'set' . GeneralUtility::underscoredToUpperCamelCase($property);
+            if (method_exists($entity, $method)) {
+                $entity->$method($value);
+            }
+        }
+        return $entity;
     }
 }

@@ -11,16 +11,19 @@ declare(strict_types=1);
 namespace T3G\Querybuilder\Factory;
 
 use T3G\Querybuilder\Entity\Plugin;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-class PluginFactory extends AbstractFactory
+class PluginFactory
 {
-    public function __construct()
-    {
-        $this->entityClass = Plugin::class;
-    }
-
     public function create(array $properties): Plugin
     {
-        return parent::create($properties);
+        $entity = GeneralUtility::makeInstance(Plugin::class);
+        foreach ($properties as $property => $value) {
+            $method = 'set' . GeneralUtility::underscoredToUpperCamelCase($property);
+            if (method_exists($entity, $method)) {
+                $entity->$method($value);
+            }
+        }
+        return $entity;
     }
 }
