@@ -18,12 +18,12 @@
 define(['jquery',
 		'moment',
 		'TYPO3/CMS/Backend/Severity',
-		'TYPO3/CMS/Backend/Storage',
+		'TYPO3/CMS/Backend/Storage/Client',
 		'TYPO3/CMS/Backend/Modal',
 		'TYPO3/CMS/Backend/Notification',
 		'twbs/bootstrap-datetimepicker',
 		'query-builder'
-		], function ($, moment, Severity, Storage, Modal, Notification) {
+		], function ($, moment, Severity, ClientStorage, Modal, Notification) {
 	'use strict';
 
 	/**
@@ -299,11 +299,11 @@ define(['jquery',
 	};
 
 	QueryBuilder.getStoredQuery = function () {
-		return Storage.Client.get('querybuilder-query-' + QueryBuilder.table);
+		return ClientStorage.get('querybuilder-query-' + QueryBuilder.table);
 	};
 
 	QueryBuilder.setStoredQuery = function (data) {
-		Storage.Client.set('querybuilder-query-' + QueryBuilder.table, data);
+    ClientStorage.set('querybuilder-query-' + QueryBuilder.table, data);
 	};
 
 	return QueryBuilder;
