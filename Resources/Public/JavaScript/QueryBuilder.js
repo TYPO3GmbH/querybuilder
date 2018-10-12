@@ -56,11 +56,7 @@ define(['jquery',
 		icon: 'fa fa-sort',
 		// Filter:Types: string, integer, double, date, time, datetime and boolean.
 		// Filter:Required: id, type, values*
-		filters: [{
-			id: 'title',
-			label: 'Title',
-			type: 'string'
-		}],
+		filters: [],
 		basicRules: {
 			condition: 'AND',
 			rules: []
@@ -84,49 +80,51 @@ define(['jquery',
 	/**
 	 * Initialize method
 	 */
-	QueryBuilder.initialize = function (rules, filter) {
-		// Add moment to the global windows space, because query-builder checks again window.moment
-		window.moment = moment;
-		QueryBuilder.table = $('table[data-table]').data('table') || QueryBuilder.getUrlVars()['table'];
-		$(QueryBuilder.template).insertAfter(QueryBuilder.selectorBuilderPosition);
-		QueryBuilder.querySelector = $('#t3js-querybuilder-recent-queries');
-		var $queryBuilderContainer = $(QueryBuilder.selectorBuilderContainer);
-		if (QueryBuilder.buttons.length > 0) {
-			var $buttonGroup = $queryBuilderContainer.find('.btn-group');
-			for (var i = 0; i < QueryBuilder.buttons.length; i++) {
-				var button = QueryBuilder.buttons[i];
-				var $button = $('<button type="button" class="btn btn-default" data-action="' + button.action + '">' + button.title + '</button>');
-				$button.appendTo($buttonGroup);
-			}
-		}
+	QueryBuilder.initialize = function (rules, filters) {
+		// only init if filter exists
+    if (filters.length > 0) {
+      // Add moment to the global windows space, because query-builder checks again window.moment
+      window.moment = moment;
+      QueryBuilder.table = $('table[data-table]').data('table') || QueryBuilder.getUrlVars()['table'];
+      $(QueryBuilder.template).insertAfter(QueryBuilder.selectorBuilderPosition);
+      QueryBuilder.querySelector = $('#t3js-querybuilder-recent-queries');
+      var $queryBuilderContainer = $(QueryBuilder.selectorBuilderContainer);
+      if (QueryBuilder.buttons.length > 0) {
+        var $buttonGroup = $queryBuilderContainer.find('.btn-group');
+        for (var i = 0; i < QueryBuilder.buttons.length; i++) {
+          var button = QueryBuilder.buttons[i];
+          var $button = $('<button type="button" class="btn btn-default" data-action="' + button.action + '">' + button.title + '</button>');
+          $button.appendTo($buttonGroup);
+        }
+      }
 
-		//QueryBuilder.initializeQueries();
-		var $queryContainer = $queryBuilderContainer.find('.t3js-querybuilder-queries');
-		var $queryHeader = $( '<h3>' + TYPO3.lang['recent.header'] + '</h3>' || '<h3>Saved queries</h3>');
-		$queryHeader.prependTo($queryContainer);
-		QueryBuilder.initializeRecentQueries(QueryBuilder.querySelector);
-		QueryBuilder.initializeEvents();
-		QueryBuilder.instance = $queryBuilderContainer.find(QueryBuilder.selectorBuilder).queryBuilder({
-			allow_empty: true,
-			icons: {
-				'add_group': 'fa fa-plus-circle',
-				'add_rule': 'fa fa-plus',
-				'remove_group': 'fa fa-minus-circle',
-				'remove_rule': 'fa fa-minus-circle',
-				'error': 'fa fa-warning'
-			},
-			plugins: QueryBuilder.plugins,
-			filters: filter.length ? filter : QueryBuilder.filters,
-			rules: rules || QueryBuilder.basicRules
-		});
-		var lastQuery = QueryBuilder.getStoredQuery();
-		if (lastQuery !== null) {
-			try {
-				lastQuery = JSON.parse(lastQuery);
-				QueryBuilder.instance.queryBuilder('setRules', lastQuery);
-			} catch (err) {
-				console.log(err.message);
-			}
+      var $queryContainer = $queryBuilderContainer.find('.t3js-querybuilder-queries');
+      var $queryHeader = $( '<h3>' + TYPO3.lang['recent.header'] + '</h3>' || '<h3>Saved queries</h3>');
+      $queryHeader.prependTo($queryContainer);
+      QueryBuilder.initializeRecentQueries(QueryBuilder.querySelector);
+      QueryBuilder.initializeEvents();
+      QueryBuilder.instance = $queryBuilderContainer.find(QueryBuilder.selectorBuilder).queryBuilder({
+        allow_empty: true,
+        icons: {
+          'add_group': 'fa fa-plus-circle',
+          'add_rule': 'fa fa-plus',
+          'remove_group': 'fa fa-minus-circle',
+          'remove_rule': 'fa fa-minus-circle',
+          'error': 'fa fa-warning'
+        },
+        plugins: QueryBuilder.plugins,
+        filters: filters,
+        rules: rules || QueryBuilder.basicRules
+      });
+      var lastQuery = QueryBuilder.getStoredQuery();
+      if (lastQuery !== null) {
+        try {
+          lastQuery = JSON.parse(lastQuery);
+          QueryBuilder.instance.queryBuilder('setRules', lastQuery);
+        } catch (err) {
+          console.log(err.message);
+        }
+      }
 		}
 	};
 
