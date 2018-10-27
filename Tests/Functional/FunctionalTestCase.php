@@ -40,6 +40,8 @@ abstract class FunctionalTestCase extends \TYPO3\TestingFramework\Core\Functiona
      */
     protected $assertionDataSetDirectory;
 
+    protected $coreExtensionsToLoad = ['recordlist'];
+
     /**
      * @param string $scenarioName
      */
