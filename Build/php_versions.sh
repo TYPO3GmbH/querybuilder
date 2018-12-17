@@ -1,3 +1,3 @@
 PHP_VERSIONS=('php72')
-PHP_VERSIONS+=('php73')
+#PHP_VERSIONS+=('php73')
 
