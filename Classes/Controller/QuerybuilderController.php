@@ -15,6 +15,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Context\UserAspect;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Http\JsonResponse;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -70,14 +71,13 @@ class QuerybuilderController
 
     /**
      * @param ServerRequestInterface $request
-     * @param ResponseInterface $response
      *
      * @return ResponseInterface
      * @throws \InvalidArgumentException
      * @throws \TYPO3\CMS\Core\Context\Exception\AspectNotFoundException
      * @throws \TYPO3\CMS\Core\Context\Exception\AspectPropertyNotFoundException
      */
-    public function ajaxGetRecentQueries(ServerRequestInterface $request, ResponseInterface $response) : ResponseInterface
+    public function ajaxGetRecentQueries(ServerRequestInterface $request) : ResponseInterface
     {
         $requestParams = $request->getQueryParams();
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
@@ -93,8 +93,7 @@ class QuerybuilderController
             ->execute()
             ->fetchAll();
 
-        $response->getBody()->write(json_encode($results));
-        return $response;
+        return new JsonResponse($results, !empty($results) ? 200 : 204);
     }
 
     /**
