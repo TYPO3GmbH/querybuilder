@@ -57,7 +57,7 @@ class QueryParserTest extends FunctionalTestCase
     /**
      *
      */
-    protected function tearDown(): void
+    protected function tearDown()
     {
         date_default_timezone_set($this->originalTimeZone);
         parent::tearDown();
