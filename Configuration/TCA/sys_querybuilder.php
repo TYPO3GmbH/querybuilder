@@ -22,22 +22,17 @@ return [
             'showitem' => 'queryname, affected_table, where_parts, user'
         ],
     ],
-    'palettes' => [
-        '1' => [
-            'showitem' => 'queryname, affected_table, where_parts, user'
-        ],
-    ],
     'columns' => [
         'where_parts' => [
             'exclude' => true,
-            'label' => 'where_parts',
+            'label' => 'Conditions (saved ad JSON)',
             'config' => [
                 'type' => 'text',
             ],
         ],
         'affected_table' => [
             'exclude' => true,
-            'label' => 'affected_table',
+            'label' => 'Affected Table',
             'config' => [
                 'type' => 'input',
                 'size' => 50,
@@ -47,7 +42,7 @@ return [
         ],
         'queryname' => [
             'exclude' => true,
-            'label' => 'queryname',
+            'label' => 'Queryname',
             'config' => [
                 'type' => 'input',
                 'size' => 50,
@@ -57,7 +52,7 @@ return [
         ],
         'user' => [
             'exclude' => true,
-            'label' => 'userid',
+            'label' => 'User',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
