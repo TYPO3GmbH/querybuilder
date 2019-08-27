@@ -2,7 +2,6 @@
   "name": "t3g/querybuilder",
   "type": "typo3-cms-extension",
   "description": "Backend extension for query builder in list module.",
-  "minimum-stability": "dev",
   "license": "GPL-2.0-or-later",
   "authors": [
     {
@@ -28,10 +27,6 @@
       "T3G\\Querybuilder\\Tests\\": "Tests/"
     }
   },
-  "config": {
-    "discard-changes": true,
-    "bin-dir": "bin"
-  },
   "extra": {
     "typo3/cms": {
       "web-dir": "."
@@ -53,13 +48,25 @@
     "ext-json": "*",
     "ext-pdo": "*",
     "psr/http-message": "^1.0.0",
-    "typo3/cms-backend": "10.0.x-dev",
-    "typo3/cms-core": "10.0.x-dev",
-    "typo3/cms-recordlist": "10.0.x-dev"
+    "typo3/cms-backend": "dev-master",
+    "typo3/cms-core": "dev-master",
+    "typo3/cms-recordlist": "dev-master"
+  },
+  "config": {
+    "preferred-install": {
+      "t3g/*": "source",
+      "*": "dist"
+    },
+    "sort-packages": true,
+    "discard-changes": true,
+    "vendor-dir": ".build/vendor",
+    "bin-dir": ".build/bin"
   },
   "require-dev": {
     "friendsofphp/php-cs-fixer": "^2.12",
     "roave/security-advisories": "dev-master",
-    "typo3/testing-framework": "dev-master"
-  }
+    "typo3/testing-framework": "^5.0"
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
 }

@@ -7,7 +7,7 @@
  * LICENSE file that was distributed with this source code.
  */
 
-$EM_CONF[$_EXTKEY] = [
+$EM_CONF['querybuilder'] = [
     'title' => 'QueryBuilder',
     'description' => 'Backend extension for a QueryBuilder in list module.',
     'category' => 'be',
@@ -15,10 +15,10 @@ $EM_CONF[$_EXTKEY] = [
     'clearCacheOnLoad' => 0,
     'author' => 'TYPO3 GmbH',
     'author_email' => 'info@typo3.com',
-    'version' => '10.0.x-dev',
+    'version' => '10.1.x-dev',
     'constraints' => [
         'depends' => [
-            'typo3' => '10.0.0',
+            'typo3' => '10.0.0 - 10.5.99',
         ],
         'conflicts' => [],
         'suggests' => [],

@@ -16,3 +16,5 @@ var/
 logs/
 index.php
 .php_cs.cache
+Build/.phpunit.result.cache
+.build/public/typo3conf/
