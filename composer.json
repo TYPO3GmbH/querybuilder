@@ -58,9 +58,9 @@
     "ext-json": "*",
     "ext-pdo": "*",
     "psr/http-message": "^1.0.0",
-    "typo3/cms-backend": "dev-master",
-    "typo3/cms-core": "dev-master",
-    "typo3/cms-recordlist": "dev-master"
+    "typo3/cms-backend": "^10.1",
+    "typo3/cms-core": "^10.1",
+    "typo3/cms-recordlist": "^10.1"
   },
   "config": {
     "preferred-install": {
