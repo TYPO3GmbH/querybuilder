@@ -29,18 +29,27 @@
   },
   "extra": {
     "typo3/cms": {
-      "web-dir": "."
+      "extension-key": "querybuilder",
+      "app-dir": ".build",
+      "web-dir": ".build/public"
     }
   },
   "scripts": {
     "t3g:test:php:functional": [
-      "phpunit -c Build/FunctionalTests.xml --log-junit logs/phpunit.xml"
+      "mkdir -p logs/; phpunit -c Build/phpunit.xml --log-junit logs/phpunit-functional.xml --testsuite \"Functional Test Suite\""
+    ],
+    "t3g:test:php:cover": [
+      "mkdir -p logs/; phpunit -c Build/phpunit.xml --log-junit logs/phpunit.xml --coverage-clover logs/coverage.xml --coverage-html logs/coverage/"
     ],
     "t3g:test": [
       "@t3g:test:php:functional"
     ],
     "t3g:cgl": [
       "php-cs-fixer fix --config Build/.php_cs.dist --format=junit > logs/php-cs-fixer.xml"
+    ],
+    "post-autoload-dump": [
+      "mkdir -p .build/public/typo3conf/ext/", "[ -L .build/public/typo3conf/ext/querybuilder ] || ln -svnf ../../../../. .build/public/typo3conf/ext/querybuilder",
+      "TYPO3\\TestingFramework\\Composer\\ExtensionTestEnvironment::prepare"
     ]
   },
   "require": {
