@@ -1,17 +1,5 @@
-# PHPStorm
 .idea
-
-# OSX
 .DS_Store
-
-# Composer
-vendor/
-bin/
-
-# TYPO3 test
-typo3/
-typo3temp/
-var/
-logs/
-index.php
-.php_cs.cache
+composer.lock
+.phplint.cache
+.build

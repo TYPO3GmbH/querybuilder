@@ -31,11 +31,11 @@ class DatabaseRecordList
      */
     public function buildQueryParametersPostProcess(
         array &$parameters,
-                                   string $table,
-                                   int $pageId,
-                                   array $additionalConstraints,
-                                   array $fieldList,
-                                   AbstractDatabaseRecordList $parentObject
+        string $table,
+        int $pageId,
+        array $additionalConstraints,
+        array $fieldList,
+        AbstractDatabaseRecordList $parentObject
     ) {
         if ($parentObject->table !== null && GeneralUtility::_GP('M') === 'web_list') {
             $query = GeneralUtility::_GP('query');
