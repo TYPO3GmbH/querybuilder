@@ -13,9 +13,9 @@
   ],
   "homepage": "https://extensions.typo3.org/extension/querybuilder/",
   "support": {
-    "issues": "https://jira.typo3.com/servicedesk/customer/portal/3/create/95",
+    "issues": "https://github.com/TYPO3GmbH/querybuilder/issues",
     "docs": "https://docs.typo3.org/typo3cms/extensions/querybuilder/",
-    "source": "https://bitbucket.typo3.com/scm/ext/querybuilder.git",
+    "source": "https://github.com/TYPO3GmbH/querybuilder.git",
     "slack": "https://typo3.slack.com/archives/ext-querybuilder"
   },
   "autoload": {
