@@ -36,16 +36,17 @@
   },
   "scripts": {
     "t3g:test:php:functional": [
-      "mkdir -p logs/; phpunit -c Build/phpunit.xml --log-junit logs/phpunit-functional.xml --testsuite \"Functional Test Suite\""
-    ],
-    "t3g:test:php:cover": [
-      "mkdir -p logs/; phpunit -c Build/phpunit.xml --log-junit logs/phpunit.xml --coverage-clover logs/coverage.xml --coverage-html logs/coverage/"
+      "Composer\\Config::disableProcessTimeout",
+      "phpunit -c phpunit.xml --testsuite \"Functional Test Suite\""
     ],
     "t3g:test": [
       "@t3g:test:php:functional"
     ],
+    "t3g:phplint": [
+      "phplint"
+    ],
     "t3g:cgl": [
-      "php-cs-fixer fix --config Build/.php_cs.dist --format=junit > logs/php-cs-fixer.xml"
+      "php-cs-fixer fix -v --dry-run --using-cache false --diff --diff-format=udiff"
     ],
     "post-autoload-dump": [
       "mkdir -p .build/public/typo3conf/ext/", "[ -L .build/public/typo3conf/ext/querybuilder ] || ln -svnf ../../../../. .build/public/typo3conf/ext/querybuilder",
@@ -56,6 +57,7 @@
     "php": "^7.2",
     "ext-json": "*",
     "ext-pdo": "*",
+    "overtrue/phplint": "^1.1",
     "psr/http-message": "^1.0.0",
     "typo3/cms-backend": "dev-master",
     "typo3/cms-core": "dev-master",

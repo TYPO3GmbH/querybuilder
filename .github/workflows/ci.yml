@@ -1,0 +1,37 @@
+name: CI master
+
+on: [push, pull_request]
+
+jobs:
+  build-php:
+    name: Build PHP
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+      fail-fast: false
+      matrix:
+        php: ['7.2', '7.3']
+    steps:
+      - uses: actions/checkout@v1
+      - name: Set up PHP Version
+        run: |
+          sudo update-alternatives --set php /usr/bin/php${{ matrix.php }}
+          php -v
+      - name: Update Composer
+        run: |
+          sudo composer self-update
+          composer --version
+      - name: Install
+        run: |
+          composer install --no-progress
+      - name: Lint
+        run: composer t3g:phplint
+      - name: CGL
+        run: composer t3g:cgl
+      - name: Functional Tests
+        run: composer t3g:test:php:functional
+        env:
+          typo3DatabaseHost: 127.0.0.1
+          typo3DatabaseName: t3func
+          typo3DatabasePassword: root
+          typo3DatabaseUsername: root
