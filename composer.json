@@ -74,6 +74,7 @@
     "bin-dir": ".build/bin"
   },
   "require-dev": {
+    "bk2k/extension-helper": "^1.0",
     "friendsofphp/php-cs-fixer": "^2.12",
     "roave/security-advisories": "dev-master",
     "typo3/testing-framework": "^5.0"
