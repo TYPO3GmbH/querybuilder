@@ -72,6 +72,7 @@
     "typo3/cms-core": "^8.7.0"
   },
   "require-dev": {
+    "bk2k/extension-helper": "^1.0@dev",
     "friendsofphp/php-cs-fixer": "^2.12",
     "roave/security-advisories": "dev-master",
     "typo3/testing-framework": "^2.0.4"
