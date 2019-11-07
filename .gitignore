@@ -3,3 +3,4 @@
 composer.lock
 .phplint.cache
 .build
+*.zip
