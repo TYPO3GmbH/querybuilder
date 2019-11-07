@@ -14,7 +14,7 @@
   "homepage": "https://extensions.typo3.org/extension/querybuilder/",
   "support": {
     "issues": "https://github.com/TYPO3GmbH/querybuilder/issues",
-    "docs": "https://docs.typo3.org/typo3cms/extensions/querybuilder/",
+    "docs": "https://docs.typo3.org/p/t3g/querybuilder/8.7/en-us/",
     "source": "https://github.com/TYPO3GmbH/querybuilder.git",
     "slack": "https://typo3.slack.com/archives/ext-querybuilder"
   },
