@@ -1,83 +1,87 @@
 {
-  "name": "t3g/querybuilder",
-  "type": "typo3-cms-extension",
-  "description": "Backend extension for query builder in list module.",
-  "minimum-stability": "dev",
-  "license": "GPL-2.0-or-later",
-  "authors": [
-    {
-      "name": "TYPO3 GmbH",
-      "role": "Developer",
-      "homepage": "https://typo3.com/"
-    }
-  ],
-  "homepage": "https://extensions.typo3.org/extension/querybuilder/",
-  "support": {
-    "issues": "https://github.com/TYPO3GmbH/querybuilder/issues",
-    "docs": "https://docs.typo3.org/p/t3g/querybuilder/9.5/en-us/",
-    "source": "https://github.com/TYPO3GmbH/querybuilder.git",
-    "slack": "https://typo3.slack.com/archives/ext-querybuilder"
-  },
-  "autoload": {
-    "psr-4": {
-      "T3G\\Querybuilder\\": "Classes/"
-    }
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "T3G\\Querybuilder\\Tests\\": "Tests/"
-    }
-  },
-  "config": {
-    "preferred-install": {
-      "t3g/*": "source",
-      "*": "dist"
+    "name": "t3g/querybuilder",
+    "type": "typo3-cms-extension",
+    "description": "Backend extension for query builder in list module.",
+    "minimum-stability": "dev",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "TYPO3 GmbH",
+            "role": "Developer",
+            "homepage": "https://typo3.com/"
+        }
+    ],
+    "homepage": "https://extensions.typo3.org/extension/querybuilder/",
+    "support": {
+        "issues": "https://github.com/TYPO3GmbH/querybuilder/issues",
+        "docs": "https://docs.typo3.org/p/t3g/querybuilder/9.5/en-us/",
+        "source": "https://github.com/TYPO3GmbH/querybuilder.git",
+        "slack": "https://typo3.slack.com/archives/ext-querybuilder"
     },
-    "sort-packages": true,
-    "discard-changes": true,
-    "vendor-dir": ".build/vendor",
-    "bin-dir": ".build/bin"
-  },
-  "extra": {
-    "typo3/cms": {
-      "extension-key": "querybuilder",
-      "app-dir": ".build",
-      "web-dir": ".build/public"
+    "autoload": {
+        "psr-4": {
+            "T3G\\Querybuilder\\": "Classes/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "T3G\\Querybuilder\\Tests\\": "Tests/"
+        }
+    },
+    "config": {
+        "preferred-install": {
+            "t3g/*": "source",
+            "*": "dist"
+        },
+        "sort-packages": true,
+        "discard-changes": true,
+        "vendor-dir": ".build/vendor",
+        "bin-dir": ".build/bin"
+    },
+    "extra": {
+        "typo3/cms": {
+            "extension-key": "querybuilder",
+            "app-dir": ".build",
+            "web-dir": ".build/public"
+        },
+        "branch-alias": {
+            "dev-v9.5": "9.5.x-dev"
+        }
+    },
+    "scripts": {
+        "t3g:test:php:functional": [
+            "Composer\\Config::disableProcessTimeout",
+            "phpunit -c phpunit.xml --testsuite \"Functional Test Suite\""
+        ],
+        "t3g:test": [
+            "@t3g:test:php:functional"
+        ],
+        "t3g:phplint": [
+            "phplint"
+        ],
+        "t3g:cgl": [
+            "php-cs-fixer fix -v --dry-run --using-cache false --diff --diff-format=udiff"
+        ],
+        "post-autoload-dump": [
+            "mkdir -p .build/public/typo3conf/ext/",
+            "[ -L .build/public/typo3conf/ext/querybuilder ] || ln -svnf ../../../../. .build/public/typo3conf/ext/querybuilder",
+            "TYPO3\\TestingFramework\\Composer\\ExtensionTestEnvironment::prepare"
+        ]
+    },
+    "require": {
+        "php": "^7.2",
+        "ext-json": "*",
+        "ext-pdo": "*",
+        "overtrue/phplint": "^1.1",
+        "psr/http-message": "^1.0.0",
+        "typo3/cms-backend": "^9.5",
+        "typo3/cms-core": "^9.5",
+        "typo3/cms-recordlist": "^9.5"
+    },
+    "require-dev": {
+        "bk2k/extension-helper": "^1.0@dev",
+        "friendsofphp/php-cs-fixer": "^2.12",
+        "roave/security-advisories": "dev-master",
+        "typo3/testing-framework": "^4"
     }
-  },
-  "scripts": {
-    "t3g:test:php:functional": [
-      "Composer\\Config::disableProcessTimeout",
-      "phpunit -c phpunit.xml --testsuite \"Functional Test Suite\""
-    ],
-    "t3g:test": [
-      "@t3g:test:php:functional"
-    ],
-    "t3g:phplint": [
-      "phplint"
-    ],
-    "t3g:cgl": [
-      "php-cs-fixer fix -v --dry-run --using-cache false --diff --diff-format=udiff"
-    ],
-    "post-autoload-dump": [
-      "mkdir -p .build/public/typo3conf/ext/", "[ -L .build/public/typo3conf/ext/querybuilder ] || ln -svnf ../../../../. .build/public/typo3conf/ext/querybuilder",
-      "TYPO3\\TestingFramework\\Composer\\ExtensionTestEnvironment::prepare"
-    ]
-  },
-  "require": {
-    "php": "^7.2",
-    "ext-json": "*",
-    "ext-pdo": "*",
-    "overtrue/phplint": "^1.1",
-    "psr/http-message": "^1.0.0",
-    "typo3/cms-backend": "^9.5",
-    "typo3/cms-core": "^9.5",
-    "typo3/cms-recordlist": "^9.5"
-  },
-  "require-dev": {
-    "bk2k/extension-helper": "^1.0@dev",
-    "friendsofphp/php-cs-fixer": "^2.12",
-    "roave/security-advisories": "dev-master",
-    "typo3/testing-framework": "^4"
-  }
 }
