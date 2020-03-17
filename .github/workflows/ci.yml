@@ -12,7 +12,10 @@ jobs:
       matrix:
         php: ['7.2', '7.3']
     steps:
-      - uses: actions/checkout@v1
+      - name: Start database server
+        run: |
+          sudo /etc/init.d/mysql start
+      - uses: actions/checkout@v2
       - name: Set up PHP Version
         run: |
           sudo update-alternatives --set php /usr/bin/php${{ matrix.php }}
