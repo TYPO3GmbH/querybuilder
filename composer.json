@@ -68,13 +68,13 @@
     "php": "^7.2",
     "ext-json": "*",
     "ext-pdo": "*",
-    "overtrue/phplint": "^1.1",
     "psr/http-message": "^1.0.0",
     "typo3/cms-backend": "^9.5",
     "typo3/cms-core": "^9.5",
     "typo3/cms-recordlist": "^9.5"
   },
   "require-dev": {
+    "overtrue/phplint": "^1.1",
     "bk2k/extension-helper": "^1.0@dev",
     "friendsofphp/php-cs-fixer": "^2.12",
     "roave/security-advisories": "dev-master",
