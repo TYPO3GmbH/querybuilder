@@ -11,13 +11,12 @@ declare(strict_types=1);
 namespace T3G\Querybuilder;
 
 use stdClass;
-use T3G\Querybuilder\Backend\Form\FormDataGroup\TcaOnly;
 use T3G\Querybuilder\Entity\Filter;
 use T3G\Querybuilder\Factory\FilterFactory;
 use T3G\Querybuilder\Factory\PluginFactory;
 use T3G\Querybuilder\Factory\ValidationFactory;
 use TYPO3\CMS\Backend\Form\FormDataCompiler;
-use TYPO3\CMS\Backend\Form\FormDataProvider\SiteResolving;
+use TYPO3\CMS\Backend\Form\FormDataGroup\TcaDatabaseRecord;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -222,16 +221,14 @@ class QueryBuilder
      */
     protected function prepareTca(string $tableName, int $pageId) : array
     {
-        $formDataGroup = GeneralUtility::makeInstance(TcaOnly::class);
+        $formDataGroup = GeneralUtility::makeInstance(TcaDatabaseRecord::class);
         $formDataCompiler = GeneralUtility::makeInstance(FormDataCompiler::class, $formDataGroup);
-        $siteResolver = GeneralUtility::makeInstance(SiteResolving::class);
 
         $formDataCompilerInput = [
             'tableName' => $tableName,
             'command' => 'new',
             'effectivePid' => $pageId
         ];
-        $formDataCompilerInput = $siteResolver->addData($formDataCompilerInput);
 
         return $formDataCompiler->compile($formDataCompilerInput);
     }
