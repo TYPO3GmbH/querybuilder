@@ -15,7 +15,9 @@ use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Context\UserAspect;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Http\JsonResponse;
+use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -23,7 +25,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class QuerybuilderController
 {
-
     /**
      * @param ServerRequestInterface $request
      * @param ResponseInterface $response
@@ -33,12 +34,13 @@ class QuerybuilderController
      * @throws \TYPO3\CMS\Core\Context\Exception\AspectNotFoundException
      * @throws \TYPO3\CMS\Core\Context\Exception\AspectPropertyNotFoundException
      */
-    public function ajaxSaveQuery(ServerRequestInterface $request, ResponseInterface $response) : ResponseInterface
+    public function ajaxSaveQuery(ServerRequestInterface $request): ResponseInterface
     {
         $result = new \stdClass();
         $result->status = 'ok';
 
         $requestParams = $request->getQueryParams();
+        /** @var \TYPO3\CMS\Core\Database\Query\QueryBuilder $queryBuilder */
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
             ->getQueryBuilderForTable('sys_querybuilder');
         $uid = (int)$requestParams['uid'];
@@ -65,6 +67,12 @@ class QuerybuilderController
             $result->uid = $uid;
         }
 
+//        @TODO: This does not feel right but generates a response like in earlier version
+        $response = new Response('php://temp', 200,
+            [
+                'Content-Type' => 'application/json; charset=utf-8',
+                'X-JSON' => [true]
+            ]);
         $response->getBody()->write(json_encode($result));
         return $response;
     }
@@ -77,9 +85,10 @@ class QuerybuilderController
      * @throws \TYPO3\CMS\Core\Context\Exception\AspectNotFoundException
      * @throws \TYPO3\CMS\Core\Context\Exception\AspectPropertyNotFoundException
      */
-    public function ajaxGetRecentQueries(ServerRequestInterface $request) : ResponseInterface
+    public function ajaxGetRecentQueries(ServerRequestInterface $request): ResponseInterface
     {
         $requestParams = $request->getQueryParams();
+        /** @var QueryBuilder $queryBuilder */
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
             ->getQueryBuilderForTable('sys_querybuilder');
 
@@ -87,7 +96,8 @@ class QuerybuilderController
             ->select('uid', 'queryname', 'where_parts')
             ->from('sys_querybuilder')
             ->where(
-                $queryBuilder->expr()->eq('affected_table', $queryBuilder->createNamedParameter($requestParams['table'])),
+                $queryBuilder->expr()->eq('affected_table',
+                    $queryBuilder->createNamedParameter($requestParams['table'])),
                 $queryBuilder->expr()->eq('user', (int)$this->getBackendUserAspect()->get('id'))
             )
             ->execute()
