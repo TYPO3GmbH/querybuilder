@@ -44,7 +44,7 @@ class DatabaseRecordList
         $request = $GLOBALS['TYPO3_REQUEST'];
         $queryParams = $request->getQueryParams();
         $route = $queryParams['route'] ?? '';
-        if (!empty($table) && $route === '/web/list/') {
+        if (!empty($table) && $route === '/module/web/list') {
             $query = $queryParams['query'] ?? '';
             if ($query !== null) {
                 $filter = json_decode($query);

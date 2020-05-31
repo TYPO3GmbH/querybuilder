@@ -37,7 +37,7 @@ class PageRenderer
         $queryParams = $request->getQueryParams();
         $table = $queryParams['table'] ?? '';
         $route = $queryParams['route'] ?? '';
-        if (!empty($table) && $route === '/web/list/') {
+        if (!empty($table) && $route === '/module/web/list') {
             $pageRenderer = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Page\PageRenderer::class);
 
             $pageRenderer->addInlineLanguageLabelFile('EXT:querybuilder/Resources/Private/Language/querybuilder-js.xlf');
