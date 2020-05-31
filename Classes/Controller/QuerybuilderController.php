@@ -68,11 +68,14 @@ class QuerybuilderController
         }
 
 //        @TODO: This does not feel right but generates a response like in earlier version
-        $response = new Response('php://temp', 200,
+        $response = new Response(
+            'php://temp',
+            200,
             [
                 'Content-Type' => 'application/json; charset=utf-8',
                 'X-JSON' => [true]
-            ]);
+            ]
+        );
         $response->getBody()->write(json_encode($result));
         return $response;
     }
@@ -96,8 +99,10 @@ class QuerybuilderController
             ->select('uid', 'queryname', 'where_parts')
             ->from('sys_querybuilder')
             ->where(
-                $queryBuilder->expr()->eq('affected_table',
-                    $queryBuilder->createNamedParameter($requestParams['table'])),
+                $queryBuilder->expr()->eq(
+                    'affected_table',
+                    $queryBuilder->createNamedParameter($requestParams['table'])
+                ),
                 $queryBuilder->expr()->eq('user', (int)$this->getBackendUserAspect()->get('id'))
             )
             ->execute()
