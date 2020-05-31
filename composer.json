@@ -64,7 +64,7 @@
     ]
   },
   "require": {
-    "php": "^7.2",
+    "php": ">=7.2.0",
     "ext-json": "*",
     "ext-pdo": "*",
     "overtrue/phplint": "^1.1",
