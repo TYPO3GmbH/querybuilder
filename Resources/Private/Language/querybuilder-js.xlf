@@ -30,10 +30,10 @@
 				<source>Override saved query?</source>
 			</trans-unit>
 			<trans-unit id="modal.cancel">
-				<source>cancel</source>
+				<source>Cancel</source>
 			</trans-unit>
 			<trans-unit id="modal.save">
-				<source>save</source>
+				<source>Save</source>
 			</trans-unit>
 			<trans-unit id="modal.success.headline">
 				<source>Query saved</source>

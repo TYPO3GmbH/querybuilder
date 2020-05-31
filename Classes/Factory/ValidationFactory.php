@@ -17,6 +17,7 @@ class ValidationFactory
 {
     public function create(array $properties): Validation
     {
+        /** @var Validation $entity */
         $entity = GeneralUtility::makeInstance(Validation::class);
         foreach ($properties as $property => $value) {
             $method = 'set' . GeneralUtility::underscoredToUpperCamelCase($property);

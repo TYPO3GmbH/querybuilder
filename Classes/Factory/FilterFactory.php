@@ -17,6 +17,7 @@ class FilterFactory
 {
     public function create(array $properties): Filter
     {
+        /** @var Filter $entity */
         $entity = GeneralUtility::makeInstance(Filter::class);
         foreach ($properties as $property => $value) {
             $method = 'set' . GeneralUtility::underscoredToUpperCamelCase($property);

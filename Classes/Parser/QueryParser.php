@@ -53,7 +53,6 @@ class QueryParser
     /**
      * @param stdClass $filterObject
      * @param QueryBuilder $queryBuilderObject
-     *
      * @param int $iteration
      *
      * @return QueryBuilder
