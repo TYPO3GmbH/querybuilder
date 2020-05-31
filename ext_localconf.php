@@ -31,12 +31,6 @@ $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['formDataGroup']['tcaOnly'] = [
             \TYPO3\CMS\Backend\Form\FormDataProvider\InitializeProcessedTca::class,
         ],
     ],
-//    TODO Check this
-    \TYPO3\CMS\Backend\Form\FormDataProvider\ParentPageTca::class => [
-        'depends' => [
-            \TYPO3\CMS\Backend\Form\FormDataProvider\InlineOverrideChildTca::class,
-        ],
-    ],
     \TYPO3\CMS\Backend\Form\FormDataProvider\TcaGroup::class => [
         'depends' => [
             \TYPO3\CMS\Backend\Form\FormDataProvider\DatabaseRecordOverrideValues::class,
@@ -160,11 +154,11 @@ $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['formDataGroup']['tcaOnly'] = [
             \TYPO3\CMS\Backend\Form\FormDataProvider\TcaSelectTreeItems::class,
         ],
     ],
-    \TYPO3\CMS\Backend\Form\FormDataProvider\TcaInline::class => [
-        'depends' => [
-            \TYPO3\CMS\Backend\Form\FormDataProvider\TcaInlineConfiguration::class,
-        ],
-    ],
+//    \TYPO3\CMS\Backend\Form\FormDataProvider\TcaInline::class => [
+//        'depends' => [
+//            \TYPO3\CMS\Backend\Form\FormDataProvider\TcaInlineConfiguration::class,
+//        ],
+//    ],
     \TYPO3\CMS\Backend\Form\FormDataProvider\TcaInputPlaceholders::class => [
         'depends' => [
             \TYPO3\CMS\Backend\Form\FormDataProvider\TcaInlineConfiguration::class,
