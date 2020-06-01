@@ -31,7 +31,6 @@ class PageRenderer
      */
     public function renderPreProcess(array $params): void
     {
-//        @TODO Check this. TYPO3_REQUEST is not supported anymore
         /** @var ServerRequestInterface $request */
         $request = $GLOBALS['TYPO3_REQUEST'];
         $queryParams = $request->getQueryParams();
