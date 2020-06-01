@@ -67,15 +67,7 @@ class QuerybuilderController
             $result->uid = $uid;
         }
 
-//        @TODO: This does not feel right but generates a response like in earlier version
-        $response = new Response(
-            'php://temp',
-            200,
-            [
-                'Content-Type' => 'application/json; charset=utf-8',
-                'X-JSON' => [true]
-            ]
-        );
+        $response = new JsonResponse();
         $response->getBody()->write(json_encode($result));
         return $response;
     }
