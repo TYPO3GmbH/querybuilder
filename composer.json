@@ -27,6 +27,16 @@
       "T3G\\Querybuilder\\Tests\\": "Tests/"
     }
   },
+  "config": {
+    "preferred-install": {
+      "t3g/*": "source",
+      "*": "dist"
+    },
+    "sort-packages": true,
+    "discard-changes": true,
+    "vendor-dir": ".build/vendor",
+    "bin-dir": ".build/bin"
+  },
   "extra": {
     "typo3/cms": {
       "extension-key": "querybuilder",
@@ -54,23 +64,13 @@
     ]
   },
   "require": {
-    "php": "^7.2",
+    "php": ">=7.2.0",
     "ext-json": "*",
     "ext-pdo": "*",
     "psr/http-message": "^1.0.0",
-    "typo3/cms-backend": "dev-master",
-    "typo3/cms-core": "dev-master",
-    "typo3/cms-recordlist": "dev-master"
-  },
-  "config": {
-    "preferred-install": {
-      "t3g/*": "source",
-      "*": "dist"
-    },
-    "sort-packages": true,
-    "discard-changes": true,
-    "vendor-dir": ".build/vendor",
-    "bin-dir": ".build/bin"
+    "typo3/cms-backend": "^10.1",
+    "typo3/cms-core": "^10.1",
+    "typo3/cms-recordlist": "^10.1"
   },
   "require-dev": {
     "overtrue/phplint": "^1.1",

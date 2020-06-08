@@ -17,6 +17,7 @@ class PluginFactory
 {
     public function create(array $properties): Plugin
     {
+        /** @var Plugin $entity */
         $entity = GeneralUtility::makeInstance(Plugin::class);
         foreach ($properties as $property => $value) {
             $method = 'set' . GeneralUtility::underscoredToUpperCamelCase($property);

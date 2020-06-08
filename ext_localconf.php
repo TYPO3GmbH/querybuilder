@@ -18,4 +18,3 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_pagerenderer.php'][
 // DatabaseRecordList hook to process the query
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][\TYPO3\CMS\Recordlist\RecordList\DatabaseRecordList::class]['modifyQuery'][] =
     \T3G\Querybuilder\Hooks\DatabaseRecordList::class;
-
