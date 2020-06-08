@@ -2,17 +2,6 @@
 
 This extension improves the list module by a powerful filter mechanism.
 
-## Requirements
-
-v8.7: 
-- TYPO3 CMS 8.3+
-
-v9.5:
-- TYPO3 CMS 9.5.0+
-
-master:
-- TYPO3 CMS dev-master
-
 ## License
 GPL-2.0-or-later
 
