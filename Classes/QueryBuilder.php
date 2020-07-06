@@ -227,7 +227,8 @@ class QueryBuilder
         $formDataCompilerInput = [
             'tableName' => $tableName,
             'command' => 'new',
-            'effectivePid' => $pageId
+            'effectivePid' => $pageId,
+            'vanillaUid' => $pageId
         ];
 
         return $formDataCompiler->compile($formDataCompilerInput);
