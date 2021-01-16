@@ -64,20 +64,20 @@
     ]
   },
   "require": {
-    "php": ">=7.2.0",
+    "php": ">=7.4.0",
     "ext-json": "*",
     "ext-pdo": "*",
     "psr/http-message": "^1.0.0",
-    "typo3/cms-backend": "^10.1",
-    "typo3/cms-core": "^10.1",
-    "typo3/cms-recordlist": "^10.1"
+    "typo3/cms-backend": "^11.0",
+    "typo3/cms-core": "^11.0",
+    "typo3/cms-recordlist": "^11.0"
   },
   "require-dev": {
     "overtrue/phplint": "^1.1",
     "bk2k/extension-helper": "^1.0",
     "friendsofphp/php-cs-fixer": "^2.12",
     "roave/security-advisories": "dev-master",
-    "typo3/testing-framework": "^5.0"
+    "typo3/testing-framework": "^6.0"
   },
   "minimum-stability": "dev",
   "prefer-stable": true

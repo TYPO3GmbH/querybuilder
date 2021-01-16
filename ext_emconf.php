@@ -15,10 +15,10 @@ $EM_CONF['querybuilder'] = [
     'clearCacheOnLoad' => 0,
     'author' => 'TYPO3 GmbH',
     'author_email' => 'info@typo3.com',
-    'version' => '10.4.0',
+    'version' => '11.0.0',
     'constraints' => [
         'depends' => [
-            'typo3' => '10.0.0 - 10.5.99',
+            'typo3' => '11.0.0 - 11.0.99',
         ],
         'conflicts' => [],
         'suggests' => [],
