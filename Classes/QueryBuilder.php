@@ -55,7 +55,6 @@ class QueryBuilder
         ValidationFactory $validationFactory,
         TcaDatabaseRecord $formDataGroup
     ) {
-
         $this->filterFactory = $filterFactory;
         $this->pluginFactory = $pluginFactory;
         $this->validationFactory = $validationFactory;

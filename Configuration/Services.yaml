@@ -7,26 +7,11 @@ services:
   T3G\Querybuilder\:
     resource: '../Classes/*'
 
-  T3G\Querybuilder\Backend\Form\FormDataGroup\TcaOnly:
-    public: true
-
   T3G\Querybuilder\Hooks\PageRenderer:
     public: true;
-    arguments:
-      $pageRenderer: '@TYPO3\CMS\Core\Page\PageRenderer'
-
 
   T3G\Querybuilder\Controller\QuerybuilderController:
-  #    public: true;
-    arguments:
-      $connectionPool: '@TYPO3\CMS\Core\Context\Context'
-      $context: '@TYPO3\CMS\Core\Database\ConnectionPool'
-
+    public: true;
 
   T3G\Querybuilder\QueryBuilder:
-  #    public: true;
-    arguments:
-      $filterFactory: '@T3G\Querybuilder\Factory\FilterFactory'
-      $pluginFactory: '@T3G\Querybuilder\Factory\PluginFactory'
-      $validationFactory: '@T3G\Querybuilder\Factory\ValidationFactory'
-      $formDataGroup: '@TYPO3\CMS\Backend\Form\FormDataGroup\TcaDatabaseRecord'
+    public: true;

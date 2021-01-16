@@ -28,9 +28,10 @@ class PageRenderer
      */
     protected $pageRenderer;
 
-    public function __construct(PageRenderer $pageRenderer)
+    public function __construct(\TYPO3\CMS\Core\Page\PageRenderer $pageRenderer, QueryBuilder $queryBuilder)
     {
         $this->pageRenderer = $pageRenderer;
+        $this->queryBuilder = $queryBuilder;
     }
 
     /**
@@ -66,10 +67,8 @@ class PageRenderer
             $query = json_decode($queryParams['query'] ?? '');
             $this->pageRenderer->addJsInlineCode('tx_querybuilder_query', 'var tx_querybuilder_query = ' . json_encode($query) . ';');
 
-            $queryBuilder = GeneralUtility::makeInstance(QueryBuilder::class);
-
             $pageId = (int)$queryParams['id'];
-            $filter = $queryBuilder->buildFilterFromTca($table, $pageId);
+            $filter = $this->queryBuilder->buildFilterFromTca($table, $pageId);
             $this->pageRenderer->addJsInlineCode('tx_querybuilder_filter', 'var tx_querybuilder_filter = ' . json_encode($filter) . ';');
 
             $this->pageRenderer->loadRequireJsModule($languageModule);
