@@ -21,7 +21,7 @@ define(['jquery',
 		'TYPO3/CMS/Backend/Storage/Client',
 		'TYPO3/CMS/Backend/Modal',
 		'TYPO3/CMS/Backend/Notification',
-		'twbs/bootstrap-datetimepicker',
+		'TYPO3/CMS/Backend/DateTimePicker',
 		'query-builder'
 		], function ($, moment, Severity, ClientStorage, Modal, Notification) {
 	'use strict';
@@ -47,12 +47,6 @@ define(['jquery',
 		table: $('table[data-table]').data('table'),
 		querySelector: null,
 		instance: null,
-		plugins: {
-			'bt-tooltip-errors': {delay: 100},
-			//'sortable': { icon: 'fa fa-sort' },
-			'invert': {},
-			'filter-description': {icon: 'fa fa-info'}
-		},
 		icon: 'fa fa-sort',
 		// Filter:Types: string, integer, double, date, time, datetime and boolean.
 		// Filter:Required: id, type, values*
@@ -195,18 +189,20 @@ define(['jquery',
 				table: QueryBuilder.table
 			},
 			success: function(data) {
-				for (var j = 0; j < data.length; j++) {
-					var $query = $('<option />', {value: data[j].uid, 'data-query': data[j].where_parts}).text(data[j].queryname);
-					$querySelector.append($query);
-				}
-				$querySelector.on('change', function() {
-					var $option = $(this.options[this.selectedIndex]);
-					try {
-						QueryBuilder.instance.queryBuilder('setRules', $option.data('query'));
-					} catch (err) {
-						console.log(err.message);
+				if (data !== undefined) {
+					for (var j = 0; j < data.length; j++) {
+						var $query = $('<option />', {value: data[j].uid, 'data-query': data[j].where_parts}).text(data[j].queryname);
+						$querySelector.append($query);
 					}
-				});
+					$querySelector.on('change', function() {
+						var $option = $(this.options[this.selectedIndex]);
+						try {
+							QueryBuilder.instance.queryBuilder('setRules', $option.data('query'));
+						} catch (err) {
+							console.log(err.message);
+						}
+					});
+				}
 			}
 		});
 	};
