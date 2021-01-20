@@ -24,6 +24,17 @@ use UnexpectedValueException;
 class PageRenderer
 {
     /**
+     * @var \TYPO3\CMS\Core\Page\PageRenderer
+     */
+    protected $pageRenderer;
+
+    public function __construct(\TYPO3\CMS\Core\Page\PageRenderer $pageRenderer, QueryBuilder $queryBuilder)
+    {
+        $this->pageRenderer = $pageRenderer;
+        $this->queryBuilder = $queryBuilder;
+    }
+
+    /**
      * @param array $params
      *
      * @throws InvalidArgumentException
@@ -37,13 +48,11 @@ class PageRenderer
         $table = $queryParams['table'] ?? '';
         $route = $queryParams['route'] ?? '';
         if (!empty($table) && $route === '/module/web/list') {
-            $pageRenderer = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Page\PageRenderer::class);
+            $this->pageRenderer->addInlineLanguageLabelFile('EXT:querybuilder/Resources/Private/Language/querybuilder-js.xlf');
+            $this->pageRenderer->addCssFile('EXT:querybuilder/Resources/Public/Css/query-builder.default.css');
+            $this->pageRenderer->addCssFile('EXT:querybuilder/Resources/Public/Css/custom-query-builder.css');
 
-            $pageRenderer->addInlineLanguageLabelFile('EXT:querybuilder/Resources/Private/Language/querybuilder-js.xlf');
-            $pageRenderer->addCssFile('EXT:querybuilder/Resources/Public/Css/query-builder.default.css');
-            $pageRenderer->addCssFile('EXT:querybuilder/Resources/Public/Css/custom-query-builder.css');
-
-            $pageRenderer->addRequireJsConfiguration([
+            $this->pageRenderer->addRequireJsConfiguration([
                 'paths' => [
                     'query-builder' => PathUtility::getAbsoluteWebPath('../typo3conf/ext/querybuilder/Resources/Public/JavaScript/query-builder.standalone'),
                     'query-builder/lang' => PathUtility::getAbsoluteWebPath('../typo3conf/ext/querybuilder/Resources/Public/JavaScript/Language'),
@@ -56,16 +65,14 @@ class PageRenderer
             }
 
             $query = json_decode($queryParams['query'] ?? '');
-            $pageRenderer->addJsInlineCode('tx_querybuilder_query', 'var tx_querybuilder_query = ' . json_encode($query) . ';');
-
-            $queryBuilder = GeneralUtility::makeInstance(QueryBuilder::class);
+            $this->pageRenderer->addJsInlineCode('tx_querybuilder_query', 'var tx_querybuilder_query = ' . json_encode($query) . ';');
 
             $pageId = (int)$queryParams['id'];
-            $filter = $queryBuilder->buildFilterFromTca($table, $pageId);
-            $pageRenderer->addJsInlineCode('tx_querybuilder_filter', 'var tx_querybuilder_filter = ' . json_encode($filter) . ';');
+            $filter = $this->queryBuilder->buildFilterFromTca($table, $pageId);
+            $this->pageRenderer->addJsInlineCode('tx_querybuilder_filter', 'var tx_querybuilder_filter = ' . json_encode($filter) . ';');
 
-            $pageRenderer->loadRequireJsModule($languageModule);
-            $pageRenderer->loadRequireJsModule('TYPO3/CMS/Querybuilder/QueryBuilder', 'function(QueryBuilder) {
+            $this->pageRenderer->loadRequireJsModule($languageModule);
+            $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Querybuilder/QueryBuilder', 'function(QueryBuilder) {
                 QueryBuilder.initialize(tx_querybuilder_query, tx_querybuilder_filter);
             }');
         }

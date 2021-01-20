@@ -29,6 +29,38 @@ class QueryBuilder
     private const FORMAT_TIME = 'HH:mm';
 
     /**
+     * @var FilterFactory
+     */
+    protected $filterFactory;
+
+    /**
+     * @var PluginFactory
+     */
+    protected $pluginFactory;
+
+    /**
+     * @var ValidationFactory
+     */
+    protected $validationFactory;
+
+    /**
+     * @var TcaDatabaseRecord
+     */
+    protected $formDataGroup;
+
+    public function __construct(
+        FilterFactory $filterFactory,
+        PluginFactory $pluginFactory,
+        ValidationFactory $validationFactory,
+        TcaDatabaseRecord $formDataGroup
+    ) {
+        $this->filterFactory = $filterFactory;
+        $this->pluginFactory = $pluginFactory;
+        $this->validationFactory = $validationFactory;
+        $this->formDataGroup = $formDataGroup;
+    }
+
+    /**
      * Build the filter configuration from TCA
      *
      * @param string $table
@@ -50,7 +82,7 @@ class QueryBuilder
             }
             // Filter:Types: string, integer, double, date, time, datetime and boolean.
             // Filter:Required: id, type, values*
-            $filter = GeneralUtility::makeInstance(FilterFactory::class)
+            $filter = $this->filterFactory
                 ->create([
                     'id' => $filterField,
                     'type' => $this->determineFilterType($fieldConfig),
@@ -196,7 +228,7 @@ class QueryBuilder
                 default:
             }
             $filter->setPlugin(
-                GeneralUtility::makeInstance(PluginFactory::class)
+                $this->pluginFactory
                     ->create([
                         'identifier' => 'datetimepicker',
                         'configuration' => $pluginConfiguration,
@@ -205,7 +237,7 @@ class QueryBuilder
 
             if (!empty($pluginConfiguration['format'])) {
                 $filter->setValidation(
-                    GeneralUtility::makeInstance(ValidationFactory::class)
+                    $this->validationFactory
                         ->create([
                             'format' => $pluginConfiguration['format'],
                         ])
@@ -221,8 +253,8 @@ class QueryBuilder
      */
     protected function prepareTca(string $tableName, int $pageId) : array
     {
-        $formDataGroup = GeneralUtility::makeInstance(TcaDatabaseRecord::class);
-        $formDataCompiler = GeneralUtility::makeInstance(FormDataCompiler::class, $formDataGroup);
+//        TODO: check how to DI this?
+        $formDataCompiler = GeneralUtility::makeInstance(FormDataCompiler::class, $this->formDataGroup);
 
         $formDataCompilerInput = [
             'tableName' => $tableName,

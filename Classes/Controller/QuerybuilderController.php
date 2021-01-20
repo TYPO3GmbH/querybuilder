@@ -12,18 +12,35 @@ namespace T3G\Querybuilder\Controller;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use TYPO3\CMS\Core\Context\AspectInterface;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Context\UserAspect;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Http\JsonResponse;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Main script class for saving query
  */
 class QuerybuilderController
 {
+
+    /**
+     * @var ConnectionPool
+     */
+    protected $connectionPool;
+
+    /**
+     * @var Context
+     */
+    protected $context;
+
+    public function __construct(ConnectionPool $connectionPool, Context $context)
+    {
+        $this->connectionPool = $connectionPool;
+        $this->context = $context;
+    }
+
     /**
      * @param ServerRequestInterface $request
      * @param ResponseInterface $response
@@ -39,9 +56,9 @@ class QuerybuilderController
         $result->status = 'ok';
 
         $requestParams = $request->getQueryParams();
-        /** @var \TYPO3\CMS\Core\Database\Query\QueryBuilder $queryBuilder */
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
-            ->getQueryBuilderForTable('sys_querybuilder');
+        /** @var QueryBuilder $queryBuilder */
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('sys_querybuilder');
+
         $uid = (int)$requestParams['uid'];
         if ($uid > 0 && (int)$requestParams['override'] === 1) {
             $result->uid = $uid;
@@ -83,8 +100,7 @@ class QuerybuilderController
     {
         $requestParams = $request->getQueryParams();
         /** @var QueryBuilder $queryBuilder */
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
-            ->getQueryBuilderForTable('sys_querybuilder');
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('sys_querybuilder');
 
         $results = $queryBuilder
             ->select('uid', 'queryname', 'where_parts')
@@ -106,8 +122,8 @@ class QuerybuilderController
      * @return UserAspect
      * @throws \TYPO3\CMS\Core\Context\Exception\AspectNotFoundException
      */
-    protected function getBackendUserAspect(): UserAspect
+    protected function getBackendUserAspect(): AspectInterface
     {
-        return GeneralUtility::makeInstance(Context::class)->getAspect('backend.user');
+        return $this->context->getAspect('backend.user');
     }
 }

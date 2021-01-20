@@ -1,0 +1,17 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  T3G\Querybuilder\:
+    resource: '../Classes/*'
+
+  T3G\Querybuilder\Hooks\PageRenderer:
+    public: true;
+
+  T3G\Querybuilder\Controller\QuerybuilderController:
+    public: true;
+
+  T3G\Querybuilder\QueryBuilder:
+    public: true;
