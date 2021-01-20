@@ -48,7 +48,6 @@ class QueryBuilder
      */
     protected $formDataGroup;
 
-
     public function __construct(
         FilterFactory $filterFactory,
         PluginFactory $pluginFactory,
