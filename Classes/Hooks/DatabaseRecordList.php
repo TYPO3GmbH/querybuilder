@@ -45,10 +45,24 @@ class DatabaseRecordList
         $route = $queryParams['route'] ?? '';
         if (!empty($table) && $route === '/module/web/list') {
             $query = $queryParams['query'] ?? '';
-            if ($query !== null) {
+            if (!empty($query)) {
                 $filter = json_decode($query);
-                $filter ? $queryBuilder = GeneralUtility::makeInstance(QueryParser::class)->parse($filter, $queryBuilder) : null;
+            }else{
+                $normalizedParams = $request->getAttribute('normalizedParams');
+                $httpReferer = $normalizedParams->getHttpReferer();
+                $query = parse_url($httpReferer);
+                if(!empty($query['query'])){
+                    $response = rawurldecode($query['query']);
+                    // Recommended
+                    parse_str($response, $output);
+                    if(!empty($output['query'])){
+                        $filter = json_decode($output['query']);
+                    }
+                }
+
             }
+
+            $filter ? $queryBuilder = GeneralUtility::makeInstance(QueryParser::class)->parse($filter, $queryBuilder) : null;
         }
         return $queryBuilder;
     }
